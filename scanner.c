@@ -72,12 +72,16 @@ typedef enum {
 	START,
 	FINISHED,
 	IDENTIFIER_KEYWORD,
+	NUMBER,
+	NUMBER_DECIMAL,
+	NUMBER_EXPONENT,
 }ScannerState;
 
 
 int main(void){
 	
 	FILE* source;
+	Token *token;
 	source = fopen("code.txt", "r");
 	ScannerState state = START;
 	char c = { 0 };
@@ -93,23 +97,65 @@ int main(void){
 				state = IDENTIFIER_KEYWORD;
 			}
 			else if (isdigit(c)) {
-				return 0;
+				strncat(Sattribute, &c, 1);
+				state = NUMBER;
 			}
 			else if (isspace(c)) {
 				state = START;
+			}
+			else if (c == '\n') {
+				state = FINISHED;
 			}
 			break;
 		case(IDENTIFIER_KEYWORD):
 			if ((isalpha(c) || isdigit(c) || c == '_')) {
 				strncat(Sattribute, &c, 1);
 			}
+			else {  
+				state = FINISHED;
+			}
+			break;
+		case(NUMBER):
+			if (isdigit(c)) {
+				strncat(Sattribute, &c, 1);
+			}
+			else if (c == '.') {
+				strncat(Sattribute, &c, 1);
+				state = NUMBER_DECIMAL;
+			}
+			else if (c == 'e') {
+				strncat(Sattribute, &c, 1);
+				state = NUMBER_EXPONENT;
+			}
 			else {
-				printf("%s", Sattribute);
-				return 0;
+				state = FINISHED;
+			}
+			break;
+		case(NUMBER_DECIMAL):
+			if (isdigit(c)) {
+				strncat(Sattribute, &c, 1);
+			}
+			else if (c == 'e') {
+				strncat(Sattribute, &c, 1);
+				state = NUMBER_EXPONENT;
+			}
+			else {
+				state = FINISHED;
+			}
+			break;
+		case(NUMBER_EXPONENT):
+			if (isdigit(c) || c == '+' || c == '-') {
+				strncat(Sattribute, &c, 1);
+			}
+			else {
+				state = FINISHED;
 			}
 			break;
 		}
+		
+
 	}
+	printf("%s", Sattribute);
 	fclose(source);
 	return 0;
 }
