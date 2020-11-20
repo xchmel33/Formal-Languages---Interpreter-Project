@@ -78,6 +78,14 @@ typedef enum {
 	BACKSLASH,
 	LINE_COMMENTARY,
 	BLOCK_COMMENTARY,
+	EQ,
+	NOT,
+	ERROR,
+	MORE,
+	LESS,
+	INITIALIZE,
+	STRING,
+	ESCAPESEQ,
 }ScannerState;
 
 void procces_id_key_data(char S_Attribute[10], Token* token) {
@@ -202,6 +210,107 @@ int main(void) {
 			else if (c == '/') {
 				state = BACKSLASH;
 			}
+			else if (c == '<') {
+				strncat(S_Attribute, c, 1);
+				state = LESS;
+			}
+			else if (c == '>') {
+				strncat(S_Attribute, c, 1);
+				state = MORE;
+			}
+			else if (c == '=') {
+				strncat(S_Attribute, c, 1);
+				state = EQ;
+			}
+			else if (c == '!') {
+				strncat(S_Attribute, c, 1);
+				state = NOT;
+			}
+			else if (c == ':') {
+				strncat(S_Attribute, c, 1);
+				state = INITIALIZE;
+			}
+			else if (c == '"') {
+				strncat(S_Attribute, c, 1);
+				state = STRING;
+			}
+			else {
+				state = ERROR;
+			}
+			break;
+		case(STRING):
+			if (c == '"') {
+				strncat(S_Attribute, c, 1);
+				token->type = TSTRING;
+				strcpy(token->attribute.operator,S_Attribute);
+				state = FINISHED;
+			}
+			else if (c == '\a') {
+				state = ESCAPESEQ;
+			}
+			break;
+		case(INITIALIZE):
+			if (c == '=') {
+				strncat(S_Attribute, c, 1);
+				token->type = INIT;
+				strcpy(token->attribute.operator,S_Attribute);
+				state = FINISHED;
+			}
+			else {
+				state = ERROR;
+			}
+			break;
+		case(LESS):
+			if (c == '=') {
+				strncat(S_Attribute, c, 1);
+				token->type = LESS_EQUAL;
+				strcpy(token->attribute.operator,S_Attribute);
+				state = FINISHED;
+			}
+			else {
+				ungetc(c, source);
+				token->type = LESS;
+				strcpy(token->attribute.operator,S_Attribute);
+				state = FINISHED;
+			}
+			break;
+		case(MORE):
+			if (c == '=') {
+				strncat(S_Attribute, c, 1);
+				token->type = MORE_EQUAL;
+				strcpy(token->attribute.operator,S_Attribute);
+				state = FINISHED;
+			}
+			else {
+				ungetc(c, source);
+				token->type = MORE;
+				strcpy(token->attribute.operator,S_Attribute);
+				state = FINISHED;
+			}
+			break;
+		case(NOT):
+			if (c == '=') {
+				strncat(S_Attribute, c, 1);
+				token->type = NOT_EQUAL;
+				strcpy(token->attribute.operator,S_Attribute);
+				state = FINISHED;
+			}
+			else {
+				state = ERROR;
+			}
+		case(EQ):
+			if (c == '=') {
+				strncat(S_Attribute, c, 1);
+				token->type = EQUAL;
+				strcpy(token->attribute.operator,S_Attribute);
+				state = FINISHED;
+			}
+			else {
+				ungetc(c, source);
+				token->type = ASSIGN;
+				strcpy(token->attribute.operator,S_Attribute);
+				state = FINISHED;
+			}
 			break;
 		case(BACKSLASH):
 			if (c == '/') {
@@ -213,7 +322,7 @@ int main(void) {
 			else {
 				ungetc(c, source);
 				token->type = DIV;
-				token->attribute.other = '/';
+				strcpy(token->attribute.operator,'/');
 				state = FINISHED;
 			}
 			break;
