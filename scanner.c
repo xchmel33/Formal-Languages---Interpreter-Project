@@ -84,7 +84,7 @@ typedef enum {
 	MORE,
 	LESS,
 	INITIALIZE,
-	STRING,
+	S_STRING,
 	ESCAPESEQ,
 }ScannerState;
 
@@ -238,7 +238,7 @@ int main(void) {
 				state = ERROR;
 			}
 			break;
-		case(STRING):
+		case(S_STRING):
 			if (c == '"') {
 				strncat(S_Attribute, c, 1);
 				token->type = TSTRING;
