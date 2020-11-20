@@ -218,10 +218,9 @@ int main(void) {
 			}
 			break;
 		case(LINE_COMMENTARY):
-			while (!c) {
-				c = getc(source);
+			if (c == '\n' || c == EOF) {
+				state = START;
 			}
-			state = START;
 			break;
 		case(BLOCK_COMMENTARY):
 			strcpy(S_Attribute, "");
