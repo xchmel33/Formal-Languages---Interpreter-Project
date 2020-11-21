@@ -1,96 +1,15 @@
 #define _CRT_SECURE_NO_WARNINGS
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
-typedef enum {
-	ELSE,
-	FOR,
-	FUNC,
-	IF,
-	PACKAGE,
-	RETURN,
-}Keyword;
+#include "scanner.h"
 
-typedef enum {
-	INT,
-	FLOAT64,
-	STRING,
-}Datatype;
-
-typedef enum {
-	TEOL,
-	TEOF,
-	IDENTIFIER,
-	KEYWORD,
-	DATATYPE,
-
-	INTEGER,
-	DECIMAL,
-	TSTRING,
-
-	EQUAL,
-	NOT_EQUAL,
-	LESS_THAN,
-	LESS_EQUAL,
-	MORETHAN,
-	MORE_EQUAL,
-
-	ASSIGN,
-	INIT,
-	ADD,
-	SUB,
-	MUL,
-	DIV,
-
-	L_BRACKET,
-	R_BRACKET,
-	BLOCK_BEGIN,
-	BLOCK_END,
-	COMMA,
-	SEMICOLON,
-}TokenType;
-
-typedef union {
-	char identifier[50];
-	Keyword keyword;
-	Datatype datatype;
-	int integer;
-	double decimal;
-	char string[50];
-	char operator[2];
-	char other;
-}TokenAttribute;
-
-typedef struct {
-	TokenType type;
-	TokenAttribute attribute;
-}Token;
-
-typedef enum {
-	START,
-	FINISHED,
-	ID_KEY_DATA,
-	NUMBER,
-	NUMBER_DECIMAL,
-	NUMBER_EXPONENT,
-	BACKSLASH,
-	LINE_COMMENTARY,
-	BLOCK_COMMENTARY,
-	EQ,
-	NOT,
-	ERROR,
-	MORE,
-	LESS,
-	INITIALIZE,
-	S_STRING,
-	ESCAPESEQ,
-}ScannerState;
+FILE* source;
 
 void procces_id_key_data(char S_Attribute[10], Token* token) {
 
-	token->type = KEYWORD;
+	token->type = TT_KEYWORD;
 	if (!strcmp(S_Attribute, "else")) token->attribute.keyword = ELSE;
 	else if (!strcmp(S_Attribute, "for")) token->attribute.keyword = FOR;
 	else if (!strcmp(S_Attribute, "func")) token->attribute.keyword = FUNC;
@@ -98,19 +17,19 @@ void procces_id_key_data(char S_Attribute[10], Token* token) {
 	else if (!strcmp(S_Attribute, "package")) token->attribute.keyword = PACKAGE;
 	else if (!strcmp(S_Attribute, "return"))  token->attribute.keyword = RETURN;
 	else if (!strcmp(S_Attribute, "int")) {
-		token->type = DATATYPE;
+		token->type = TT_DATATYPE;
 		token->attribute.datatype = INT;
 	}
 	else if (!strcmp(S_Attribute, "float64")) {
-		token->type = DATATYPE;
+		token->type = TT_DATATYPE;
 		token->attribute.datatype = FLOAT64;
 	}
 	else if (!strcmp(S_Attribute, "string")) {
-		token->type = DATATYPE;
+		token->type = TT_DATATYPE;
 		token->attribute.datatype = STRING;
 	}
 	else {
-		token->type = IDENTIFIER;
+		token->type = TT_IDENTIFIER;
 		strcpy(token->attribute.identifier, S_Attribute);
 	}
 }
@@ -122,216 +41,272 @@ void procces_decimal(char S_Attribute[10], Token* token) {
 	if (*end) {
 		return;
 	}
-	token->type = DECIMAL;
+	token->type = TT_DECIMAL;
 	token->attribute.decimal = value;
 }
 
-int main(void) {
+void SetSource(FILE* f) {
+	source = f;
+}
 
-	FILE* source;
-	Token* token = malloc(sizeof(Token));
-	source = fopen("code.txt", "r");
-	ScannerState state = START;
+int GetToken(Token *token) {
+
+	token->type = TT_EMPTY;
+	ScannerState state = SS_START;
 	char c = { 0 };
-	char S_Attribute[10] = "";
+	char S_Attribute[100] = "";
+	char strhex[2];
 
-	while (state != FINISHED) {
+	while (state != SS_FINISHED) {
 		c = getc(source);
 		switch (state)
 		{
-		case(START):
+		case(SS_START):
 			strcpy(S_Attribute, "");
 			if (isalpha(c)) {
 				strncat(S_Attribute, &c, 1);
-				state = ID_KEY_DATA;
+				state = SS_ID_KEY_DATA;
 			}
 			else if (isdigit(c)) {
 				strncat(S_Attribute, &c, 1);
-				state = NUMBER;
+				state = SS_NUMBER;
 			}
 			else if (isspace(c)) {
-				state = START;
+				state = SS_START;
 			}
 			else if (c == '\n') {
-				token->type = TEOL;
+				token->type = TT_EOL;
 				token->attribute.other = NULL;
-				state = FINISHED;
+				state = SS_FINISHED;
 			}
 			else if (c == EOF) {
-				token->type = TEOF;
+				token->type = TT_EOF;
 				token->attribute.other = NULL;
-				state = FINISHED;
+				state = SS_FINISHED;
 			}
 			else if (c == ',') {
-				token->type = COMMA;
+				token->type = TT_COMMA;
 				token->attribute.other = c;
-				state = FINISHED;
+				state = SS_FINISHED;
 			}
 			else if (c == ';') {
-				token->type = SEMICOLON;
+				token->type = TT_SEMICOLON;
 				token->attribute.other = c;
-				state = FINISHED;
+				state = SS_FINISHED;
 			}
 			else if (c == '(') {
-				token->type = L_BRACKET;
+				token->type = TT_L_BRACKET;
 				token->attribute.other = c;
-				state = FINISHED;
+				state = SS_FINISHED;
 			}
 			else if (c == ')') {
-				token->type = R_BRACKET;
+				token->type = TT_R_BRACKET;
 				token->attribute.other = c;
-				state = FINISHED;
+				state = SS_FINISHED;
 			}
 			else if (c == '{') {
-				token->type = BLOCK_BEGIN;
+				token->type = TT_BLOCK_BEGIN;
 				token->attribute.other = c;
-				state = FINISHED;
+				state = SS_FINISHED;
 			}
 			else if (c == '}') {
-				token->type = BLOCK_END;
+				token->type = TT_BLOCK_END;
 				token->attribute.other = c;
-				state = FINISHED;
+				state = SS_FINISHED;
 			}
 			else if (c == '+') {
-				token->type = ADD;
+				token->type = TT_ADD;
 				token->attribute.other = c;
-				state = FINISHED;
+				state = SS_FINISHED;
 			}
 			else if (c == '-') {
-				token->type = SUB;
+				token->type = TT_SUB;
 				token->attribute.other = c;
-				state = FINISHED;
+				state = SS_FINISHED;
 			}
 			else if (c == '*') {
-				token->type = MUL;
+				token->type = TT_MUL;
 				token->attribute.other = c;
-				state = FINISHED;
+				state = SS_FINISHED;
 			}
 			else if (c == '/') {
-				state = BACKSLASH;
+				state = SS_BACKSLASH;
 			}
 			else if (c == '<') {
-				strncat(S_Attribute, c, 1);
-				state = LESS;
+				strncat(S_Attribute, &c, 1);
+				state = SS_LESS_THAN;
 			}
 			else if (c == '>') {
-				strncat(S_Attribute, c, 1);
-				state = MORE;
+				strncat(S_Attribute, &c, 1);
+				state = SS_MORE_THAN;
 			}
 			else if (c == '=') {
-				strncat(S_Attribute, c, 1);
-				state = EQ;
+				strncat(S_Attribute, &c, 1);
+				state = SS_EQUAL;
 			}
 			else if (c == '!') {
-				strncat(S_Attribute, c, 1);
-				state = NOT;
+				strncat(S_Attribute, &c, 1);
+				state = SS_NOT;
 			}
 			else if (c == ':') {
-				strncat(S_Attribute, c, 1);
-				state = INITIALIZE;
+				strncat(S_Attribute, &c, 1);
+				state = SS_INIT;
 			}
 			else if (c == '"') {
-				strncat(S_Attribute, c, 1);
-				state = STRING;
+				strncat(S_Attribute, &c, 1);
+				state = SS_STRING;
 			}
 			else {
-				state = ERROR;
+				state = SS_ERROR;
 			}
 			break;
-		case(S_STRING):
+		case(SS_STRING):
 			if (c == '"') {
-				strncat(S_Attribute, c, 1);
-				token->type = TSTRING;
-				strcpy(token->attribute.operator,S_Attribute);
-				state = FINISHED;
+				strncat(S_Attribute, &c, 1);
+				token->type = TT_STRING;
+				strcpy(token->attribute.string,S_Attribute);
+				state = SS_FINISHED;
 			}
-			else if (c == '\a') {
-				state = ESCAPESEQ;
+			else if (c < 32) {
+				ungetc(c, source);
+				state = SS_ERROR;
 			}
-			break;
-		case(INITIALIZE):
-			if (c == '=') {
-				strncat(S_Attribute, c, 1);
-				token->type = INIT;
-				strcpy(token->attribute.operator,S_Attribute);
-				state = FINISHED;
+			else if (c == '\\') {
+				state = SS_ESCAPE_SEQUENCE;
 			}
 			else {
-				state = ERROR;
+				strncat(S_Attribute, &c, 1);
 			}
 			break;
-		case(LESS):
+		case(SS_ESCAPE_SEQUENCE):
+			if (c == 'n') {
+				c = '\n';
+				strncat(S_Attribute, &c, 1);
+				state = SS_STRING;
+			}
+			else if (c == 't') {
+				c = '\t';
+				strncat(S_Attribute, &c, 1);
+				state = SS_STRING;
+			}
+			else if (c == 'x') {
+				state = SS_ESCAPE_SEQUENCE_HEX;
+			}
+			else if (c == '"') {
+				c = '\"';
+				strncat(S_Attribute, &c, 1);
+				state = SS_STRING;
+			}
+			else if (c == '\\') {
+				strncat(S_Attribute, &c, 1);
+				state = SS_STRING;
+			}
+			break;
+		case(SS_ESCAPE_SEQUENCE_HEX):
+			if ((isdigit(c))||(tolower(c)>=97 && tolower(c)<=102)){
+				strhex[0] = c;
+				state = SS_ESCAPE_SEQUENCE_HEX_2;
+			}
+			else {
+				state = SS_ERROR;
+			}
+			break;
+		case(SS_ESCAPE_SEQUENCE_HEX_2):
+			if ((isdigit(c)) || (tolower(c) >= 97 && tolower(c) <= 102)) {
+				strhex[1] = c;
+				c = (char)strtol(strhex, NULL, 16);
+				strncat(S_Attribute, &c, 1);
+				state = SS_STRING;
+			}
+			else {
+				state = SS_ERROR;
+			}
+			break;
+		case(SS_INIT):
 			if (c == '=') {
-				strncat(S_Attribute, c, 1);
-				token->type = LESS_EQUAL;
+				strncat(S_Attribute, &c, 1);
+				token->type = TT_INIT;
 				strcpy(token->attribute.operator,S_Attribute);
-				state = FINISHED;
+				state = SS_FINISHED;
+			}
+			else {
+				state = SS_ERROR;
+			}
+			break;
+		case(SS_LESS_THAN):
+			if (c == '=') {
+				strncat(S_Attribute, &c, 1);
+				token->type = TT_LESS_OR_EQUAL;
+				strcpy(token->attribute.operator,S_Attribute);
+				state = SS_FINISHED;
 			}
 			else {
 				ungetc(c, source);
-				token->type = LESS;
+				token->type = TT_LESS_THAN;
 				strcpy(token->attribute.operator,S_Attribute);
-				state = FINISHED;
+				state = SS_FINISHED;
 			}
 			break;
-		case(MORE):
+		case(SS_MORE_THAN):
 			if (c == '=') {
-				strncat(S_Attribute, c, 1);
-				token->type = MORE_EQUAL;
+				strncat(S_Attribute, &c, 1);
+				token->type = TT_MORE_OR_EQUAL;
 				strcpy(token->attribute.operator,S_Attribute);
-				state = FINISHED;
+				state = SS_FINISHED;
 			}
 			else {
 				ungetc(c, source);
-				token->type = MORE;
+				token->type = TT_MORE_THAN;
 				strcpy(token->attribute.operator,S_Attribute);
-				state = FINISHED;
+				state = SS_FINISHED;
 			}
 			break;
-		case(NOT):
+		case(SS_NOT):
 			if (c == '=') {
-				strncat(S_Attribute, c, 1);
-				token->type = NOT_EQUAL;
+				strncat(S_Attribute, &c, 1);
+				token->type = TT_NOT_EQUAL;
 				strcpy(token->attribute.operator,S_Attribute);
-				state = FINISHED;
+				state = SS_FINISHED;
 			}
 			else {
-				state = ERROR;
+				state = SS_ERROR;
 			}
-		case(EQ):
+			break;
+		case(SS_EQUAL):
 			if (c == '=') {
-				strncat(S_Attribute, c, 1);
-				token->type = EQUAL;
+				strncat(S_Attribute, &c, 1);
+				token->type = TT_EQUAL;
 				strcpy(token->attribute.operator,S_Attribute);
-				state = FINISHED;
+				state = SS_FINISHED;
 			}
 			else {
 				ungetc(c, source);
-				token->type = ASSIGN;
+				token->type = TT_ASSIGN;
 				strcpy(token->attribute.operator,S_Attribute);
-				state = FINISHED;
+				state = SS_FINISHED;
 			}
 			break;
-		case(BACKSLASH):
+		case(SS_BACKSLASH):
 			if (c == '/') {
-				state = LINE_COMMENTARY;
+				state = SS_LINE_COMMENTARY;
 			}
 			else if (c == '*') {
-				state = BLOCK_COMMENTARY;
+				state = SS_BLOCK_COMMENTARY;
 			}
 			else {
 				ungetc(c, source);
-				token->type = DIV;
-				strcpy(token->attribute.operator,'/');
-				state = FINISHED;
+				S_Attribute[0] = '/';
+				token->type = TT_DIV;
+				strcpy(token->attribute.operator,S_Attribute);
+				state = SS_FINISHED;
 			}
 			break;
-		case(LINE_COMMENTARY):
+		case(SS_LINE_COMMENTARY):
 			if (c == '\n' || c == EOF) {
-				state = START;
+				state = SS_START;
 			}
 			break;
-		case(BLOCK_COMMENTARY):
+		case(SS_BLOCK_COMMENTARY):
 			strcpy(S_Attribute, "");
 			while (strcmp(S_Attribute, "*/") != 0) {
 				if (c == '*' || c == '/') {
@@ -339,64 +314,64 @@ int main(void) {
 				}
 				c = getc(source);
 			}
-			state = START;
+			state = SS_START;
 			break;
-		case(ID_KEY_DATA):
+		case(SS_ID_KEY_DATA):
 			if ((isalpha(c) || isdigit(c) || c == '_')) {
 				strncat(S_Attribute, &c, 1);
 			}
 			else {
 				procces_id_key_data(S_Attribute, token);
-				state = FINISHED;
+				state = SS_FINISHED;
 			}
 			break;
-		case(NUMBER):
+		case(SS_NUMBER):
 			if (isdigit(c)) {
 				strncat(S_Attribute, &c, 1);
 			}
 			else if (c == '.') {
 				strncat(S_Attribute, &c, 1);
-				state = NUMBER_DECIMAL;
+				state = SS_NUMBER_DECIMAL;
 			}
 			else if (tolower(c) == 'e') {
 				strncat(S_Attribute, &c, 1);
-				state = NUMBER_EXPONENT;
+				state = SS_NUMBER_EXPONENT;
 			}
 			else {
-				token->type = INTEGER;
+				token->type = TT_INTEGER;
 				token->attribute.integer = atoi(S_Attribute);
-				state = FINISHED;
+				state = SS_FINISHED;
 			}
 			break;
-		case(NUMBER_DECIMAL):
+		case(SS_NUMBER_DECIMAL):
 			if (isdigit(c)) {
 				strncat(S_Attribute, &c, 1);
 			}
 			else if (tolower(c) == 'e') {
 				strncat(S_Attribute, &c, 1);
-				state = NUMBER_EXPONENT;
+				state = SS_NUMBER_EXPONENT;
 			}
 			else {
 				procces_decimal(S_Attribute, token);
-				state = FINISHED;
+				state = SS_FINISHED;
 			}
 			break;
-		case(NUMBER_EXPONENT):
+		case(SS_NUMBER_EXPONENT):
 			if (isdigit(c) || c == '+' || c == '-') {
 				strncat(S_Attribute, &c, 1);
 			}
 			else {
 				procces_decimal(S_Attribute, token);
-				state = FINISHED;
+				state = SS_FINISHED;
 			}
+			break;
+		case(SS_ERROR):
+			return 1;
 			break;
 		}
 
 
 	}
-
-	printf("Read: %s\n", S_Attribute);
-	fclose(source);
-	free(token);
-	return 0;
+	return token->type == TT_EMPTY ? -1 : 0;
+	
 }
