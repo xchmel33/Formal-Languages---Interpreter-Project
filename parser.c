@@ -22,13 +22,13 @@ int main() {
 			switch (token->type)
 			{
 			case(TT_EOL):
-				printf("Token: EOL, %s\n", token->attribute.other);
+				printf("Token: EOL, %s\n", token->attribute.string);
 				break;
 			case(TT_EOF):
-				printf("Token: EOF, %s\n", token->attribute.other);
+				printf("Token: EOF, %s\n", token->attribute.string);
 				break;
 			case(TT_IDENTIFIER):
-				printf("Token: IDENTIFIER, %s\n", token->attribute.identifier);
+				printf("Token: IDENTIFIER, %s\n", token->attribute.string);
 				break;
 			case(TT_KEYWORD):
 				printf("Token: KEYWORD, ");
@@ -79,58 +79,58 @@ int main() {
 				printf("Token: STRING, %s\n", token->attribute.string);
 				break;
 			case(TT_EQUAL):
-				printf("Token: EQUAL, %s\n", token->attribute.operator);
+				printf("Token: EQUAL, %s\n", token->attribute.string);
 				break;
 			case(TT_NOT_EQUAL):
-				printf("Token: NOT EQUAL, %s\n", token->attribute.operator);
+				printf("Token: NOT EQUAL, %s\n", token->attribute.string);
 				break;
 			case(TT_LESS_THAN):
-				printf("Token: LESS THAN, %s\n", token->attribute.operator);
+				printf("Token: LESS THAN, %s\n", token->attribute.string);
 				break;
 			case(TT_LESS_OR_EQUAL):
-				printf("Token: LESS OR EQUAL, %s\n", token->attribute.operator);
+				printf("Token: LESS OR EQUAL, %s\n", token->attribute.string);
 				break;
 			case(TT_MORE_THAN):
-				printf("Token: MORE THAN, %s\n", token->attribute.operator);
+				printf("Token: MORE THAN, %s\n", token->attribute.string);
 				break;
 			case(TT_MORE_OR_EQUAL):
-				printf("Token: MORE OR EQUAL, %s\n", token->attribute.operator);
+				printf("Token: MORE OR EQUAL, %s\n", token->attribute.string);
 				break;
 			case(TT_ASSIGN):
-				printf("Token: ASSIGN, %c\n", token->attribute.operator[0]);
+				printf("Token: ASSIGN, %s\n", token->attribute.string);
 				break;
 			case(TT_INIT):
-				printf("Token: INIT, %s\n", token->attribute.operator);
+				printf("Token: INIT, %s\n", token->attribute.string);
 				break;
 			case(TT_ADD):
-				printf("Token: ADD, %c\n", token->attribute.operator[0]);
+				printf("Token: ADD, %s\n", token->attribute.string);
 				break;
 			case(TT_SUB):
-				printf("Token: SUB, %c\n", token->attribute.operator[0]);
+				printf("Token: SUB, %s\n", token->attribute.string);
 				break;
 			case(TT_MUL):
-				printf("Token: MUL, %c\n", token->attribute.operator[0]);
+				printf("Token: MUL, %s\n", token->attribute.string);
 				break;
 			case(TT_DIV):
-				printf("Token: DIV, %c\n", token->attribute.operator[0]);
+				printf("Token: DIV, %s\n", token->attribute.string);
 				break;
 			case(TT_L_BRACKET):
-				printf("Token: LEFT BRACKET, %c\n", token->attribute.other);
+				printf("Token: LEFT BRACKET, %s\n", token->attribute.string);
 				break;
 			case(TT_R_BRACKET):
-				printf("Token: RIGHT BRACKET, %c\n", token->attribute.other);
+				printf("Token: RIGHT BRACKET, %s\n", token->attribute.string);
 				break;
 			case(TT_BLOCK_BEGIN):
-				printf("Token: BLOCK BEGIN, %c\n", token->attribute.other);
+				printf("Token: BLOCK BEGIN, %s\n", token->attribute.string);
 				break;
 			case(TT_BLOCK_END):
-				printf("Token: BLOCK END, %c\n", token->attribute.other);
+				printf("Token: BLOCK END, %s\n", token->attribute.string);
 				break;
 			case(TT_COMMA):
-				printf("Token: COMMA, %c\n", token->attribute.other);
+				printf("Token: COMMA, %s\n", token->attribute.string);
 				break;
 			case(TT_SEMICOLON):
-				printf("Token: SEMICOLON, %c\n", token->attribute.other);
+				printf("Token: SEMICOLON, %s\n", token->attribute.string);
 				break;
 			}
 		}

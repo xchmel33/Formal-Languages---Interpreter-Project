@@ -48,14 +48,11 @@ typedef enum {
 }TokenType;
 
 typedef union {
-	char identifier[50];
 	Keyword keyword;
 	Datatype datatype;
 	int integer;
 	double decimal;
 	char string[50];
-	char operator[2];
-	char other;
 }TokenAttribute;
 
 typedef struct {
