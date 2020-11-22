@@ -19,7 +19,6 @@ int main() {
 			return 0;
 		}
 		else {
-			printf("Mame token\n");
 			switch (token->type)
 			{
 			case(TT_EOL):
@@ -98,22 +97,22 @@ int main() {
 				printf("Token: MORE OR EQUAL, %s\n", token->attribute.operator);
 				break;
 			case(TT_ASSIGN):
-				printf("Token: ASSIGN, %s\n", token->attribute.operator);
+				printf("Token: ASSIGN, %c\n", token->attribute.operator[0]);
 				break;
 			case(TT_INIT):
 				printf("Token: INIT, %s\n", token->attribute.operator);
 				break;
 			case(TT_ADD):
-				printf("Token: ADD, %s\n", token->attribute.operator);
+				printf("Token: ADD, %c\n", token->attribute.operator[0]);
 				break;
 			case(TT_SUB):
-				printf("Token: SUB, %s\n", token->attribute.operator);
+				printf("Token: SUB, %c\n", token->attribute.operator[0]);
 				break;
 			case(TT_MUL):
-				printf("Token: MUL, %s\n", token->attribute.operator);
+				printf("Token: MUL, %c\n", token->attribute.operator[0]);
 				break;
 			case(TT_DIV):
-				printf("Token: DIV, %s\n", token->attribute.operator);
+				printf("Token: DIV, %c\n", token->attribute.operator[0]);
 				break;
 			case(TT_L_BRACKET):
 				printf("Token: LEFT BRACKET, %c\n", token->attribute.other);

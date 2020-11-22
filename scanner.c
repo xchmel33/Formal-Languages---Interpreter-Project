@@ -63,7 +63,7 @@ int GetToken(Token *token) {
 		{
 		case(SS_START):
 			strcpy(S_Attribute, "");
-			if (isalpha(c)) {
+			if (isalpha(c)||c == '_') {
 				strncat(S_Attribute, &c, 1);
 				state = SS_ID_KEY_DATA;
 			}
@@ -116,17 +116,17 @@ int GetToken(Token *token) {
 			}
 			else if (c == '+') {
 				token->type = TT_ADD;
-				token->attribute.other = c;
+				token->attribute.operator[0] = c;
 				state = SS_FINISHED;
 			}
 			else if (c == '-') {
 				token->type = TT_SUB;
-				token->attribute.other = c;
+				token->attribute.operator[0] = c;
 				state = SS_FINISHED;
 			}
 			else if (c == '*') {
 				token->type = TT_MUL;
-				token->attribute.other = c;
+				token->attribute.operator[0] = c;
 				state = SS_FINISHED;
 			}
 			else if (c == '/') {
@@ -153,7 +153,7 @@ int GetToken(Token *token) {
 				state = SS_INIT;
 			}
 			else if (c == '"') {
-				strncat(S_Attribute, &c, 1);
+				//strncat(S_Attribute, &c, 1);
 				state = SS_STRING;
 			}
 			else {
@@ -162,7 +162,7 @@ int GetToken(Token *token) {
 			break;
 		case(SS_STRING):
 			if (c == '"') {
-				strncat(S_Attribute, &c, 1);
+				//strncat(S_Attribute, &c, 1);
 				token->type = TT_STRING;
 				strcpy(token->attribute.string,S_Attribute);
 				state = SS_FINISHED;
@@ -302,7 +302,7 @@ int GetToken(Token *token) {
 			}
 			break;
 		case(SS_LINE_COMMENTARY):
-			if (c == '\n' || c == EOF) {
+			if (c == '\n' || c == EOF || c == '\r') {
 				state = SS_START;
 			}
 			break;
@@ -321,6 +321,7 @@ int GetToken(Token *token) {
 				strncat(S_Attribute, &c, 1);
 			}
 			else {
+				ungetc(c, source);
 				procces_id_key_data(S_Attribute, token);
 				state = SS_FINISHED;
 			}
@@ -338,6 +339,7 @@ int GetToken(Token *token) {
 				state = SS_NUMBER_EXPONENT;
 			}
 			else {
+				ungetc(c, source);
 				token->type = TT_INTEGER;
 				token->attribute.integer = atoi(S_Attribute);
 				state = SS_FINISHED;
