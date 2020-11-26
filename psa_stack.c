@@ -61,19 +61,3 @@ void s_pop (Psa_stack *stack)
         free(tmp);
     }
 }
-
-
-
-
-
-
-
-
-int main() {
-    printf("Hello, World!\n");
-    Psa_stack *stack = s_init();
-    operator_s k = 's';
-    s_push(stack,k);
-
-    return 0;
-}
