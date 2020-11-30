@@ -12,7 +12,7 @@ int main() {
     FILE* f;
     Token* token = malloc(sizeof(Token));
     f = fopen("code.txt", "r");
-    HashTable* pTable;
+    HashTable* pTable = (HashTable*)malloc(sizeof(HashTable));
     htInit(pTable);
     SetSource(f);
     set_active_token(token);
