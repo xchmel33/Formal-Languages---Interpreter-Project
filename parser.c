@@ -6,6 +6,7 @@
 #include <stdbool.h>
 
 #include "error.h"
+#include "parser.h"
 #include "scanner.h"
 #include "symtable.h"
 

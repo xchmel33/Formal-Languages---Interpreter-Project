@@ -1,5 +1,5 @@
 
-#ifdef ERROR_H
+#ifndef ERROR_H
 #define ERROR_H
 	
 	#define ERR_OK 0 

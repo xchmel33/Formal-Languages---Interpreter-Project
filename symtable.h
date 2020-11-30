@@ -1,26 +1,28 @@
+#ifndef SYMTABLE_H
+#define SYMTABLE_H
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
 
 typedef enum {
-	T_FUNC,
-	T_INT,
-	T_DOUBLE,
-	T_STRING,
-	T_NONE,
+    T_FUNC,
+    T_INT,
+    T_DOUBLE,
+    T_STRING,
+    T_NONE,
 }DataType;
 
 typedef struct {
-	DataType type;
-	bool defined;
-	char* identifier;
-	char* params;
+    DataType type;
+    bool defined;
+    char* identifier;
+    char* params;
 }TableData;
 
- typedef struct TableItem{
-	char* key;				
-	TableData data;	
-	struct TableItem* next_item;	
+typedef struct TableItem{
+    char* key;
+    TableData data;
+    struct TableItem* next_item;
 } TableItem;
 
 
@@ -40,3 +42,4 @@ void htDelete (HashTable* htable, char* key );
 
 void htClearAll (HashTable* htable );
 
+#endif
