@@ -30,6 +30,8 @@ typedef TableItem* HashTable[100];
 
 int hashCode ( char* key );
 
+void htPrintTable( HashTable* ptrht);
+
 void htInit (HashTable* htable );
 
 TableItem* htSearch (HashTable* htable, char* key );

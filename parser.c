@@ -62,29 +62,30 @@ int base_cond(Token* token)
     }
 }
 
-int body()
-{
+int body() {
     PRINT_DEBUG("Body start \n");
     GET_TOKEN;
     base_cond(act_token);
     GET_TOKEN;
-    if (act_token->type == TT_KEYWORD && (strcmp(act_token->attribute.string, "func") != 0))
-    {
+    if (act_token->type == TT_KEYWORD && (strcmp(act_token->attribute.string, "func") != 0)) {
         PRINT_DEBUG("Def func \n");
         func_flag = 1;
         depth_level++;
         GET_TOKEN;
-        if (act_token->type == TT_IDENTIFIER)
-        {
+        if (act_token->type == TT_IDENTIFIER) {
             TableItem func;
             func.next_item = NULL;
+            func.key = NULL;
             func.key = act_token->attribute.string;
-            func.data.type = (DataType)act_token->type;
+            func.data.type = T_FUNC;
+            PRINT_DEBUG("Table check \n");
+            htInsert(act_table, func.key, func.data);
 
 
         }
-
+        else {
+            PRINT_DEBUG("Chyba definiecie funkcie \n");
+            return ERR_DEF;
+        }
     }
-
-
 }

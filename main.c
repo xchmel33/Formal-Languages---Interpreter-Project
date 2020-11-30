@@ -6,19 +6,24 @@
 
 #include "scanner.h"
 #include "parser.h"
-#include "symtable.h"
+#include "errno.h"
 
 int main() {
     FILE* f;
     Token* token = malloc(sizeof(Token));
     f = fopen("code.txt", "r");
+    if (f == NULL)
+    {
+        printf("File opening error \n"); //zmazat neskor !!!!!!!!!!!!!!!!!!!!
+        return 0;
+    }
     HashTable* pTable = (HashTable*)malloc(sizeof(HashTable));
     htInit(pTable);
     SetSource(f);
     set_active_token(token);
     set_active_table(pTable);
     body();
-
+    htPrintTable(pTable);
 
     /*while (token->type != TT_EOF) {
         if (GetToken(&*token)) {

@@ -1,0 +1,44 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+C:/CLionProjects/School/IFJ/error.h
+
+C:/CLionProjects/School/IFJ/parser.c
+stdio.h
+-
+stdlib.h
+-
+string.h
+-
+stdbool.h
+-
+error.h
+C:/CLionProjects/School/IFJ/error.h
+parser.h
+C:/CLionProjects/School/IFJ/parser.h
+scanner.h
+C:/CLionProjects/School/IFJ/scanner.h
+symtable.h
+C:/CLionProjects/School/IFJ/symtable.h
+
+C:/CLionProjects/School/IFJ/parser.h
+scanner.h
+C:/CLionProjects/School/IFJ/scanner.h
+symtable.h
+C:/CLionProjects/School/IFJ/symtable.h
+
+C:/CLionProjects/School/IFJ/scanner.h
+
+C:/CLionProjects/School/IFJ/symtable.h
+stdlib.h
+-
+string.h
+-
+stdbool.h
+-
+

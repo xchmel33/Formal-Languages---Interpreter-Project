@@ -1,7 +1,39 @@
 #include <stdlib.h>
 #include <string.h>
+#include <stdio.h>
 
 #include "symtable.h"
+
+TableItem* UNDEFPTR;
+
+void htPrintTable( HashTable* ptrht)
+{
+    int maxlen = 0;
+    int sumcnt = 0;
+
+    printf("------------HASH TABLE--------------\n");
+    for ( int i=0; i<100; i++ ) {
+        printf ("%i:",i);
+        int cnt = 0;
+        TableItem* ptr = (*ptrht)[i];
+        while ( ptr != NULL ) {
+            printf(" (%s,%d)",ptr->key,ptr->data.type);
+            if ( ptr != UNDEFPTR )
+                cnt++;
+            ptr = ptr->next_item;
+        }
+        printf ("\n");
+
+        if (cnt > maxlen)
+            maxlen = cnt;
+        sumcnt+=cnt;
+    }
+
+    printf("------------------------------------\n");
+    printf("Items count %i   The longest list %i\n",sumcnt,maxlen);
+    printf("------------------------------------\n");
+}
+
 
 int hashCode(char* key) {
 
