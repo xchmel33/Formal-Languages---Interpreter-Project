@@ -24,6 +24,7 @@ Token* act_token;
 HashTable* act_table;
 int depth_level = 0;  //level zanorenia do funkcie
 bool func_flag = 0; //flag funkcie 0 - 1
+int iteration_count = 0; //pocet iteracii
 
 
 
@@ -65,9 +66,13 @@ int base_cond(Token* token)
 int body() {
     PRINT_DEBUG("Body start \n");
     GET_TOKEN;
-    base_cond(act_token);
-    GET_TOKEN;
-    if (act_token->type == TT_KEYWORD && (strcmp(act_token->attribute.string, "func") != 0)) {
+    iteration_count++;
+    if (iteration_count == 1)
+    {
+        base_cond(act_token);
+        GET_TOKEN;
+    }
+    if (act_token->attribute.keyword == FUNC) {
         PRINT_DEBUG("Def func \n");
         func_flag = 1;
         depth_level++;
@@ -75,17 +80,21 @@ int body() {
         if (act_token->type == TT_IDENTIFIER) {
             TableItem func;
             func.next_item = NULL;
-            func.key = NULL;
-            func.key = act_token->attribute.string;
+            size_t len = strlen(act_token->attribute.string);
+            func.key = malloc(len * sizeof(char)); //sizeof(char) always 1
+            strcpy(func.key,act_token->attribute.string);
             func.data.type = T_FUNC;
             PRINT_DEBUG("Table check \n");
             htInsert(act_table, func.key, func.data);
-
-
         }
-        else {
+        else{
             PRINT_DEBUG("Chyba definiecie funkcie \n");
             return ERR_DEF;
         }
     }
+    if (act_token->type == TT_EOF )
+    {
+        return 0;
+    }
+    body();
 }

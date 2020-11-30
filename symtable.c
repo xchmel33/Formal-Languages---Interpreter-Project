@@ -13,20 +13,22 @@ void htPrintTable( HashTable* ptrht)
 
     printf("------------HASH TABLE--------------\n");
     for ( int i=0; i<100; i++ ) {
-        printf ("%i:",i);
-        int cnt = 0;
-        TableItem* ptr = (*ptrht)[i];
-        while ( ptr != NULL ) {
-            printf(" (%s,%d)",ptr->key,ptr->data.type);
-            if ( ptr != UNDEFPTR )
-                cnt++;
-            ptr = ptr->next_item;
-        }
-        printf ("\n");
+        TableItem *ptr = (*ptrht)[i];
+        if (ptr != NULL) {
+            printf("%i:", i);
+            int cnt = 0;
+            while (ptr != NULL) {
+                printf(" (%s,%d)", ptr->key, ptr->data.type);
+                if (ptr != UNDEFPTR)
+                    cnt++;
+                ptr = ptr->next_item;
+            }
+            printf("\n");
 
-        if (cnt > maxlen)
-            maxlen = cnt;
-        sumcnt+=cnt;
+            if (cnt > maxlen)
+                maxlen = cnt;
+            sumcnt += cnt;
+        }
     }
 
     printf("------------------------------------\n");
@@ -38,7 +40,8 @@ void htPrintTable( HashTable* ptrht)
 int hashCode(char* key) {
 
     int retval = 1;
-    int keylen = strlen(key);
+    size_t keylen;
+    keylen = strlen(key);
     for (int i = 0; i < keylen; i++)
         retval += key[i];
     return (retval % 100);

@@ -24,7 +24,6 @@ int main() {
     set_active_table(pTable);
     body();
     htPrintTable(pTable);
-
     /*while (token->type != TT_EOF) {
         if (GetToken(&*token)) {
             printf("Lexical Error\n");
