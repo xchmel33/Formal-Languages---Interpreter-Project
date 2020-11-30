@@ -20,19 +20,25 @@
 
 
 Token* act_token;
+HashTable* act_table;
 int depth_level = 0;  //level zanorenia do funkcie
 bool func_flag = 0; //flag funkcie 0 - 1
 
 
 
-void set_active_token (Token* token)
+void set_active_token(Token* token)
 {
     act_token = token;
+}
+void set_active_table(HashTable* table)
+{
+    act_table = table;
 }
 
 
 
-int base_cond (Token* token)
+
+int base_cond(Token* token)
 {
     if (token->type == TT_EOF)
     {
@@ -42,7 +48,7 @@ int base_cond (Token* token)
     if (token->attribute.keyword == PACKAGE)
     {
         GetToken(token);
-        if (strcmp(token->attribute.string,"main") == 0)
+        if (strcmp(token->attribute.string, "main") == 0)
         {
             PRINT_DEBUG("Package main ok \n ");
             return 0; //Chybaju err stavy
@@ -61,7 +67,7 @@ int body()
     GET_TOKEN;
     base_cond(act_token);
     GET_TOKEN;
-    if (act_token->type == TT_KEYWORD && (strcmp(act_token->attribute.string,"func") != 0))
+    if (act_token->type == TT_KEYWORD && (strcmp(act_token->attribute.string, "func") != 0))
     {
         PRINT_DEBUG("Def func \n");
         func_flag = 1;
@@ -72,7 +78,7 @@ int body()
             TableItem func;
             func.next_item = NULL;
             func.key = act_token->attribute.string;
-            func.data.type = (DataType) act_token->type;
+            func.data.type = (DataType)act_token->type;
 
 
         }
@@ -80,22 +86,4 @@ int body()
     }
 
 
-}
-
-
-
-int main() {
-    FILE* f;
-    f = fopen("code.txt", "r");
-    SetSource(f);
-
-    Token* token = malloc(sizeof(Token));
-    set_active_token(token);
-    body();
-
-
-
-    fclose(f);
-    free(token);
-    return 0;
 }
