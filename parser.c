@@ -3,139 +3,99 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdbool.h>
 
+#include "error.h"
 #include "scanner.h"
+#include "symtable.h"
+
+#define DEBUG 1
+
+#define PRINT_DEBUG(txt) \
+    if (DEBUG) \
+        printf(txt)
+
+#define GET_TOKEN \
+    GetToken(act_token)
+
+
+Token* act_token;
+int depth_level = 0;  //level zanorenia do funkcie
+bool func_flag = 0; //flag funkcie 0 - 1
+
+
+
+void set_active_token (Token* token)
+{
+    act_token = token;
+}
+
+
+
+int base_cond (Token* token)
+{
+    if (token->type == TT_EOF)
+    {
+        PRINT_DEBUG("End of program");
+        return 0;
+    }
+    if (token->attribute.keyword == PACKAGE)
+    {
+        GetToken(token);
+        if (strcmp(token->attribute.string,"main") == 0)
+        {
+            PRINT_DEBUG("Package main ok \n ");
+            return 0; //Chybaju err stavy
+        }
+
+    }
+    else
+    {
+        return 3;
+    }
+}
+
+int body()
+{
+    PRINT_DEBUG("Body start \n");
+    GET_TOKEN;
+    base_cond(act_token);
+    GET_TOKEN;
+    if (act_token->type == TT_KEYWORD && (strcmp(act_token->attribute.string,"func") != 0))
+    {
+        PRINT_DEBUG("Def func \n");
+        func_flag = 1;
+        depth_level++;
+        GET_TOKEN;
+        if (act_token->type == TT_IDENTIFIER)
+        {
+            TableItem func;
+            func.next_item = NULL;
+            func.key = act_token->attribute.string;
+            func.data.type = (DataType) act_token->type;
+
+
+        }
+
+    }
+
+
+}
+
+
 
 int main() {
-	FILE* f;
-	Token* token = malloc(sizeof(Token));
-	f = fopen("code.txt", "r");
-	SetSource(f);
-	while (token->type != TT_EOF) {
-		if (GetToken(&*token)) {
-			printf("Lexical Error\n");
-			fclose(f);
-			free(token);
-			return 0;
-		}
-		else {
-			switch (token->type)
-			{
-			case(TT_EOL):
-				printf("Token: EOL, %s\n", token->attribute.string);
-				break;
-			case(TT_EOF):
-				printf("Token: EOF, %s\n", token->attribute.string);
-				break;
-			case(TT_IDENTIFIER):
-				printf("Token: IDENTIFIER, %s\n", token->attribute.string);
-				break;
-			case(TT_KEYWORD):
-				printf("Token: KEYWORD, ");
-				switch (token->attribute.keyword)
-				{
-				case(ELSE):
-					printf("else\n");
-					break;
-				case(FOR):
-					printf("for\n");
-					break;
-				case(FUNC):
-					printf("func\n");
-					break;
-				case(IF):
-					printf("if\n");
-					break;
-				case(PACKAGE):
-					printf("package\n");
-					break;
-				case(RETURN):
-					printf("return\n");
-					break;
-				}
-				break;
-			case(TT_DATATYPE):
-				printf("Token: DATATYPE, ");
-				switch (token->attribute.datatype)
-				{
-				case(INT):
-					printf("int\n");
-					break;
-				case(FLOAT64):
-					printf("float64\n");
-					break;
-				case(STRING):
-					printf("string\n");
-					break;
-				}
-				break;
-			case(TT_INTEGER):
-				printf("Token: INTEGER, %d\n", token->attribute.integer);
-				break;
-			case(TT_DECIMAL):
-				printf("Token: DECIMAL, %d\n", token->attribute.decimal);
-				break;
-			case(TT_STRING):
-				printf("Token: STRING, %s\n", token->attribute.string);
-				break;
-			case(TT_EQUAL):
-				printf("Token: EQUAL, %s\n", token->attribute.string);
-				break;
-			case(TT_NOT_EQUAL):
-				printf("Token: NOT EQUAL, %s\n", token->attribute.string);
-				break;
-			case(TT_LESS_THAN):
-				printf("Token: LESS THAN, %s\n", token->attribute.string);
-				break;
-			case(TT_LESS_OR_EQUAL):
-				printf("Token: LESS OR EQUAL, %s\n", token->attribute.string);
-				break;
-			case(TT_MORE_THAN):
-				printf("Token: MORE THAN, %s\n", token->attribute.string);
-				break;
-			case(TT_MORE_OR_EQUAL):
-				printf("Token: MORE OR EQUAL, %s\n", token->attribute.string);
-				break;
-			case(TT_ASSIGN):
-				printf("Token: ASSIGN, %s\n", token->attribute.string);
-				break;
-			case(TT_INIT):
-				printf("Token: INIT, %s\n", token->attribute.string);
-				break;
-			case(TT_ADD):
-				printf("Token: ADD, %s\n", token->attribute.string);
-				break;
-			case(TT_SUB):
-				printf("Token: SUB, %s\n", token->attribute.string);
-				break;
-			case(TT_MUL):
-				printf("Token: MUL, %s\n", token->attribute.string);
-				break;
-			case(TT_DIV):
-				printf("Token: DIV, %s\n", token->attribute.string);
-				break;
-			case(TT_L_BRACKET):
-				printf("Token: LEFT BRACKET, %s\n", token->attribute.string);
-				break;
-			case(TT_R_BRACKET):
-				printf("Token: RIGHT BRACKET, %s\n", token->attribute.string);
-				break;
-			case(TT_BLOCK_BEGIN):
-				printf("Token: BLOCK BEGIN, %s\n", token->attribute.string);
-				break;
-			case(TT_BLOCK_END):
-				printf("Token: BLOCK END, %s\n", token->attribute.string);
-				break;
-			case(TT_COMMA):
-				printf("Token: COMMA, %s\n", token->attribute.string);
-				break;
-			case(TT_SEMICOLON):
-				printf("Token: SEMICOLON, %s\n", token->attribute.string);
-				break;
-			}
-		}
-	}
-	fclose(f);
-	free(token);
-	return 0;
+    FILE* f;
+    f = fopen("code.txt", "r");
+    SetSource(f);
+
+    Token* token = malloc(sizeof(Token));
+    set_active_token(token);
+    body();
+
+
+
+    fclose(f);
+    free(token);
+    return 0;
 }

@@ -1,7 +1,6 @@
 
-
-#ifdef ERR_CDS
-#define ERR_CDS
+#ifdef ERROR_H
+#define ERROR_H
 	
 	#define ERR_OK 0 
 	#define ERR_SCANNER 1
