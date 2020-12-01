@@ -12,6 +12,8 @@ void set_active_token(Token* token);
 void set_active_table(HashTable* table);
 int base_cond(Token* token);
 int body();
+int def_func();
+int params();
 
 
 #endif //IFJ_FINAL_PARSER_H
