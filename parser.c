@@ -146,6 +146,7 @@ int def_func()
 
 int params(TableItem* func)
 {
+    TableData* data = (TableData*) malloc(sizeof(TableData));
     size_t len = 0;
     if (act_token->type == TT_L_BRACKET)
     {
@@ -158,34 +159,14 @@ int params(TableItem* func)
 
     if (act_token->type == TT_IDENTIFIER)
     {
+        strcpy(data->param[param].identifier,act_token->attribute.string);
+        htInsert(act_table,func->key,data);
         param++;
-        len = strlen(act_token->attribute.string);
-        func->data.identifier = malloc(len * sizeof(char));
-        strcpy(func->data.identifier,act_token->attribute.string);
-        htInsert(act_table,func->key,func->data);
     }
 
     if (act_token->type == TT_DATATYPE)
     {
-        len = 7;
-        switch(act_token->attribute.datatype)
-        {
-            case 0:
-                func->data.params = malloc(len * sizeof(char));
-                strcpy(func->data.params,"INT");
-                htInsert(act_table,func->key,func->data);
-                break;
-            case 1:
-                func->data.params = malloc(len * sizeof(char));
-                strcpy(func->data.params,"FLOAT64");
-                htInsert(act_table,func->key,func->data);
-                break;
-            case 2:
-                func->data.params = malloc(len * sizeof(char));
-                strcpy(func->data.params,"STRING");
-                htInsert(act_table,func->key,func->data);
-                break;
-        }
+
     }
     GET_TOKEN;
     if (act_token->type == TT_DATATYPE)

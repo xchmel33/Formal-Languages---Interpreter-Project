@@ -12,11 +12,21 @@ typedef enum {
     T_NONE,
 }DataType;
 
+typedef enum {
+    P_INT,
+    P_FLOAT64,
+    P_STRING,
+}ParamType;
+
+typedef struct {
+    ParamType type;
+    char* identifier;
+}Param;
+
 typedef struct {
     DataType type;
     bool defined;
-    char* identifier;
-    char* params;
+    Param param[100]; //Define max index ex. max number of arg !
 }TableData;
 
 typedef struct TableItem{
