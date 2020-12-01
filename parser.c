@@ -75,9 +75,9 @@ int body() {
         base_cond(act_token);
         GET_TOKEN;
     }
-    if (act_token->attribute.keyword == FUNC)
+    if (act_token->attribute.keyword == FUNC) // ID "FUNC" -> "ID"
     {
-        error_guard = def_func();
+        error_guard = def_func(); //"ID"
         if (error_guard != 0)
         {
             PRINT_DEBUG("Error guard def func ! \n");
@@ -114,7 +114,11 @@ int def_func()
 
             if (!params(&func))
             {
-
+                if (statements() != 0)
+                {
+                    PRINT_DEBUG("Statements error \n");
+                    return ERR_PARSER;
+                }
             }
             else
             {
@@ -237,4 +241,19 @@ int params(TableItem* func)
         }
 
     }
+}
+
+int statements()
+{
+    GET_TOKEN;
+    if (act_token->type != TT_BLOCK_BEGIN)
+    {
+        return ERR_PARSER;
+    }
+    else
+    {
+        GET_TOKEN;
+        return ERR_OK;
+    }
+
 }

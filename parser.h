@@ -15,5 +15,6 @@ int body();
 
 int def_func();
 int params(TableItem* func);
+int statements();
 
 #endif //IFJ_FINAL_PARSER_H

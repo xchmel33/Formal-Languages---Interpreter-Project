@@ -7,6 +7,7 @@ a, _ = inputi()
 if a < 0 {
 print("Faktorial nejde spocitat!\n")
 } else {
+vys
 for vysl := 1; a > 0; a = a - 1 {
 vysl = vysl * a
 }
