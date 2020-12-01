@@ -26,11 +26,13 @@ typedef struct {
 typedef struct {
     DataType type;
     bool defined;
+    ParamType return_type;
     Param param[100]; //Define max index ex. max number of arg !
 }TableData;
 
 typedef struct TableItem{
     char* key;
+    //DataType type;
     TableData data;
     struct TableItem* next_item;
 } TableItem;

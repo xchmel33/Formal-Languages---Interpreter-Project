@@ -97,8 +97,10 @@ int def_func()
     func_flag = 1;
     depth_level++;
     GET_TOKEN;
-    if (act_token->type == TT_IDENTIFIER) {
+    if (act_token->type == TT_IDENTIFIER)
+    {
         TableItem func;
+
         func.next_item = NULL;
         size_t len = strlen(act_token->attribute.string);
         func.key = malloc(len * sizeof(char)); //sizeof(char) always 1
@@ -109,32 +111,16 @@ int def_func()
         GET_TOKEN;
         if (act_token->type == TT_L_BRACKET)
         {
-            int pom = 0;
-            int datatype_counter = 0;
-            pom = params(&func);
-            while (pom == TT_COMMA || pom == TT_DATATYPE)
+
+            if (!params(&func))
             {
-                if (pom == TT_DATATYPE)
-                {
-                    datatype_counter++;
-                    if (datatype_counter > 1)
-                    {
-                        PRINT_DEBUG("Error datatype params def_fun \n");
-                        return ERR_DEF;
-                    }
-                }
-                pom = params(&func);
-                if (pom == ERR_OK)
-                {
-                    return ERR_OK;
-                }
-                if (pom == ERR_DEF)
-                {
-                    return ERR_DEF;
-                }
+
+            }
+            else
+            {
+                return ERR_DEF;
             }
         }
-
         return 0;
     }
     else
@@ -146,48 +132,109 @@ int def_func()
 
 int params(TableItem* func)
 {
-    TableData* data = (TableData*) malloc(sizeof(TableData));
-    size_t len = 0;
-    if (act_token->type == TT_L_BRACKET)
+    TableData *data = (TableData *) malloc(sizeof(TableData));
+    int pom = TT_COMMA;
+    int i = 0;
+    while (pom == TT_COMMA)
     {
-        GET_TOKEN;
-    }
-    if(act_token->type == TT_R_BRACKET)
-    {
-        return ERR_OK;
-    }
+        size_t len = 0;
+        if (act_token->type == TT_L_BRACKET) {
+            GET_TOKEN;
+        }
+        /*if (act_token->type == TT_R_BRACKET) {
+            GET_TOKEN;
+        }*/
+        if (act_token->type == TT_IDENTIFIER) {
+            len = strlen(act_token->attribute.string);
+            data->param[param].identifier = malloc(sizeof(len * sizeof(char)));
+            strcpy(data->param[param].identifier, act_token->attribute.string);
+            GET_TOKEN;
+        }
+        if (act_token->type == TT_DATATYPE) {
+            switch (act_token->attribute.datatype) {
+                case INT:
+                    data->param[param].type = 0;
+                    GET_TOKEN;
+                    break;
+                case FLOAT64:
+                    data->param[param].type = 1;
+                    GET_TOKEN;
+                    break;
+                case STRING:
+                    data->param[param].type = 2;
+                    GET_TOKEN;
+                    break;
+            }
+        }
 
-    if (act_token->type == TT_IDENTIFIER)
-    {
-        strcpy(data->param[param].identifier,act_token->attribute.string);
-        htInsert(act_table,func->key,data);
-        param++;
-    }
-
-    if (act_token->type == TT_DATATYPE)
-    {
-
-    }
-    GET_TOKEN;
-    if (act_token->type == TT_DATATYPE)
-    {
-        return TT_DATATYPE;
-    }
-    if (act_token->type == TT_COMMA)
-    {
-        return TT_COMMA;
-    }
-    else
-    {
-        if (act_token->type == TT_R_BRACKET)
+        /*if (act_token->type == TT_DATATYPE)
         {
-            return ERR_OK;
+            return TT_DATATYPE;
+        }*/
+        if (act_token->type == TT_COMMA) {
+            param++; //indexovanie parametrov
+            GET_TOKEN;
+            pom = TT_COMMA;
+            i++;
         }
         else
         {
-            PRINT_DEBUG("Chyba parametrov funcia params \n");
-            return ERR_DEF;
+            if (act_token->type == TT_R_BRACKET)
+            {
+                GET_TOKEN;
+                if (act_token->type == TT_L_BRACKET) {
+                    GET_TOKEN;
+                }
+                else
+                {
+                    PRINT_DEBUG("Error def in params \n");
+                    return ERR_DEF;
+                }
+                do {
+                    if (act_token->type == TT_R_BRACKET) {
+                        return ERR_OK;
+                    }
+                    if (act_token->type == TT_DATATYPE) {
+                        switch (act_token->attribute.datatype) {
+                            case INT:
+                                data->return_type = 0;
+                                GET_TOKEN;
+                                break;
+                            case FLOAT64:
+                                data->return_type = 1;
+                                GET_TOKEN;
+                                break;
+                            case STRING:
+                                data->return_type = 2;
+                                GET_TOKEN;
+                                break;
+                        }
+                    }
+                    if (act_token->type == TT_COMMA) {
+                        param++; //indexovanie parametrov
+                        GET_TOKEN;
+                        pom = TT_COMMA;
+                    }
+                    else {
+                        if (act_token->type == TT_R_BRACKET) {
+                            data->type = T_FUNC;
+                            htInsert(act_table, func->key, *data);
+                            param = 0; //resetovanie indexovania parametrov
+                            return ERR_OK;
+                        }
+                        else {
+                            PRINT_DEBUG("ERROR def func in params \n");
+                            return ERR_DEF;
+                        }
+                    }
+                } while (pom == TT_COMMA);
+            }
+            else
+            {
+                PRINT_DEBUG("ERROR def func in params ! \n");
+                return ERR_DEF;
+            }
         }
-    }
 
+    }
 }

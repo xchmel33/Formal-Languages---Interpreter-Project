@@ -22,7 +22,11 @@ int main() {
     SetSource(f);
     set_active_token(token);
     set_active_table(pTable);
-    body();
+    int error = body();
+    if (error != 0)
+    {
+        return error;
+    }
     htPrintTable(pTable);
     /*while (token->type != TT_EOF) {
         if (GetToken(&*token)) {
