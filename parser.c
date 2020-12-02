@@ -67,6 +67,12 @@ int base_cond(Token* token)
 int body() {
     PRINT_DEBUG("Body start \n");
     GET_TOKEN;
+    if (act_token->type == TT_EOL)
+    {
+        do {
+            GET_TOKEN;
+        }while (act_token->type == TT_EOL);
+    }
     iteration_count++;
     if (iteration_count == 1)
     {
@@ -194,6 +200,12 @@ int params(TableItem* func)
             if (act_token->type == TT_R_BRACKET)
             {
                 GET_TOKEN;
+
+                if (act_token->type == TT_BLOCK_BEGIN)
+                {
+                    return ERR_OK;
+                }
+
                 if (act_token->type == TT_L_BRACKET) {
                     GET_TOKEN;
                 }
@@ -294,11 +306,58 @@ int statements(TableItem* func)
             PRINT_DEBUG("Statemnts RETURN \n");
             break;
     }
+    if (act_token->type == TT_IDENTIFIER)
+    {
+        prev_token = act_token; //v pripade ak by som ho v buducnosti potreboval
+        GET_TOKEN;
+        switch (act_token->type)
+        {
+            case TT_IDENTIFIER:
+                return ERR_PARSER; //ID ID x not ok
+
+            case TT_INIT:
+                PRINT_DEBUG("Statements init ! \n");
+                GET_TOKEN;
+                break;
+            case TT_INTEGER:
+            case TT_STRING:
+            case TT_DECIMAL:
+                PRINT_DEBUG("Statements int string decimal alias <value>\n");
+                GET_TOKEN;
+                break;
+            case TT_COMMA:
+                break;
+
+        }
+    }
+    if (act_token->type == TT_COMMA)
+    {
+        prev_token = act_token; //v pripade ak by som ho v buducnosti potreboval
+        int id_counter = 0;
+        PRINT_DEBUG("ID, ID, IDn ... \n");
+        while (1)
+        {
+            GET_TOKEN;
+            if (act_token->type != TT_IDENTIFIER)
+            {
+                return ERR_PARSER;
+            }
+            GET_TOKEN;
+            id_counter++;
+        }
+    }
     return ERR_OK;
 }
 
-int blockBeginEOL_check () {
-    GET_TOKEN;
+int blockBeginEOL_check ()
+{
+    Token* prev_token = malloc(sizeof(Token));
+    prev_token = act_token;
+    if (act_token->type== TT_R_BRACKET)
+    {
+        GET_TOKEN;
+    }
+
     if (act_token->type != TT_BLOCK_BEGIN)
     {
         return ERR_PARSER;
