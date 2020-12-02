@@ -24,18 +24,22 @@ typedef struct {
 }Param;
 
 typedef struct {
-    DataType type;
+    DataType type; //func/var
     bool defined;
-    ParamType return_type;
+    bool var; // true -> contains variable !
+    DataType return_type;
+    int number_params;
     Param param[100]; //Define max index ex. max number of arg !
 }TableData;
 
 typedef struct TableItem{
     char* key;
-    //DataType type;
     TableData data;
     struct TableItem* next_item;
 } TableItem;
+
+
+
 
 
 typedef TableItem* HashTable[100];

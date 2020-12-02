@@ -1,6 +1,9 @@
 // Program 1: Vypocet faktorialu (iterativne)
 package main
 func main (s int, x string) (int) {
+if a < 0
+for vysl := 1; a > 0; a = a - 1
+for vysl := 1; a > 0; a = a - 1 {
 print("Zadejte cislo pro vypocet faktorialu: ")
 a := 0
 a, _ = inputi()
@@ -11,8 +14,10 @@ vys
 for vysl := 1; a > 0; a = a - 1 {
 vysl = vysl * a
 }
-func init()()
+func init()(){
 print("Vysledek je ", vysl, "\n")
 }
 }
-func asdf (c string, h float64) (string)
+func asdf (c string, h float64) (string){
+}
+}

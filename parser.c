@@ -16,8 +16,6 @@
     if (DEBUG) \
         printf(txt)
 
-#define GET_TOKEN \
-    GetToken(act_token)
 
 
 Token* act_token;
@@ -84,6 +82,9 @@ int body() {
             return error_guard;
         }
     }
+
+
+
     if (act_token->type == TT_EOF )
     {
         return 0;
@@ -114,7 +115,12 @@ int def_func()
 
             if (!params(&func))
             {
-                if (statements() != 0)
+                if (blockBeginEOL_check() !=0)
+                {
+                    PRINT_DEBUG("Error block begin eol \n");
+                    return ERR_PARSER;
+                }
+                if (statements(&func) != 0)
                 {
                     PRINT_DEBUG("Statements error \n");
                     return ERR_PARSER;
@@ -139,6 +145,7 @@ int params(TableItem* func)
     TableData *data = (TableData *) malloc(sizeof(TableData));
     int pom = TT_COMMA;
     int i = 0;
+    int param_counter = 0;
     while (pom == TT_COMMA)
     {
         size_t len = 0;
@@ -152,6 +159,7 @@ int params(TableItem* func)
             len = strlen(act_token->attribute.string);
             data->param[param].identifier = malloc(sizeof(len * sizeof(char)));
             strcpy(data->param[param].identifier, act_token->attribute.string);
+            param_counter++;
             GET_TOKEN;
         }
         if (act_token->type == TT_DATATYPE) {
@@ -196,6 +204,11 @@ int params(TableItem* func)
                 }
                 do {
                     if (act_token->type == TT_R_BRACKET) {
+                        data->type = T_FUNC;
+                        data->number_params = param_counter;
+                        data->return_type = T_NONE;
+                        data->var = false;
+                        htInsert(act_table, func->key, *data);
                         return ERR_OK;
                     }
                     if (act_token->type == TT_DATATYPE) {
@@ -219,9 +232,13 @@ int params(TableItem* func)
                         GET_TOKEN;
                         pom = TT_COMMA;
                     }
-                    else {
-                        if (act_token->type == TT_R_BRACKET) {
+                    else
+                    {
+                        if (act_token->type == TT_R_BRACKET)
+                        {
                             data->type = T_FUNC;
+                            data->number_params = param_counter;
+                            data->var = false;
                             htInsert(act_table, func->key, *data);
                             param = 0; //resetovanie indexovania parametrov
                             return ERR_OK;
@@ -243,8 +260,44 @@ int params(TableItem* func)
     }
 }
 
-int statements()
+int statements(TableItem* func)
 {
+    Token* prev_token = malloc(sizeof(Token));
+    GET_TOKEN;
+    switch (act_token->attribute.keyword)
+    {
+        case IF:
+            PRINT_DEBUG("Statemnts IF \n");
+            GET_TOKEN;
+            if (act_token->type == TT_IDENTIFIER)
+            {
+
+            }
+            else
+            {
+                return ERR_PARSER;
+            }
+            break;
+        case ELSE:
+            PRINT_DEBUG("Statemnts ELSE \n");
+            break;
+        case FOR:
+            PRINT_DEBUG("Statemnts FOR \n");
+            break;
+        case FUNC:
+            PRINT_DEBUG("Statemnts FUNC \n");
+            break;
+        case PACKAGE:
+            PRINT_DEBUG("Statemnts PACKAGE \n");
+            break;
+        case RETURN:
+            PRINT_DEBUG("Statemnts RETURN \n");
+            break;
+    }
+    return ERR_OK;
+}
+
+int blockBeginEOL_check () {
     GET_TOKEN;
     if (act_token->type != TT_BLOCK_BEGIN)
     {
@@ -253,7 +306,11 @@ int statements()
     else
     {
         GET_TOKEN;
-        return ERR_OK;
+        if (act_token->type == TT_EOL)
+        {
+            PRINT_DEBUG("Block begin + EOL OK ! \n");
+            return ERR_OK;
+        }
     }
 
 }
