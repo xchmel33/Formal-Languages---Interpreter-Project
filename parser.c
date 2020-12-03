@@ -275,75 +275,78 @@ int params(TableItem* func)
 int statements(TableItem* func)
 {
     Token* prev_token = malloc(sizeof(Token));
-    GET_TOKEN;
-    switch (act_token->attribute.keyword)
+    while (act_token->type != TT_BLOCK_BEGIN && act_token->type != TT_BLOCK_END)
     {
-        case IF:
-            PRINT_DEBUG("Statemnts IF \n");
-            GET_TOKEN;
-            if (act_token->type == TT_IDENTIFIER)
-            {
-
-            }
-            else
-            {
-                return ERR_PARSER;
-            }
-            break;
-        case ELSE:
-            PRINT_DEBUG("Statemnts ELSE \n");
-            break;
-        case FOR:
-            PRINT_DEBUG("Statemnts FOR \n");
-            break;
-        case FUNC:
-            PRINT_DEBUG("Statemnts FUNC \n");
-            break;
-        case PACKAGE:
-            PRINT_DEBUG("Statemnts PACKAGE \n");
-            break;
-        case RETURN:
-            PRINT_DEBUG("Statemnts RETURN \n");
-            break;
-    }
-    if (act_token->type == TT_IDENTIFIER)
-    {
-        prev_token = act_token; //v pripade ak by som ho v buducnosti potreboval
         GET_TOKEN;
-        switch (act_token->type)
+        switch (act_token->attribute.keyword)
         {
-            case TT_IDENTIFIER:
-                return ERR_PARSER; //ID ID x not ok
-
-            case TT_INIT:
-                PRINT_DEBUG("Statements init ! \n");
+            case IF:
+                PRINT_DEBUG("Statemnts IF \n");
                 GET_TOKEN;
-                break;
-            case TT_INTEGER:
-            case TT_STRING:
-            case TT_DECIMAL:
-                PRINT_DEBUG("Statements int string decimal alias <value>\n");
-                GET_TOKEN;
-                break;
-            case TT_COMMA:
-                break;
+                if (act_token->type == TT_IDENTIFIER)
+                {
 
+                }
+                else
+                {
+                    return ERR_PARSER;
+                }
+                break;
+            case ELSE:
+                PRINT_DEBUG("Statemnts ELSE \n");
+                break;
+            case FOR:
+                PRINT_DEBUG("Statemnts FOR \n");
+                break;
+            case FUNC:
+                PRINT_DEBUG("Statemnts FUNC \n");
+                break;
+            case PACKAGE:
+                PRINT_DEBUG("Statemnts PACKAGE \n");
+                break;
+            case RETURN:
+                PRINT_DEBUG("Statemnts RETURN \n");
+                break;
         }
-    }
-    if (act_token->type == TT_COMMA)
-    {
-        prev_token = act_token; //v pripade ak by som ho v buducnosti potreboval
-        int id_counter = 0;
-        PRINT_DEBUG("ID, ID, IDn ... \n");
-        while (1)
-        {
+        if (act_token->type == TT_IDENTIFIER) {
+            prev_token = act_token; //v pripade ak by som ho v buducnosti potreboval
             GET_TOKEN;
-            if (act_token->type != TT_IDENTIFIER)
-            {
-                return ERR_PARSER;
+            switch (act_token->type) {
+                case TT_IDENTIFIER:
+                    return ERR_PARSER; //ID ID x not ok
+
+                case TT_INIT:
+                    PRINT_DEBUG("Statements init ! \n");
+                    init();
+                    break;
+                case TT_INTEGER:
+                case TT_STRING:
+                case TT_DECIMAL:
+                    PRINT_DEBUG("Statements int string decimal alias <value>\n");
+                    prev_token = act_token;
+                    GET_TOKEN;
+                    break;
+                case TT_COMMA:
+                    break;
+
             }
-            GET_TOKEN;
-            id_counter++;
+        }
+        if (act_token->type == TT_COMMA) {
+            prev_token = act_token; //v pripade ak by som ho v buducnosti potreboval
+            int id_counter = 0;
+            PRINT_DEBUG("ID, ID, IDn ... \n");
+            while (1) {
+                if (act_token->type == TT_ASSIGN || act_token->type == TT_INIT)
+                {
+                    break;
+                }
+                GET_TOKEN;
+                if (act_token->type != TT_IDENTIFIER) {
+                    return ERR_PARSER;
+                }
+                GET_TOKEN;
+                id_counter++;
+            }
         }
     }
     return ERR_OK;
@@ -372,4 +375,23 @@ int blockBeginEOL_check ()
         }
     }
 
+}
+
+int init ()
+{
+    Token* prev_token = malloc(sizeof(Token));
+    GET_TOKEN;
+    if (act_token->type == TT_IDENTIFIER)
+    {
+        prev_token = act_token;
+        GET_TOKEN;
+        switch (act_token->type)
+        {
+            case TT_ADD:
+            case TT_SUB:
+            case TT_MUL:
+            case TT_DIV:
+                PRINT_DEBUG("Arithmetical operator calling expression analyser !\n");
+        }
+    }
 }

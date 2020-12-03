@@ -17,4 +17,5 @@ int def_func();
 int params(TableItem* func);
 int statements(TableItem* func);
 int blockBeginEOL_check ();
+int init ();
 #endif //IFJ_FINAL_PARSER_H
