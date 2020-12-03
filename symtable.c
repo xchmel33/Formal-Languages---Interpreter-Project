@@ -6,14 +6,14 @@
 
 TableItem* UNDEFPTR;
 
-void htPrintTable( HashTable* ptrht)
+void htPrintTable(HashTable* ptrht)
 {
     int maxlen = 0;
     int sumcnt = 0;
 
     printf("------------HASH TABLE--------------\n");
-    for ( int i=0; i<100; i++ ) {
-        TableItem *ptr = (*ptrht)[i];
+    for (int i = 0; i < 100; i++) {
+        TableItem* ptr = (*ptrht)[i];
         if (ptr != NULL) {
             printf("%i:", i);
             int cnt = 0;
@@ -32,7 +32,7 @@ void htPrintTable( HashTable* ptrht)
     }
 
     printf("------------------------------------\n");
-    printf("Items count %i   The longest list %i\n",sumcnt,maxlen);
+    printf("Items count %i   The longest list %i\n", sumcnt, maxlen);
     printf("------------------------------------\n");
 }
 
@@ -66,7 +66,7 @@ TableItem* htSearch(HashTable* htable, char* key) {
     return NULL;
 }
 
-void htInsert(HashTable* htable, char* key, TableData data) {
+void htInsert(HashTable* htable, char* key, ItemData data) {
 
     TableItem* X = htSearch(htable, key);
     if (X) {
@@ -88,7 +88,7 @@ void htInsert(HashTable* htable, char* key, TableData data) {
     }
 }
 
-TableData* htRead(HashTable* htable, char* key) {
+ItemData* htRead(HashTable* htable, char* key) {
 
     TableItem* X = htSearch(htable, key);
     return (X != NULL) ? &X->data : NULL;

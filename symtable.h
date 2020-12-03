@@ -24,40 +24,34 @@ typedef struct {
 }Param;
 
 typedef struct {
-    DataType type; //func/var
+    DataType type;
     bool defined;
-    bool var; // true -> contains variable !
-    DataType return_type;
-    int number_params;
     Param param[100]; //Define max index ex. max number of arg !
-}TableData;
+}ItemData;
 
-typedef struct TableItem{
+typedef struct TableItem {
     char* key;
-    TableData data;
+    ItemData data;
     struct TableItem* next_item;
 } TableItem;
 
 
-
-
-
 typedef TableItem* HashTable[100];
 
-int hashCode ( char* key );
+int hashCode(char* key);
 
-void htPrintTable( HashTable* ptrht);
+void htPrintTable(HashTable* ptrht);
 
-void htInit (HashTable* htable );
+void htInit(HashTable* htable);
 
-TableItem* htSearch (HashTable* htable, char* key );
+TableItem* htSearch(HashTable* htable, char* key);
 
-void htInsert (HashTable* htable, char* key, TableData data );
+void htInsert(HashTable* htable, char* key, ItemData data);
 
-TableData* htRead (HashTable* htable, char* key );
+ItemData* htRead(HashTable* htable, char* key);
 
-void htDelete (HashTable* htable, char* key );
+void htDelete(HashTable* htable, char* key);
 
-void htClearAll (HashTable* htable );
+void htClearAll(HashTable* htable);
 
 #endif
