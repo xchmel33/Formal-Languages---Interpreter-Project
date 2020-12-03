@@ -3,6 +3,7 @@
 
 #include "error.h"
 #include "psa_stack.h"
+#include "scanner.h"
 
 
 
@@ -33,7 +34,7 @@ void s_destroy(Psa_stack *stack)
     free(stack);
 }
 
-int s_push (Psa_stack *stack, enum operator_s operator_ss)
+int s_push (Psa_stack *stack, Token token)
 {
     Stack_item *new_i = malloc(sizeof(Stack_item));
     if (new_i == NULL)
@@ -41,7 +42,7 @@ int s_push (Psa_stack *stack, enum operator_s operator_ss)
         return ERR_PARSER;
     }
 
-    new_i->operator_ss = operator_ss;
+    new_i->E = token;
     new_i->lptr = (struct Stack_item *) stack->top;
     new_i->rptr = NULL;
 
@@ -60,4 +61,7 @@ void s_pop (Psa_stack *stack)
         stack->top = (Stack_item *) tmp->lptr;
         free(tmp);
     }
+}
+Token* StackTraverse(Psa_stack* stack, int depth) {
+
 }
