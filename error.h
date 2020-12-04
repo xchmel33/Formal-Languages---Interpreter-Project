@@ -2,9 +2,6 @@
 #ifndef ERROR_H
 #define ERROR_H
 
-#define GET_TOKEN \
-    GetToken(act_token)
-
 	#define ERR_OK 0 
 	#define ERR_SCANNER 1
 	#define ERR_PARSER 2

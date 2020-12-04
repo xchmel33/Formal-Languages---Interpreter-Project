@@ -1,3 +1,4 @@
+
 #ifndef SYMTABLE_H
 #define SYMTABLE_H
 #include <stdlib.h>
@@ -24,16 +25,22 @@ typedef struct {
 }Param;
 
 typedef struct {
-    DataType type;
+    DataType type; //func/var
     bool defined;
+    bool var; // true -> contains variable !
+    DataType return_type;
+    int number_params;
     Param param[100]; //Define max index ex. max number of arg !
-}ItemData;
+}TableData;
 
 typedef struct TableItem {
     char* key;
-    ItemData data;
+    TableData data;
     struct TableItem* next_item;
 } TableItem;
+
+
+
 
 
 typedef TableItem* HashTable[100];
@@ -46,9 +53,9 @@ void htInit(HashTable* htable);
 
 TableItem* htSearch(HashTable* htable, char* key);
 
-void htInsert(HashTable* htable, char* key, ItemData data);
+void htInsert(HashTable* htable, char* key, TableData data);
 
-ItemData* htRead(HashTable* htable, char* key);
+TableData* htRead(HashTable* htable, char* key);
 
 void htDelete(HashTable* htable, char* key);
 

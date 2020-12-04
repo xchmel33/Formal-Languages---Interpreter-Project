@@ -66,7 +66,7 @@ TableItem* htSearch(HashTable* htable, char* key) {
     return NULL;
 }
 
-void htInsert(HashTable* htable, char* key, ItemData data) {
+void htInsert(HashTable* htable, char* key, TableData data) {
 
     TableItem* X = htSearch(htable, key);
     if (X) {
@@ -88,7 +88,7 @@ void htInsert(HashTable* htable, char* key, ItemData data) {
     }
 }
 
-ItemData* htRead(HashTable* htable, char* key) {
+TableData* htRead(HashTable* htable, char* key) {
 
     TableItem* X = htSearch(htable, key);
     return (X != NULL) ? &X->data : NULL;

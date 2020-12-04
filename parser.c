@@ -88,7 +88,10 @@ int body() {
             return error_guard;
         }
     }
-
+    if (act_token->type == TT_IDENTIFIER)
+    {
+        statements();
+    }
 
 
     if (act_token->type == TT_EOF )
@@ -126,10 +129,11 @@ int def_func()
                     PRINT_DEBUG("Error block begin eol \n");
                     return ERR_PARSER;
                 }
-                if (statements(&func) != 0)
+                int error_pom = statements(&func); // pomocna aby sme vedeli kt. error vracat
+                if (error_pom != 0)
                 {
+                    return error_pom;
                     PRINT_DEBUG("Statements error \n");
-                    return ERR_PARSER;
                 }
             }
             else
@@ -203,6 +207,11 @@ int params(TableItem* func)
 
                 if (act_token->type == TT_BLOCK_BEGIN)
                 {
+                    data->type = T_FUNC;
+                    data->number_params = param_counter;
+                    data->return_type = T_NONE;
+                    data->var = false;
+                    htInsert(act_table, func->key, *data);
                     return ERR_OK;
                 }
 
@@ -272,9 +281,9 @@ int params(TableItem* func)
     }
 }
 
-int statements(TableItem* func)
+int statements()
 {
-    Token* prev_token = malloc(sizeof(Token));
+    Token* prev_token;
     while (act_token->type != TT_BLOCK_BEGIN && act_token->type != TT_BLOCK_END)
     {
         GET_TOKEN;
@@ -282,18 +291,30 @@ int statements(TableItem* func)
         {
             case IF:
                 PRINT_DEBUG("Statemnts IF \n");
-                GET_TOKEN;
-                if (act_token->type == TT_IDENTIFIER)
+                int error_pom = statement(); // pomocna aby sme vedeli kt. error vracat
+                if (error_pom != 0)
                 {
-
+                    return error_pom;
                 }
-                else
+                if (blockBeginEOL_check() != 0)
                 {
                     return ERR_PARSER;
                 }
-                break;
-            case ELSE:
-                PRINT_DEBUG("Statemnts ELSE \n");
+                GET_TOKEN; // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! umela uprava !!!!!!
+                if (act_token->type == TT_BLOCK_END)
+                {
+                    if (IfblockEnd_check() != 0)
+                    {
+                        return ERR_PARSER;
+                    }
+                    else
+                    {
+                        if (blockBeginEOL_check() != 0)
+                        {
+                            return ERR_PARSER;
+                        }
+                    }
+                }
                 break;
             case FOR:
                 PRINT_DEBUG("Statemnts FOR \n");
@@ -319,6 +340,11 @@ int statements(TableItem* func)
                     PRINT_DEBUG("Statements init ! \n");
                     init();
                     break;
+                case TT_ASSIGN:
+                    PRINT_DEBUG("Statements assign \n");
+                    GET_TOKEN;
+                    value();
+                    break;
                 case TT_INTEGER:
                 case TT_STRING:
                 case TT_DECIMAL:
@@ -338,7 +364,7 @@ int statements(TableItem* func)
             while (1) {
                 if (act_token->type == TT_ASSIGN || act_token->type == TT_INIT)
                 {
-                    break;
+                    statements();
                 }
                 GET_TOKEN;
                 if (act_token->type != TT_IDENTIFIER) {
@@ -351,11 +377,63 @@ int statements(TableItem* func)
     }
     return ERR_OK;
 }
+int statement ()
+{
+    TableItem* temporary_ht;
+    if (act_token->attribute.keyword == IF)
+    {
+        GET_TOKEN;
+        if (act_token->type != TT_IDENTIFIER)
+        {
+            return ERR_PARSER;
+        }
+        else
+        {
+            temporary_ht = htSearch(act_table,act_token->attribute.string);
+            if(temporary_ht != NULL)
+            {
+                PRINT_DEBUG("IF -> FUNC found in global hash table \n");
+                GET_TOKEN; //overime ci sedi pocet parametrov
+                if (act_token->type == TT_L_BRACKET)
+                {
+                    //ok zatvorka sedi
+                    GET_TOKEN;
+                    int counter = 0;
+                    while (act_token->type == TT_IDENTIFIER)
+                    {
+                        counter++;
+                        GET_TOKEN;
+                        if (act_token->type == TT_R_BRACKET)
+                        {
+                            break;
+                        }
+                        if (act_token->type != TT_COMMA)
+                        {
+                            return ERR_PARSER;
+                        }
+                        GET_TOKEN;
+                    }
+
+                    if (temporary_ht->data.number_params != counter)
+                    {
+                        PRINT_DEBUG("Nesedi pocet parametrov ! \n ");
+                        return ERR_FUNC;
+                    }
+
+                }
+                return ERR_OK; // zatial work in progress
+            }
+            else
+            {
+                PRINT_DEBUG("IF -> FUNC not found in global hash table \n");
+            }
+        }
+    }
+}
+
 
 int blockBeginEOL_check ()
 {
-    Token* prev_token = malloc(sizeof(Token));
-    prev_token = act_token;
     if (act_token->type== TT_R_BRACKET)
     {
         GET_TOKEN;
@@ -363,6 +441,7 @@ int blockBeginEOL_check ()
 
     if (act_token->type != TT_BLOCK_BEGIN)
     {
+        PRINT_DEBUG("Block begin + EOL ERROR ! \n");
         return ERR_PARSER;
     }
     else
@@ -374,7 +453,26 @@ int blockBeginEOL_check ()
             return ERR_OK;
         }
     }
+}
 
+int IfblockEnd_check()
+{
+    Token* prev_token = malloc(sizeof(Token));
+    if (act_token->type == TT_BLOCK_END)
+    {
+        prev_token->type = act_token->type;
+        GET_TOKEN;
+    }
+    else
+    {
+        return ERR_PARSER;
+    }
+
+    if (act_token->attribute.keyword == ELSE && prev_token->type == TT_BLOCK_END)
+    {
+        GET_TOKEN;
+        return ERR_OK;
+    }
 }
 
 int init ()
@@ -394,4 +492,9 @@ int init ()
                 PRINT_DEBUG("Arithmetical operator calling expression analyser !\n");
         }
     }
+}
+
+int value()
+{
+
 }
