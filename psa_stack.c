@@ -31,7 +31,12 @@ void s_destroy(Psa_stack *stack)
         free(stack->top->lptr);
         stack->top = prev;
     }
-    free(stack);
+    while (stack->active != NULL)
+    {
+        prev = (Stack_item*)stack->active->lptr;
+        free(stack->top->lptr);
+        stack->active = prev;
+    }
 }
 
 int s_push (Psa_stack *stack, Token token)
@@ -53,15 +58,22 @@ int s_push (Psa_stack *stack, Token token)
     stack->top = new_i;
     return ERR_OK;
 }
-void s_pop (Psa_stack *stack)
+
+Token s_pop (Psa_stack *stack)
 {
     if (stack->top != NULL)
     {
         Stack_item *tmp = stack->top;
         stack->top = (Stack_item *) tmp->lptr;
-        free(tmp);
+        return tmp->E;
     }
 }
-Token* StackTraverse(Psa_stack* stack, int depth) {
 
+void s_print(Psa_stack *stack)
+{
+    stack->active = stack->top;
+    while (stack->active != NULL) {
+        printToken(&stack->active->E);
+        stack->active = stack->active->lptr;
+    }
 }

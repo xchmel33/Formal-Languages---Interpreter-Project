@@ -17,6 +17,7 @@ typedef enum {
 }Datatype;
 
 typedef enum {
+    //term
     TT_ADD,
     TT_SUB,
     TT_MUL,
@@ -33,9 +34,10 @@ typedef enum {
     TT_INTEGER,
     TT_DECIMAL,
     TT_STRING,
-    TT_SYM,
-
     TT_EMPTY,
+
+    //other
+    TT_TABLESYM,
     TT_EOL,
     TT_EOF,
     TT_KEYWORD,
@@ -87,5 +89,6 @@ void procces_id_key_data(char S_Attribute[10], Token* token);
 void procces_decimal(char S_Attribute[10], Token* token);
 void SetSource(FILE* f);
 int GetToken(Token* token);
+void printToken(Token* token);
 
 #endif //IFJ_FINAL_SCANNER_H
