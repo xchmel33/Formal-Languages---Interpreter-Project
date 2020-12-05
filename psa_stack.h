@@ -24,9 +24,9 @@ typedef struct
 
 Psa_stack *s_init();
 void s_destroy(Psa_stack *stack);
-Token s_pop (Psa_stack *stack);
-int s_push (Psa_stack *stack,Token token);
-void s_print(Psa_stack* stack);
+Token* s_pop (Psa_stack *stack);
+int s_push (Psa_stack *stack,Token *token);
+void s_print(Psa_stack* stack,char* mame);
 //Token* s_search_tokens(Psa_stack* stack, TokenType rangeBegin, TokenType rangeEnd);
 
 

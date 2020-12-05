@@ -15,8 +15,8 @@
 #define T_S (7)
 #define Error (-1)
 
-Psa_stack ActiveStack;
-Token EMPTY_TOKEN;
+Psa_stack *ActiveStack;
+Token *EMPTY_TOKEN;
 
 char prec_table[T_S][T_S] = {
     //      *			  +-   */  <!=   (	   )     i	  $ *//
@@ -29,19 +29,20 @@ char prec_table[T_S][T_S] = {
     /*	    $	    */ { '<', '<', '<', '<',  ' ',  '<', ' '},
 };
 void ActivateResources() {
-    ActiveStack = *s_init();
-    EMPTY_TOKEN.attribute.string[0] = '$';
-    EMPTY_TOKEN.type = TT_EMPTY;
+    ActiveStack = s_init();
+    EMPTY_TOKEN = malloc(sizeof(Token));
+    EMPTY_TOKEN->attribute.string[0] = '$';
+    EMPTY_TOKEN->type = TT_EMPTY;
 }
 
 void FreeResources() {
-    s_destroy(&ActiveStack);
+    s_destroy(ActiveStack);
 }
 
-int getIndex(Token T) {
+int getIndex(Token *T) {
 
     //pozicia v tabulke
-    switch (T.type) {
+    switch (T->type) {
         case TT_ADD:
         case TT_SUB:
             return 0;
@@ -74,7 +75,7 @@ int getIndex(Token T) {
     }
 }
 
-Token* getSymbol(Token A, Token B) {
+Token* getSymbol(Token *A, Token *B) {
 
     int x, y;
     x = getIndex(A);
@@ -88,28 +89,29 @@ Token* getSymbol(Token A, Token B) {
     return sym;
 }
 
-void getNextToken(Token* token, Token prev_token, Token actual_token) {
+Token* getNextToken(Token *actual_token, Token *next_token) {
 
-    if (token->type == prev_token.type) {
-        *token = actual_token;
+    if (actual_token->type == next_token->type) {
+        GetToken(next_token);
+        return next_token;
     }
     else {
-        GetToken(token);
+        return next_token;
     }
 }
 
-Token topTerm(Psa_stack* stack) {
+Token* topTerm(Psa_stack* stack) {
 
     stack->active = (struct Stack_item*) stack->top;
     while (stack->active != NULL){
         if (stack->active->E.type >= TT_ADD && stack->active->E.type <= TT_EMPTY) {
-            return stack->active->E;
+            return &stack->active->E;
         }
         stack->active = stack->active->lptr;
     }
 }
 
-int checkRule(Psa_stack* Rulestack) {
+Token* checkRule(Psa_stack* Rulestack) { //codegen required
     
     // E -> E+E 
     // E -> E-E
@@ -123,28 +125,37 @@ int checkRule(Psa_stack* Rulestack) {
     // E -> E!=E
     // E -> (E)
     // E -> i
+    Token* token = s_pop(Rulestack);
+    if (token->type == TT_TABLESYM) {
+        token = s_pop(Rulestack);
+        if (token->type >= TT_IDENTIFIER && token->type <= TT_STRING) {
+            token->type = TT_EXPRESSION;
+            return token;
+        }
+    }
     // E -> integer
     // E -> double
     // E -> string
 
-    return 0;
+    return EMPTY_TOKEN;
 }
 
 
-int expression(HashTable table, Token prev_token, Token act_token) {
+int expression(HashTable table, Token *prev_token, Token *act_token) {
 
     //moze ist do main
     ActivateResources();
 
-    Token A, B, * S, Y;
-    Psa_stack RuleStack;
+    Token *A, *B, *S, *Y;
+    Psa_stack *RuleStack;
+    B = prev_token;
 
-    if (s_push(&ActiveStack, EMPTY_TOKEN) != ERR_OK) {
+    if (s_push(ActiveStack, EMPTY_TOKEN) != ERR_OK) {
         return Error;
     }
-    B = prev_token;
+
     do {
-        A = topTerm(&ActiveStack);
+        A = topTerm(ActiveStack);
         S = (Token*)getSymbol(A, B);
         if (S == NULL) {
             printf("error");
@@ -153,34 +164,47 @@ int expression(HashTable table, Token prev_token, Token act_token) {
         switch (S->attribute.string[0])
         {
         case '=':
-            s_push(&ActiveStack, B);
-            getNextToken(&B, prev_token, act_token);
+            s_push(ActiveStack, B);
+            B = getNextToken(B, act_token);
             break;
         case '<':
-            s_push(&ActiveStack, *S);
-            s_push(&ActiveStack, B);
-            getNextToken(&B, prev_token, act_token);
+            if (ActiveStack->top->E.type == TT_EXPRESSION) {
+                prev_token = s_pop(ActiveStack);
+                s_push(ActiveStack, S);
+                s_push(ActiveStack, prev_token);
+                s_push(ActiveStack, B);
+            }
+            else {
+                s_push(ActiveStack, S);
+                s_push(ActiveStack, B);
+            }
+            B = getNextToken(B, act_token);
             break;
         case '>':
-            RuleStack = *s_init();
-            Y = s_pop(&ActiveStack);
-            while (Y.type != TT_TABLESYM) {
-                s_push(&RuleStack, Y);
-                Y = s_pop(&ActiveStack);
+            RuleStack = s_init();
+            Y = s_pop(ActiveStack);
+            while (Y->type != TT_TABLESYM) {
+                s_push(RuleStack, Y);
+                Y = s_pop(ActiveStack);
             }
-            s_push(&RuleStack, Y);
-            printf("Rule stack:\n");
-            s_print(&RuleStack);
-            printf("END OF Rule stack:\n");
-            s_destroy(&RuleStack);
+            s_push(RuleStack, Y);
+            s_print(RuleStack, "RuleStack");
+            s_push(ActiveStack, checkRule(RuleStack));
+            if (ActiveStack->top->E.type == TT_EMPTY) {
+                printf("Unknown rule -> rules are WIP\n");
+                return Error;
+            }
+            s_destroy(RuleStack);
+            break;
+        case ' ':
+            printf("Error");
+            return Error;
             break;
         }
-        printf("A:");
-        printToken(&A);
-        printf("B:");
-        printToken(&B);
-        printf("Active stack:\n");
-        s_print(&ActiveStack);
-        printf("End of Active stack:\n");
-    } while (B.type != TT_EMPTY || A.type != TT_EMPTY);
+        s_print(ActiveStack,"ActiveStack");
+        if (B->type == TT_EOL || B->type == TT_EOF) {
+            B = EMPTY_TOKEN;
+        }
+    } while (B->type != TT_EMPTY || A->type != TT_EMPTY);
+    FreeResources;
 }

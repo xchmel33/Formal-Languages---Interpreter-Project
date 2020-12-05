@@ -35,7 +35,7 @@ typedef enum {
     TT_DECIMAL,
     TT_STRING,
     TT_EMPTY,
-
+    
     //other
     TT_TABLESYM,
     TT_EOL,
@@ -48,6 +48,7 @@ typedef enum {
     TT_BLOCK_END,
     TT_COMMA,
     TT_SEMICOLON,
+    TT_EXPRESSION,
 }TokenType;
 
 typedef union {

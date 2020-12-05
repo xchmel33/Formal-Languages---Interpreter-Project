@@ -505,5 +505,8 @@ void printToken(Token* token) {
     case(TT_EMPTY):
         printf("Token: EMPTY, %s\n", token->attribute.string);
         break;
+    case(TT_EXPRESSION):
+        printf("Token: EXPRESSION, %s\n", token->attribute.string);
+        break;
     }
 }
