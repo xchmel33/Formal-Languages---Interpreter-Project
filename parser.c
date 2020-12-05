@@ -317,16 +317,36 @@ int statements()
                 }
                 break;
             case FOR:
-                PRINT_DEBUG("Statemnts FOR \n");
+                PRINT_DEBUG("Statements FOR \n");
+                // for -> init -> ; -> expres -> ; -> assign -> { eol statements... eol }
+                if (init() != 0)
+                {
+                    return ERR_PARSER;
+                }
+                GET_TOKEN;
+                if (act_token->type == TT_SEMICOLON)
+                {
+                    PRINT_DEBUG("For 1. semicolon ok");
+                    GET_TOKEN;
+                }
+                else
+                {
+                    return ERR_PARSER;
+                }
+                // assing teba dorobit neviem ako bude vyzerat value();!!!!!!!!!!!!!!!!
+
+
+
+
                 break;
             case FUNC:
-                PRINT_DEBUG("Statemnts FUNC \n");
+                PRINT_DEBUG("Statements FUNC \n");
                 break;
             case PACKAGE:
-                PRINT_DEBUG("Statemnts PACKAGE \n");
+                PRINT_DEBUG("Statements PACKAGE \n");
                 break;
             case RETURN:
-                PRINT_DEBUG("Statemnts RETURN \n");
+                PRINT_DEBUG("Statements RETURN \n");
                 break;
         }
         if (act_token->type == TT_IDENTIFIER) {
@@ -492,6 +512,12 @@ int init ()
                 PRINT_DEBUG("Arithmetical operator calling expression analyser !\n");
         }
     }
+    else
+    {
+        PRINT_DEBUG("error missing ID (func -> init)");
+        return ERR_PARSER;
+    }
+    return ERR_OK; //umela uprava
 }
 
 int value()
