@@ -7,6 +7,7 @@
 #include "scanner.h"
 #include "parser.h"
 #include "errno.h"
+#include "code_generator.h"
 
 int main() {
     FILE* f;
@@ -152,6 +153,7 @@ int main() {
             }
         }
     }*/
+    code_to_stdout();
     fclose(f);
     free(token);
     htClearAll(pTable);

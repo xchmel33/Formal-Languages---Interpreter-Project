@@ -7,8 +7,10 @@
 
 #include "error.h"
 #include "parser.h"
+#include "dstring.h"
 #include "scanner.h"
 #include "symtable.h"
+#include "code_generator.h"
 
 #define DEBUG 1
 
@@ -26,7 +28,7 @@ int iteration_count = 0; //pocet iteracii
 int error_guard = 0;
 unsigned param = 0;
 
-
+dstring code;
 
 void set_active_token(Token* token)
 {
@@ -96,6 +98,7 @@ int body() {
 
     if (act_token->type == TT_EOF )
     {
+        cg_main_end();
         return 0;
     }
     body();
@@ -107,10 +110,19 @@ int def_func()
     func_flag = 1;
     depth_level++;
     GET_TOKEN;
+
     if (act_token->type == TT_IDENTIFIER)
     {
         TableItem func;
-
+        if (strcmp(act_token->attribute.string,"main") == 0)
+        {
+            strInit(&code);
+            cg_main();
+        }
+        else
+        {
+            cg_func_start(act_token->attribute.string);
+        }
         func.next_item = NULL;
         size_t len = strlen(act_token->attribute.string);
         func.key = malloc(len * sizeof(char)); //sizeof(char) always 1
@@ -135,13 +147,17 @@ int def_func()
                     return error_pom;
                     PRINT_DEBUG("Statements error \n");
                 }
+                else
+                {
+                    cg_func_end(func.key);
+                }
             }
             else
             {
                 return ERR_DEF;
             }
         }
-        return 0;
+        return ERR_OK;
     }
     else
     {
@@ -341,6 +357,7 @@ int statements()
                 break;
             case FUNC:
                 PRINT_DEBUG("Statements FUNC \n");
+                def_func();
                 break;
             case PACKAGE:
                 PRINT_DEBUG("Statements PACKAGE \n");
@@ -387,7 +404,7 @@ int statements()
                     statements();
                 }
                 GET_TOKEN;
-                if (act_token->type != TT_IDENTIFIER) {
+                if (act_token->type != TT_IDENTIFIER ) {
                     return ERR_PARSER;
                 }
                 GET_TOKEN;

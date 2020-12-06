@@ -2,6 +2,7 @@
 #ifndef IFJ_FINAL_DSTRING_H
 #define IFJ_FINAL_DSTRING_H
 
+
 #define MAX_CHARACTERS (101)
 
 typedef struct
