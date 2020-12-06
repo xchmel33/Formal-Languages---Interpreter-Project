@@ -21,6 +21,9 @@ int strCopyString(dstring* s1, dstring* s2);
 int strCmpString(dstring* s1, dstring* s2);
 int strCmpConstStr(dstring* s1, char* s2);
 
+int strAddString(dstring* s1, const char *s2);
+
+
 char* strGetStr(dstring* s);
 int strGetLength(dstring* s);
 

@@ -47,6 +47,22 @@ int strAddChar(dstring* s1, char c) {
     s1->str[s1->length] = '\0';
     return STR_TRUE;
 }
+int strAddString(dstring* s1, const char *s2){
+    unsigned int len2 = (unsigned int) strlen(s2);
+
+    if (s1->length + len2 + 1 >= s1->allocSize)
+    {
+
+        if ((s1->str = (char*)realloc(s1->str, s1->length + len2  + 1)) == NULL)
+            return STR_FALSE;
+        s1->allocSize = s1->length + len2  + 1;
+    }
+    s1->length += len2;
+    strcat(s1->str, s2);
+    s1->str[s1->length] = '\0';
+    return STR_TRUE;
+
+}
 
 int strCopyString(dstring* s1, dstring* s2) {
 
