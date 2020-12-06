@@ -9,18 +9,16 @@
 #define STR_TRUE 1
 
 int strInit(dstring* s) {
-    
-    s->str = (char*)malloc(STR_LEN_INC);
 
-    if (s->str == NULL) {
+    if (!(s->str = (char *) malloc(STR_LEN_INC)))
+    {
         return STR_FALSE;
     }
-    else {
-        s->length = 0;
-        s->str[0] = '\0';
-        s->allocSize = STR_LEN_INC;
-        return STR_TRUE;
-    }
+
+    strClear(s);
+    s->allocSize = STR_LEN_INC;
+
+    return STR_TRUE;
 }
 
 void strFree(dstring* s) {
@@ -31,9 +29,9 @@ void strFree(dstring* s) {
 
 void strClear(dstring* s) {
 
-    
-    s->str[0] = '\0';
     s->length = 0;
+    s->str[0] = '\0';
+
 }
 
 int strAddChar(dstring* s1, char c) {
