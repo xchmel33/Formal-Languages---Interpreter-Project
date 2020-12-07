@@ -21,7 +21,9 @@
 
 
 Token* act_token;
-HashTable* act_table;
+HashTable* act_table; //Global
+HashTable* local_table; //Local
+
 int depth_level = 0;  //level zanorenia do funkcie
 bool func_flag = 0; //flag funkcie 0 - 1
 int iteration_count = 0; //pocet iteracii
@@ -52,10 +54,10 @@ int base_cond(Token* token)
     if (token->attribute.keyword == PACKAGE)
     {
         GetToken(token);
-        if (strcmp(token->attribute.string, "main") == 0)
+        if (strcmp(token->attribute.string->str, "main") == 0)
         {
             PRINT_DEBUG("Package main ok \n ");
-            return 0; //Chybaju err stavy
+            return ERR_OK; //Chybaju err stavy
         }
 
     }
@@ -68,6 +70,7 @@ int base_cond(Token* token)
 
 int body() {
     PRINT_DEBUG("Body start \n");
+
     GET_TOKEN;
     if (act_token->type == TT_EOL)
     {
@@ -78,6 +81,8 @@ int body() {
     iteration_count++;
     if (iteration_count == 1)
     {
+        local_table = (HashTable*)malloc(sizeof(HashTable));
+        htInit(local_table);
         base_cond(act_token);
         GET_TOKEN;
     }
@@ -92,7 +97,7 @@ int body() {
     }
     if (act_token->type == TT_IDENTIFIER)
     {
-        statements();
+        statement();
     }
 
 
@@ -114,19 +119,19 @@ int def_func()
     if (act_token->type == TT_IDENTIFIER)
     {
         TableItem func;
-        if (strcmp(act_token->attribute.string,"main") == 0)
+        if (strcmp(act_token->attribute.string->str,"main") == 0)
         {
             strInit(&code);
             cg_main();
         }
         else
         {
-            cg_func_start(act_token->attribute.string);
+            cg_func_start(act_token->attribute.string->str);
         }
         func.next_item = NULL;
-        size_t len = strlen(act_token->attribute.string);
+        size_t len = strlen(act_token->attribute.string->str);
         func.key = malloc(len * sizeof(char)); //sizeof(char) always 1
-        strcpy(func.key,act_token->attribute.string);
+        strcpy(func.key,act_token->attribute.string->str);
         func.data.type = T_FUNC;
         PRINT_DEBUG("Table check \n");
         htInsert(act_table, func.key, func.data);
@@ -182,9 +187,9 @@ int params(TableItem* func)
             GET_TOKEN;
         }*/
         if (act_token->type == TT_IDENTIFIER) {
-            len = strlen(act_token->attribute.string);
+            len = strlen(act_token->attribute.string->str);
             data->param[param].identifier = malloc(sizeof(len * sizeof(char)));
-            strcpy(data->param[param].identifier, act_token->attribute.string);
+            strcpy(data->param[param].identifier, act_token->attribute.string->str);
             param_counter++;
             GET_TOKEN;
         }
@@ -228,6 +233,26 @@ int params(TableItem* func)
                     data->return_type = T_NONE;
                     data->var = false;
                     htInsert(act_table, func->key, *data);
+                    if (param_counter != 0)
+                    {
+                        switch (data->param[param].type) {
+
+                            case P_INT:
+                                data->type = T_INT;
+                                break;
+                            case P_FLOAT64:
+                                data->type = T_DOUBLE;
+                                break;
+                            case P_STRING:
+                                data->type = T_STRING;
+                                break;
+                            default:
+                                data->type = T_NONE;
+                                break;
+                        }
+                        data->var = true;
+                        htInsert(local_table, data->param[param].identifier, *data);
+                    }
                     return ERR_OK;
                 }
 
@@ -306,7 +331,7 @@ int statements()
         switch (act_token->attribute.keyword)
         {
             case IF:
-                PRINT_DEBUG("Statemnts IF \n");
+                PRINT_DEBUG("Statements IF \n");
                 int error_pom = statement(); // pomocna aby sme vedeli kt. error vracat
                 if (error_pom != 0)
                 {
@@ -367,6 +392,11 @@ int statements()
                 break;
         }
         if (act_token->type == TT_IDENTIFIER) {
+            if (statement() != 0)
+            {
+                return ERR_DEF;
+            }
+            /*
             prev_token = act_token; //v pripade ak by som ho v buducnosti potreboval
             GET_TOKEN;
             switch (act_token->type) {
@@ -392,31 +422,20 @@ int statements()
                 case TT_COMMA:
                     break;
 
-            }
-        }
-        if (act_token->type == TT_COMMA) {
-            prev_token = act_token; //v pripade ak by som ho v buducnosti potreboval
-            int id_counter = 0;
-            PRINT_DEBUG("ID, ID, IDn ... \n");
-            while (1) {
-                if (act_token->type == TT_ASSIGN || act_token->type == TT_INIT)
-                {
-                    statements();
-                }
-                GET_TOKEN;
-                if (act_token->type != TT_IDENTIFIER ) {
-                    return ERR_PARSER;
-                }
-                GET_TOKEN;
-                id_counter++;
-            }
+            }*/
         }
     }
-    return ERR_OK;
+    if (act_token->type == TT_BLOCK_END)
+    {
+        PRINT_DEBUG("Block end of func !");
+        body();
+    }
 }
 int statement ()
 {
+    TableData *data = (TableData *) malloc(sizeof(TableData));
     TableItem* temporary_ht;
+    Token *prev_token;
     if (act_token->attribute.keyword == IF)
     {
         GET_TOKEN;
@@ -426,7 +445,7 @@ int statement ()
         }
         else
         {
-            temporary_ht = htSearch(act_table,act_token->attribute.string);
+            temporary_ht = htSearch(act_table,act_token->attribute.string->str);
             if(temporary_ht != NULL)
             {
                 PRINT_DEBUG("IF -> FUNC found in global hash table \n");
@@ -466,6 +485,70 @@ int statement ()
             }
         }
     }
+    if (act_token->type == TT_IDENTIFIER)
+    {
+        if (htSearch(act_table,act_token->attribute.string->str) != NULL)
+        {
+            PRINT_DEBUG("Volanie definovanej funkcie ! \n ");
+        }
+
+
+        if (htSearch(local_table,act_token->attribute.string->str) == NULL)
+        {
+            //nebol este inicializovany => next token musi byt :=
+            prev_token = act_token;
+            GET_TOKEN;
+            if (act_token->type != TT_INIT)
+            {
+                return ERR_DEF;
+            }
+            else
+            {
+                PRINT_DEBUG("INIT \n");
+
+
+            }
+            data->var = true;
+            switch (act_token->attribute.datatype) {
+
+                case INT:
+                    data->type = T_INT;
+                    break;
+                case FLOAT64:
+                    data->type = T_DOUBLE;
+                    break;
+                case STRING:
+                    data->type = T_STRING;
+                    break;
+            }
+            htInsert(local_table,prev_token->attribute.string->str,*data);
+        }
+        else
+        {
+            PRINT_DEBUG("ID sa uz nachadza v localhash table ! \n");
+        }
+    }
+    if (act_token->type == TT_COMMA) {
+        prev_token = act_token; //v pripade ak by som ho v buducnosti potreboval
+        int id_counter = 0;
+        PRINT_DEBUG("ID, ID, IDn ... \n");
+        while (1) {
+            if (act_token->type == TT_ASSIGN || act_token->type == TT_INIT)
+            {
+                statements();
+            }
+            GET_TOKEN;
+            if (act_token->type != TT_IDENTIFIER ) {
+                return ERR_PARSER;
+            }
+            data->var = true;
+            htInsert(local_table,act_token->attribute.string->str,*data);
+            GET_TOKEN;
+            id_counter++;
+        }
+    }
+
+    return ERR_OK;
 }
 
 
@@ -537,7 +620,6 @@ int init ()
     return ERR_OK; //umela uprava
 }
 
-int value()
-{
+int value() {
 
 }
