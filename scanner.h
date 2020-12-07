@@ -1,6 +1,8 @@
 
 #ifndef SCANNER_H
 #define SCANNER_H
+#include "dstring.h"
+#define UNDEFINED_TOKEN_ATTRIBUTE -999999
 typedef enum {
     ELSE,
     FOR,
@@ -35,7 +37,7 @@ typedef enum {
     TT_DECIMAL,
     TT_STRING,
     TT_EMPTY,
-    
+
     //other
     TT_TABLESYM,
     TT_EOL,
@@ -51,12 +53,12 @@ typedef enum {
     TT_EXPRESSION,
 }TokenType;
 
-typedef union {
+typedef struct {
     Keyword keyword;
     Datatype datatype;
     int integer;
     double decimal;
-    char string[50];
+    dstring* string;
 }TokenAttribute;
 
 typedef struct {
@@ -86,10 +88,11 @@ typedef enum {
     SS_ESCAPE_SEQUENCE_HEX_2,
 }ScannerState;
 
-void procces_id_key_data(char S_Attribute[10], Token* token);
-void procces_decimal(char S_Attribute[10], Token* token);
+void procces_id_key_data(dstring* S_Attribute, Token* token);
+void procces_decimal(dstring* S_Attribute, Token* token);
 void SetSource(FILE* f);
 int GetToken(Token* token);
+Token* initToken();
 void printToken(Token* token);
 
 #endif //IFJ_FINAL_SCANNER_H
