@@ -5,7 +5,7 @@
 #include "psa_stack.h"
 #include "symtable.h"
 
-void ActivateResources();
+void ActivateResources(HashTable* ptable);
 void FreeResources();
 int getIndex(Token* T);
 Token* getSymbol(Token* A, Token* B);
