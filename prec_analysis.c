@@ -146,6 +146,111 @@ bool cg_stack_p(Token* token) {
     return true;
 }
 
+int checkTypes(Token* operand1,Token* operand2) {
+
+    Datatype op1_type = getType(operand1);
+    Datatype op2_type = getType(operand2);
+    switch (op1_type)
+    {
+    case INT:
+        if (op2_type == INT) {
+            break;
+        }
+        else if (op2_type == STRING || op2_type == FLOAT64) {
+            return ERR_MATH_TYPE;
+        }
+        else if (op2_type == IDENTIFIER) {
+            if (htSearch(table, operand2->attribute.string->str)->data.type == T_INT) {
+                break;
+            }
+            else {
+                return ERR_MATH_TYPE;
+            }
+        }
+    case FLOAT64:
+        if (op2_type == STRING || op2_type == INT) {
+            return ERR_MATH_TYPE;
+        }
+        else if (op2_type == FLOAT64) {
+            break;
+        }
+        else if (op2_type == IDENTIFIER) {
+            if (htSearch(table, operand2->attribute.string->str)->data.type == T_DOUBLE) {
+                break;
+            }
+            else {
+                return ERR_MATH_TYPE;
+            }
+        }
+    case STRING:
+        if (op2_type == INT || op2_type == FLOAT64) {
+            return ERR_MATH_TYPE;
+        }
+        else if (op2_type == STRING) {
+            break;
+        }
+        else if (op2_type == IDENTIFIER) {
+            if (htSearch(table, operand2->attribute.string->str)->data.type == T_STRING) {
+                break;
+            }
+            else {
+                return ERR_MATH_TYPE;
+            }
+        }
+    case IDENTIFIER:
+        switch (htSearch(table, operand1->attribute.string->str)->data.type)
+        {
+        case T_INT:
+            if (op2_type == INT) {
+                break;
+            }
+            else if (op2_type == STRING || op2_type == FLOAT64) {
+                return ERR_MATH_TYPE;
+            }
+            else if (op2_type == IDENTIFIER) {
+                if (htSearch(table, operand2->attribute.string->str)->data.type == T_INT) {
+                    break;
+                }
+                else {
+                    return ERR_MATH_TYPE;
+                }
+            }
+        case T_DOUBLE:
+            if (op2_type == STRING || op2_type == INT) {
+                return ERR_MATH_TYPE;
+            }
+            else if (op2_type == FLOAT64) {
+                break;
+            }
+            else if (op2_type == IDENTIFIER) {
+                if (htSearch(table, operand2->attribute.string->str)->data.type == T_DOUBLE) {
+                    break;
+                }
+                else {
+                    return ERR_MATH_TYPE;
+                }
+            }
+        case T_STRING:
+            if (op2_type == INT || op2_type == FLOAT64) {
+                return ERR_MATH_TYPE;
+            }
+            else if (op2_type == STRING) {
+                break;
+            }
+            else if (op2_type == IDENTIFIER) {
+                if (htSearch(table, operand2->attribute.string->str)->data.type == T_STRING) {
+                    break;
+                }
+                else {
+                    return ERR_MATH_TYPE;
+                }
+            }
+        }
+    }
+    return EXP_OK;
+}
+
+
 int checkRule(Psa_stack* Rulestack,Token* result_type) { //codegen required
     
     Token* operand1 = s_pop(Rulestack);
@@ -168,104 +273,9 @@ int checkRule(Psa_stack* Rulestack,Token* result_type) { //codegen required
         operand2 = s_pop(Rulestack);
 
         //check matching types
-        Datatype op1_type = getType(operand1);
-        Datatype op2_type = getType(operand2);
-        switch (op1_type)
-        {
-        case INT:
-            if (op2_type == INT) {
-                break;
-            }
-            else if (op2_type == STRING || op2_type == FLOAT64) {
-                return ERR_MATH_TYPE;
-            }
-            else if (op2_type == IDENTIFIER) {
-                if (htSearch(table, operand2->attribute.string->str)->data.type == T_INT) {
-                    break;
-                }
-                else {
-                    return ERR_MATH_TYPE;
-                }
-            }
-        case FLOAT64:
-            if (op2_type == STRING || op2_type == INT) {
-                return ERR_MATH_TYPE;
-            }
-            else if (op2_type == FLOAT64) {
-                break;
-            }
-            else if (op2_type == IDENTIFIER) {
-                if (htSearch(table, operand2->attribute.string->str)->data.type == T_DOUBLE) {
-                    break;
-                }
-                else {
-                    return ERR_MATH_TYPE;
-                }
-            }
-        case STRING:
-            if (op2_type == INT || op2_type == FLOAT64) {
-                return ERR_MATH_TYPE;
-            }
-            else if (op2_type == STRING) {
-                break;
-            }
-            else if (op2_type == IDENTIFIER) {
-                if (htSearch(table, operand2->attribute.string->str)->data.type == T_STRING) {
-                    break;
-                }
-                else {
-                    return ERR_MATH_TYPE;
-                }
-            }
-        case IDENTIFIER:
-            switch (htSearch(table, operand1->attribute.string->str)->data.type)
-            {
-            case T_INT:
-                if (op2_type == INT) {
-                    break;
-                }
-                else if (op2_type == STRING || op2_type == FLOAT64) {
-                    return ERR_MATH_TYPE;
-                }
-                else if (op2_type == IDENTIFIER) {
-                    if (htSearch(table, operand2->attribute.string->str)->data.type == T_INT) {
-                        break;
-                    }
-                    else {
-                        return ERR_MATH_TYPE;
-                    }
-                }
-            case T_DOUBLE:
-                if (op2_type == STRING || op2_type == INT) {
-                    return ERR_MATH_TYPE;
-                }
-                else if (op2_type == FLOAT64) {
-                    break;
-                }
-                else if (op2_type == IDENTIFIER) {
-                    if (htSearch(table, operand2->attribute.string->str)->data.type == T_DOUBLE) {
-                        break;
-                    }
-                    else {
-                        return ERR_MATH_TYPE;
-                    }
-                }
-            case T_STRING:
-                if (op2_type == INT || op2_type == FLOAT64) {
-                    return ERR_MATH_TYPE;
-                }
-                else if (op2_type == STRING) {
-                    break;
-                }
-                else if (op2_type == IDENTIFIER) {
-                    if (htSearch(table, operand2->attribute.string->str)->data.type == T_STRING) {
-                        break;
-                    }
-                    else {
-                        return ERR_MATH_TYPE;
-                    }
-                }
-            }
+        int pom = checkTypes(operand1, operand2);
+        if (pom != EXP_OK) {
+            return pom;
         }
 
         //zero division
