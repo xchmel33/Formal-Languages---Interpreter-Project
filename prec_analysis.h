@@ -11,7 +11,9 @@ int getIndex(Token* T);
 Token* getSymbol(Token* A, Token* B);
 Token* getNextToken(Token* prev_token, Token* actual_token);
 Token* topTerm(Psa_stack* stack);
-Token* checkRule(Psa_stack* Rulestack, HashTable *table);
-int expression(HashTable table, Token* prev_token, Token* act_token);
+int checkRule(Psa_stack* Rulestack, Token *result_type);
+Datatype getType(Token* token);
+int expression(Token* prev_token, Token* act_token);
+bool cg_stack_p(Token* token);
 
 #endif //IFJ_FINAL_PARSER_H
