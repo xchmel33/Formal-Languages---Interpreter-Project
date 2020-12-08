@@ -11,6 +11,7 @@ int getIndex(Token* T);
 Token* getSymbol(Token* A, Token* B);
 Token* getNextToken(Token* prev_token, Token* actual_token);
 Token* topTerm(Psa_stack* stack);
+int checkTypes(Token* operand1, Token* operand2);
 int checkRule(Psa_stack* Rulestack, Token *result_type);
 Datatype getType(Token* token);
 int expression(Token* prev_token, Token* act_token);
