@@ -10,6 +10,7 @@
 #include "psa_stack.h"
 #include "scanner.h"
 #include "dstring.h"
+#include "code_generator.h"
 
 #define T_S (7)
 #define Error (-1)
@@ -109,25 +110,62 @@ Token* topTerm(Psa_stack* stack) {
         stack->active = stack->active->lptr;
     }
 }
+DataType getType(Token *token) {
+
+    
+    if (token->attribute.integer != UNDEFINED_TOKEN_ATTRIBUTE) {
+        return INT;
+    }
+    else if (token->attribute.decimal = UNDEFINED_TOKEN_ATTRIBUTE) {
+        return FLOAT64;
+    }
+    else {
+        return STRING;
+    }
+}
 
 Token* checkRule(Psa_stack* Rulestack, HashTable *table) { //codegen required
     
     Token* operand1 = s_pop(Rulestack);
     Token* operator,* operand2;
+    Token* result = initToken();
+    TableItem* ID;
 
     if (operand1->type == TT_EXPRESSION) {
         operator = s_pop(Rulestack);
         operand2 = s_pop(Rulestack);
+
+        //check matching types
+        if (getType(operand1) != getType(operand2)) {
+            return EMPTY_TOKEN;
+        }
+
+        result->type = TT_EXPRESSION;
         switch (operator->type)
         {
         // E -> E+E
         case(TT_ADD):
-            break;
+            switch (getType(operand1))
+            {
+            case INT:
+                //cg ADD
+                break;
+            case FLOAT64:
+                //cg ADD
+                break;
+            case STRING:
+                //cg CONCAT
+                break;
+            }
+            return result;
         // E -> E-E
         case(TT_SUB):
-            break;
+            //cg SUB
+            return result;
         // E -> E*E
         case(TT_MUL):
+            //cg MUL
+            return result;
             break;
         // E -> E/E
         case(TT_DIV):
@@ -154,9 +192,20 @@ Token* checkRule(Psa_stack* Rulestack, HashTable *table) { //codegen required
     }
     // E -> i
     else if (operand1->type == TT_IDENTIFIER){ 
-        //WIP -> hash table
-        operand1->type = TT_EXPRESSION;
-        return operand1;
+        ID = htSearch(table, operand1->attribute.string->str);
+        if (ID == NULL) {
+            return EMPTY_TOKEN;
+        }
+        else {
+            if (ID->data.var) {
+                operand1->type = TT_EXPRESSION;
+                return operand1;
+            }
+            else {
+                //function call
+            }
+        }
+        
     }
     else if (operand1->type >= TT_INTEGER && operand1->type <= TT_STRING) {
         operand1->type = TT_EXPRESSION;
