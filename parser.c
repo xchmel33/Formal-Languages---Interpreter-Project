@@ -48,7 +48,7 @@ int base_cond(Token* token)
 {
     if (token->type == TT_EOF)
     {
-        PRINT_DEBUG("End of program");
+        PRINT_DEBUG("End of program \n");
         return 0;
     }
     if (token->attribute.keyword == PACKAGE)
@@ -104,7 +104,7 @@ int body() {
     if (act_token->type == TT_EOF )
     {
         cg_main_end();
-        return 0;
+        return ERR_OK;
     }
     body();
 }
@@ -328,6 +328,11 @@ int statements()
     while (act_token->type != TT_BLOCK_BEGIN && act_token->type != TT_BLOCK_END)
     {
         GET_TOKEN;
+        if (act_token->type == TT_BLOCK_BEGIN || act_token->type == TT_BLOCK_END)
+        {
+            break;
+        }
+
         switch (act_token->attribute.keyword)
         {
             case IF:
@@ -367,7 +372,7 @@ int statements()
                 GET_TOKEN;
                 if (act_token->type == TT_SEMICOLON)
                 {
-                    PRINT_DEBUG("For 1. semicolon ok");
+                    PRINT_DEBUG("For 1. semicolon ok \n");
                     GET_TOKEN;
                 }
                 else
@@ -375,8 +380,6 @@ int statements()
                     return ERR_PARSER;
                 }
                 // assing teba dorobit neviem ako bude vyzerat value();!!!!!!!!!!!!!!!!
-
-
 
 
                 break;
@@ -389,6 +392,8 @@ int statements()
                 break;
             case RETURN:
                 PRINT_DEBUG("Statements RETURN \n");
+                break;
+            default:
                 break;
         }
         if (act_token->type == TT_IDENTIFIER) {
@@ -427,7 +432,7 @@ int statements()
     }
     if (act_token->type == TT_BLOCK_END)
     {
-        PRINT_DEBUG("Block end of func !");
+        PRINT_DEBUG("Block end of func ! \n");
         body();
     }
 }
@@ -497,31 +502,37 @@ int statement ()
         {
             //nebol este inicializovany => next token musi byt :=
             prev_token = act_token;
+            size_t len = strlen(prev_token->attribute.string->str);
+            char* name_of_id = malloc(sizeof(len));
+            strcpy(name_of_id,prev_token->attribute.string->str);
             GET_TOKEN;
             if (act_token->type != TT_INIT)
             {
                 return ERR_DEF;
             }
-            else
-            {
+            else {
                 PRINT_DEBUG("INIT \n");
+                init(prev_token);
 
 
+                data->var = true;
+                switch (prev_token->attribute.datatype) {
+
+                    case INT:
+                        data->type = T_INT;
+                        data->value.integer_value = prev_token->attribute.integer;
+                        break;
+                    case FLOAT64:
+                        data->type = T_DOUBLE;
+                        data->value.float_value = prev_token->attribute.decimal;
+                        break;
+                    case STRING:
+                        data->type = T_STRING;
+                        strcpy(data->value.string_value, prev_token->attribute.string->str);
+                        break;
+                }
+                htInsert(local_table, name_of_id, *data);
             }
-            data->var = true;
-            switch (act_token->attribute.datatype) {
-
-                case INT:
-                    data->type = T_INT;
-                    break;
-                case FLOAT64:
-                    data->type = T_DOUBLE;
-                    break;
-                case STRING:
-                    data->type = T_STRING;
-                    break;
-            }
-            htInsert(local_table,prev_token->attribute.string->str,*data);
         }
         else
         {
@@ -554,7 +565,7 @@ int statement ()
 
 int blockBeginEOL_check ()
 {
-    if (act_token->type== TT_R_BRACKET)
+    if (act_token->type == TT_R_BRACKET)
     {
         GET_TOKEN;
     }
@@ -595,11 +606,10 @@ int IfblockEnd_check()
     }
 }
 
-int init ()
-{
-    Token* prev_token = malloc(sizeof(Token));
+int init (Token* left_id) {
+    Token *prev_token = initToken();
     GET_TOKEN;
-    if (act_token->type == TT_IDENTIFIER)
+    /*if (act_token->type == TT_IDENTIFIER)
     {
         prev_token = act_token;
         GET_TOKEN;
@@ -611,15 +621,14 @@ int init ()
             case TT_DIV:
                 PRINT_DEBUG("Arithmetical operator calling expression analyser !\n");
         }
+    }*/
+    if (act_token->type == TT_INTEGER) {
+        left_id->attribute.datatype = INT;
+        left_id->attribute.integer = act_token->attribute.integer;
     }
-    else
-    {
-        PRINT_DEBUG("error missing ID (func -> init)");
-        return ERR_PARSER;
+    if (act_token->type == TT_DECIMAL) {
+        left_id->attribute.datatype = FLOAT64;
+        left_id->attribute.decimal = act_token->attribute.decimal;
     }
-    return ERR_OK; //umela uprava
-}
-
-int value() {
-
+    return ERR_OK;
 }

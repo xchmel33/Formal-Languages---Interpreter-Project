@@ -24,9 +24,16 @@ typedef struct {
     char* identifier;
 }Param;
 
+typedef union {
+    int integer_value;
+    char* string_value;
+    float  float_value;
+}Value;
+
 typedef struct {
     DataType type; //func/var
     bool defined;
+    Value value; //na uchovanie hodnoty
     bool var; // true -> contains variable !
     DataType return_type;
     int number_params;

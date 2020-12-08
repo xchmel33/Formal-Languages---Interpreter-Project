@@ -51,6 +51,25 @@ bool cg_func_end(char* id){
     return true;
 }
 
+bool cg_func_call(char* id)
+{
+    ADD_CODE("CALL $");
+    ADD_CODE(id);
+    ADD_CODE("\n");
+
+    return true;
+}
+
+bool cg_stack_p_int(int i)
+{
+    ADD_CODE("PUSHS int@");
+    ADD_CODE_INT(i);
+    ADD_CODE("\n");
+    return true;
+}
+
+
+
 int code_to_stdout(){
     fprintf(stdout, "%s", code.str);
     strFree(&code);

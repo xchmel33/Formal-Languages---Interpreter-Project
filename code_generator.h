@@ -26,6 +26,10 @@ bool cg_main();
 bool cg_main_end();
 bool cg_func_start(char* id);
 bool cg_func_end(char* id);
+bool cg_func_call(char* id);
+
+bool cg_stack_p_int(int i);
+
 int code_to_stdout();
 
 #endif //IFJ_FINAL_CODE_GENERATOR_H
