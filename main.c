@@ -11,7 +11,8 @@
 
 int main() {
     FILE* f;
-    Token* token = malloc(sizeof(Token));
+    Token* token;
+    token = initToken();
     f = fopen("code.txt", "r");
     if (f == NULL)
     {
@@ -23,6 +24,7 @@ int main() {
     SetSource(f);
     set_active_token(token);
     set_active_table(pTable);
+
     int error = body();
     if (error != 0)
     {

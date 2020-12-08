@@ -4,6 +4,8 @@ set(CMAKE_DEPENDS_LANGUAGES
   )
 # The set of files for implicit dependencies of each language:
 set(CMAKE_DEPENDS_CHECK_C
+  "C:/CLionProjects/School/IFJ/code_generator.c" "C:/CLionProjects/School/IFJ/cmake-build-debug/CMakeFiles/IFJ_FINAL.dir/code_generator.c.obj"
+  "C:/CLionProjects/School/IFJ/dstring.c" "C:/CLionProjects/School/IFJ/cmake-build-debug/CMakeFiles/IFJ_FINAL.dir/dstring.c.obj"
   "C:/CLionProjects/School/IFJ/main.c" "C:/CLionProjects/School/IFJ/cmake-build-debug/CMakeFiles/IFJ_FINAL.dir/main.c.obj"
   "C:/CLionProjects/School/IFJ/parser.c" "C:/CLionProjects/School/IFJ/cmake-build-debug/CMakeFiles/IFJ_FINAL.dir/parser.c.obj"
   "C:/CLionProjects/School/IFJ/scanner.c" "C:/CLionProjects/School/IFJ/cmake-build-debug/CMakeFiles/IFJ_FINAL.dir/scanner.c.obj"

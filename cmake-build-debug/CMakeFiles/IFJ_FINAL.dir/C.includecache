@@ -6,6 +6,12 @@
 
 #IncludeRegexTransform: 
 
+C:/CLionProjects/School/IFJ/code_generator.h
+dstring.h
+C:/CLionProjects/School/IFJ/dstring.h
+
+C:/CLionProjects/School/IFJ/dstring.h
+
 C:/CLionProjects/School/IFJ/error.h
 
 C:/CLionProjects/School/IFJ/parser.c
@@ -21,10 +27,14 @@ error.h
 C:/CLionProjects/School/IFJ/error.h
 parser.h
 C:/CLionProjects/School/IFJ/parser.h
+dstring.h
+C:/CLionProjects/School/IFJ/dstring.h
 scanner.h
 C:/CLionProjects/School/IFJ/scanner.h
 symtable.h
 C:/CLionProjects/School/IFJ/symtable.h
+code_generator.h
+C:/CLionProjects/School/IFJ/code_generator.h
 
 C:/CLionProjects/School/IFJ/parser.h
 scanner.h
@@ -33,6 +43,8 @@ symtable.h
 C:/CLionProjects/School/IFJ/symtable.h
 
 C:/CLionProjects/School/IFJ/scanner.h
+dstring.h
+C:/CLionProjects/School/IFJ/dstring.h
 
 C:/CLionProjects/School/IFJ/symtable.h
 stdlib.h

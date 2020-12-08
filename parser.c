@@ -82,6 +82,7 @@ int body() {
     if (iteration_count == 1)
     {
         local_table = (HashTable*)malloc(sizeof(HashTable));
+        strInit(&code);
         htInit(local_table);
         base_cond(act_token);
         GET_TOKEN;
@@ -121,7 +122,6 @@ int def_func()
         TableItem func;
         if (strcmp(act_token->attribute.string->str,"main") == 0)
         {
-            strInit(&code);
             cg_main();
         }
         else
@@ -433,8 +433,14 @@ int statements()
     if (act_token->type == TT_BLOCK_END)
     {
         PRINT_DEBUG("Block end of func ! \n");
-        IfblockEnd_check();
-        body();
+        if (IfblockEnd_check() == 0 )
+        {
+            return ERR_OK;
+        }
+        else
+        {
+            return ERR_PARSER;
+        }
     }
 }
 int statement ()

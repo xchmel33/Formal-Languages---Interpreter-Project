@@ -1,4 +1,6 @@
 file(REMOVE_RECURSE
+  "CMakeFiles/IFJ_FINAL.dir/code_generator.c.obj"
+  "CMakeFiles/IFJ_FINAL.dir/dstring.c.obj"
   "CMakeFiles/IFJ_FINAL.dir/main.c.obj"
   "CMakeFiles/IFJ_FINAL.dir/parser.c.obj"
   "CMakeFiles/IFJ_FINAL.dir/scanner.c.obj"

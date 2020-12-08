@@ -137,12 +137,52 @@ CMakeFiles\IFJ_FINAL.dir\symtable.c.s: cmake_force
  /nologo $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) /FoNUL /FAs /FaCMakeFiles\IFJ_FINAL.dir\symtable.c.s /c C:\CLionProjects\School\IFJ\symtable.c
 <<
 
+CMakeFiles\IFJ_FINAL.dir\code_generator.c.obj: CMakeFiles\IFJ_FINAL.dir\flags.make
+CMakeFiles\IFJ_FINAL.dir\code_generator.c.obj: ..\code_generator.c
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=C:\CLionProjects\School\IFJ\cmake-build-debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building C object CMakeFiles/IFJ_FINAL.dir/code_generator.c.obj"
+	C:\PROGRA~2\MICROS~3\2019\COMMUN~1\VC\Tools\MSVC\1427~1.291\bin\Hostx86\x86\cl.exe @<<
+ /nologo $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) /FoCMakeFiles\IFJ_FINAL.dir\code_generator.c.obj /FdCMakeFiles\IFJ_FINAL.dir\ /FS -c C:\CLionProjects\School\IFJ\code_generator.c
+<<
+
+CMakeFiles\IFJ_FINAL.dir\code_generator.c.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/IFJ_FINAL.dir/code_generator.c.i"
+	C:\PROGRA~2\MICROS~3\2019\COMMUN~1\VC\Tools\MSVC\1427~1.291\bin\Hostx86\x86\cl.exe > CMakeFiles\IFJ_FINAL.dir\code_generator.c.i @<<
+ /nologo $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E C:\CLionProjects\School\IFJ\code_generator.c
+<<
+
+CMakeFiles\IFJ_FINAL.dir\code_generator.c.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/IFJ_FINAL.dir/code_generator.c.s"
+	C:\PROGRA~2\MICROS~3\2019\COMMUN~1\VC\Tools\MSVC\1427~1.291\bin\Hostx86\x86\cl.exe @<<
+ /nologo $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) /FoNUL /FAs /FaCMakeFiles\IFJ_FINAL.dir\code_generator.c.s /c C:\CLionProjects\School\IFJ\code_generator.c
+<<
+
+CMakeFiles\IFJ_FINAL.dir\dstring.c.obj: CMakeFiles\IFJ_FINAL.dir\flags.make
+CMakeFiles\IFJ_FINAL.dir\dstring.c.obj: ..\dstring.c
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=C:\CLionProjects\School\IFJ\cmake-build-debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Building C object CMakeFiles/IFJ_FINAL.dir/dstring.c.obj"
+	C:\PROGRA~2\MICROS~3\2019\COMMUN~1\VC\Tools\MSVC\1427~1.291\bin\Hostx86\x86\cl.exe @<<
+ /nologo $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) /FoCMakeFiles\IFJ_FINAL.dir\dstring.c.obj /FdCMakeFiles\IFJ_FINAL.dir\ /FS -c C:\CLionProjects\School\IFJ\dstring.c
+<<
+
+CMakeFiles\IFJ_FINAL.dir\dstring.c.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/IFJ_FINAL.dir/dstring.c.i"
+	C:\PROGRA~2\MICROS~3\2019\COMMUN~1\VC\Tools\MSVC\1427~1.291\bin\Hostx86\x86\cl.exe > CMakeFiles\IFJ_FINAL.dir\dstring.c.i @<<
+ /nologo $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E C:\CLionProjects\School\IFJ\dstring.c
+<<
+
+CMakeFiles\IFJ_FINAL.dir\dstring.c.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/IFJ_FINAL.dir/dstring.c.s"
+	C:\PROGRA~2\MICROS~3\2019\COMMUN~1\VC\Tools\MSVC\1427~1.291\bin\Hostx86\x86\cl.exe @<<
+ /nologo $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) /FoNUL /FAs /FaCMakeFiles\IFJ_FINAL.dir\dstring.c.s /c C:\CLionProjects\School\IFJ\dstring.c
+<<
+
 # Object files for target IFJ_FINAL
 IFJ_FINAL_OBJECTS = \
 "CMakeFiles\IFJ_FINAL.dir\main.c.obj" \
 "CMakeFiles\IFJ_FINAL.dir\scanner.c.obj" \
 "CMakeFiles\IFJ_FINAL.dir\parser.c.obj" \
-"CMakeFiles\IFJ_FINAL.dir\symtable.c.obj"
+"CMakeFiles\IFJ_FINAL.dir\symtable.c.obj" \
+"CMakeFiles\IFJ_FINAL.dir\code_generator.c.obj" \
+"CMakeFiles\IFJ_FINAL.dir\dstring.c.obj"
 
 # External object files for target IFJ_FINAL
 IFJ_FINAL_EXTERNAL_OBJECTS =
@@ -151,9 +191,11 @@ IFJ_FINAL.exe: CMakeFiles\IFJ_FINAL.dir\main.c.obj
 IFJ_FINAL.exe: CMakeFiles\IFJ_FINAL.dir\scanner.c.obj
 IFJ_FINAL.exe: CMakeFiles\IFJ_FINAL.dir\parser.c.obj
 IFJ_FINAL.exe: CMakeFiles\IFJ_FINAL.dir\symtable.c.obj
+IFJ_FINAL.exe: CMakeFiles\IFJ_FINAL.dir\code_generator.c.obj
+IFJ_FINAL.exe: CMakeFiles\IFJ_FINAL.dir\dstring.c.obj
 IFJ_FINAL.exe: CMakeFiles\IFJ_FINAL.dir\build.make
 IFJ_FINAL.exe: CMakeFiles\IFJ_FINAL.dir\objects1.rsp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=C:\CLionProjects\School\IFJ\cmake-build-debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Linking C executable IFJ_FINAL.exe"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=C:\CLionProjects\School\IFJ\cmake-build-debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "Linking C executable IFJ_FINAL.exe"
 	C:\JetBrains\Toolbox\apps\CLion\ch-0\202.7660.37\bin\cmake\win\bin\cmake.exe -E vs_link_exe --intdir=CMakeFiles\IFJ_FINAL.dir --rc=C:\PROGRA~2\WI3CF2~1\10\bin\100183~1.0\x86\rc.exe --mt=C:\PROGRA~2\WI3CF2~1\10\bin\100183~1.0\x86\mt.exe --manifests  -- C:\PROGRA~2\MICROS~3\2019\COMMUN~1\VC\Tools\MSVC\1427~1.291\bin\Hostx86\x86\link.exe /nologo @CMakeFiles\IFJ_FINAL.dir\objects1.rsp @<<
  /out:IFJ_FINAL.exe /implib:IFJ_FINAL.lib /pdb:C:\CLionProjects\School\IFJ\cmake-build-debug\IFJ_FINAL.pdb /version:0.0  /machine:X86 /debug /INCREMENTAL /subsystem:console  kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib 
 <<

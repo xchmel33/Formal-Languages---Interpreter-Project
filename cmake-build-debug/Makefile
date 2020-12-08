@@ -127,6 +127,60 @@ IFJ_FINAL\fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\IFJ_FINAL.dir\build.make /nologo -$(MAKEFLAGS) CMakeFiles\IFJ_FINAL.dir\build
 .PHONY : IFJ_FINAL\fast
 
+code_generator.obj: code_generator.c.obj
+
+.PHONY : code_generator.obj
+
+# target to build an object file
+code_generator.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\IFJ_FINAL.dir\build.make /nologo -$(MAKEFLAGS) CMakeFiles\IFJ_FINAL.dir\code_generator.c.obj
+.PHONY : code_generator.c.obj
+
+code_generator.i: code_generator.c.i
+
+.PHONY : code_generator.i
+
+# target to preprocess a source file
+code_generator.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\IFJ_FINAL.dir\build.make /nologo -$(MAKEFLAGS) CMakeFiles\IFJ_FINAL.dir\code_generator.c.i
+.PHONY : code_generator.c.i
+
+code_generator.s: code_generator.c.s
+
+.PHONY : code_generator.s
+
+# target to generate assembly for a file
+code_generator.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\IFJ_FINAL.dir\build.make /nologo -$(MAKEFLAGS) CMakeFiles\IFJ_FINAL.dir\code_generator.c.s
+.PHONY : code_generator.c.s
+
+dstring.obj: dstring.c.obj
+
+.PHONY : dstring.obj
+
+# target to build an object file
+dstring.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\IFJ_FINAL.dir\build.make /nologo -$(MAKEFLAGS) CMakeFiles\IFJ_FINAL.dir\dstring.c.obj
+.PHONY : dstring.c.obj
+
+dstring.i: dstring.c.i
+
+.PHONY : dstring.i
+
+# target to preprocess a source file
+dstring.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\IFJ_FINAL.dir\build.make /nologo -$(MAKEFLAGS) CMakeFiles\IFJ_FINAL.dir\dstring.c.i
+.PHONY : dstring.c.i
+
+dstring.s: dstring.c.s
+
+.PHONY : dstring.s
+
+# target to generate assembly for a file
+dstring.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\IFJ_FINAL.dir\build.make /nologo -$(MAKEFLAGS) CMakeFiles\IFJ_FINAL.dir\dstring.c.s
+.PHONY : dstring.c.s
+
 main.obj: main.c.obj
 
 .PHONY : main.obj
@@ -244,6 +298,12 @@ help:
 	@echo ... edit_cache
 	@echo ... rebuild_cache
 	@echo ... IFJ_FINAL
+	@echo ... code_generator.obj
+	@echo ... code_generator.i
+	@echo ... code_generator.s
+	@echo ... dstring.obj
+	@echo ... dstring.i
+	@echo ... dstring.s
 	@echo ... main.obj
 	@echo ... main.i
 	@echo ... main.s

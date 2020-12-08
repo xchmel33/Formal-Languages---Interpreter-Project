@@ -84,6 +84,18 @@
 				</MakeCommands>
 			</Target>
 		</Build>
+		<Unit filename="C:/CLionProjects/School/IFJ/code_generator.c">
+			<Option target="IFJ_FINAL"/>
+		</Unit>
+		<Unit filename="C:/CLionProjects/School/IFJ/code_generator.h">
+			<Option target="IFJ_FINAL"/>
+		</Unit>
+		<Unit filename="C:/CLionProjects/School/IFJ/dstring.c">
+			<Option target="IFJ_FINAL"/>
+		</Unit>
+		<Unit filename="C:/CLionProjects/School/IFJ/dstring.h">
+			<Option target="IFJ_FINAL"/>
+		</Unit>
 		<Unit filename="C:/CLionProjects/School/IFJ/error.h">
 			<Option target="IFJ_FINAL"/>
 		</Unit>
