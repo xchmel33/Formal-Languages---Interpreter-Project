@@ -20,7 +20,7 @@
         ADD_CODE(str); \
     } while (0)
 
-#define MAX_DIGITS 40
+#define MAX_DIGITS 30
 
 bool cg_main();
 bool cg_main_end();
@@ -29,6 +29,8 @@ bool cg_func_end(char* id);
 bool cg_func_call(char* id);
 
 bool cg_stack_p_int(int i);
+
+bool cg_var_declare(char* id);
 
 int code_to_stdout();
 
