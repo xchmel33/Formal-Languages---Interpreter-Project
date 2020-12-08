@@ -131,6 +131,16 @@ Token* checkRule(Psa_stack* Rulestack, HashTable *table) { //codegen required
     Token* result = initToken();
     TableItem* ID;
 
+    // E -> E+E
+    // E -> E-E
+    // E -> E*E
+    // E -> E/E
+    // E -> E<E
+    // E -> E>E
+    // E -> E==E
+    // E -> E>=E
+    // E -> E<=E
+    // E -> E!=E
     if (operand1->type == TT_EXPRESSION) {
         operator = s_pop(Rulestack);
         operand2 = s_pop(Rulestack);
@@ -139,56 +149,8 @@ Token* checkRule(Psa_stack* Rulestack, HashTable *table) { //codegen required
         if (getType(operand1) != getType(operand2)) {
             return EMPTY_TOKEN;
         }
-
-        result->type = TT_EXPRESSION;
-        switch (operator->type)
-        {
-        // E -> E+E
-        case(TT_ADD):
-            switch (getType(operand1))
-            {
-            case INT:
-                //cg ADD
-                break;
-            case FLOAT64:
-                //cg ADD
-                break;
-            case STRING:
-                //cg CONCAT
-                break;
-            }
-            return result;
-        // E -> E-E
-        case(TT_SUB):
-            //cg SUB
-            return result;
-        // E -> E*E
-        case(TT_MUL):
-            //cg MUL
-            return result;
-            break;
-        // E -> E/E
-        case(TT_DIV):
-            break;
-        // E -> E<E
-        case(TT_LESS_THAN):
-            break;
-        // E -> E>E
-        case(TT_MORE_THAN):
-            break;
-        // E -> E==E
-        case(TT_EQUAL):
-            break;
-        // E -> E>=E
-        case(TT_LESS_OR_EQUAL):
-            break;
-        // E -> E<=E
-        case(TT_MORE_OR_EQUAL):
-            break;
-        // E -> E!=E
-        case(TT_NOT_EQUAL):
-            break;
-        }
+        result = cg_count();
+        return result;
     }
     // E -> i
     else if (operand1->type == TT_IDENTIFIER){ 
