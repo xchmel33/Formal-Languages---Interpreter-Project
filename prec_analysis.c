@@ -124,11 +124,27 @@ DataType getType(Token *token) {
     }
 }
 
+bool cg_stack_p(Token* token) {
+    
+    if (token->type == TT_STRING) {
+        cg_stack_push_string(token->attribute.string->str);
+    }
+    else if (token->type == TT_INTEGER) {
+        cg_stack_push_string(token->attribute.integer);
+    }
+    else if (token->type == TT_IDENTIFIER) {
+        cg_stack_push_string(token->attribute.string->str);
+    }
+    else if (token->type == TT_DECIMAL) {
+        cg_stack_push_double(token->attribute.decimal);
+    }
+    return true;
+}
+
 Token* checkRule(Psa_stack* Rulestack, HashTable *table) { //codegen required
     
     Token* operand1 = s_pop(Rulestack);
     Token* operator,* operand2;
-    Token* result = initToken();
     TableItem* ID;
 
     // E -> E+E
@@ -149,8 +165,14 @@ Token* checkRule(Psa_stack* Rulestack, HashTable *table) { //codegen required
         if (getType(operand1) != getType(operand2)) {
             return EMPTY_TOKEN;
         }
-        result = cg_count();
-        return result;
+
+        //zero division
+        if (operator->type == TT_DIV && operand2->attribute.integer == 0 || operand2->attribute.decimal == 0) {
+            return EMPTY_TOKEN;
+        }
+         
+
+        return operand1;
     }
     // E -> i
     else if (operand1->type == TT_IDENTIFIER){ 
