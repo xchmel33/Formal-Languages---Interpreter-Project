@@ -46,11 +46,7 @@ void set_active_table(HashTable* table)
 
 int base_cond(Token* token)
 {
-    if (token->type == TT_EOF)
-    {
-        PRINT_DEBUG("End of program \n");
-        return 0;
-    }
+
     if (token->attribute.keyword == PACKAGE)
     {
         GetToken(token);
@@ -59,11 +55,15 @@ int base_cond(Token* token)
             PRINT_DEBUG("Package main ok \n ");
             return ERR_OK; //Chybaju err stavy
         }
-
+        if (token->type == TT_EOF)
+        {
+            PRINT_DEBUG("End of program \n");
+            return 0;
+        }
     }
     else
     {
-        return 3;
+        return ERR_PARSER;
     }
 }
 
@@ -433,6 +433,7 @@ int statements()
     if (act_token->type == TT_BLOCK_END)
     {
         PRINT_DEBUG("Block end of func ! \n");
+        IfblockEnd_check();
         body();
     }
 }
@@ -497,14 +498,14 @@ int statement ()
             PRINT_DEBUG("Volanie definovanej funkcie ! \n ");
         }
 
+        prev_token = act_token;
+        size_t len = strlen(prev_token->attribute.string->str);
+        char* name_of_id = malloc(sizeof(len));
+        strcpy(name_of_id,prev_token->attribute.string->str);
 
         if (htSearch(local_table,act_token->attribute.string->str) == NULL)
         {
             //nebol este inicializovany => next token musi byt :=
-            prev_token = act_token;
-            size_t len = strlen(prev_token->attribute.string->str);
-            char* name_of_id = malloc(sizeof(len));
-            strcpy(name_of_id,prev_token->attribute.string->str);
             GET_TOKEN;
             if (act_token->type != TT_INIT)
             {
@@ -537,6 +538,8 @@ int statement ()
         else
         {
             PRINT_DEBUG("ID sa uz nachadza v localhash table ! \n");
+
+
         }
     }
     if (act_token->type == TT_COMMA) {
@@ -544,21 +547,19 @@ int statement ()
         int id_counter = 0;
         PRINT_DEBUG("ID, ID, IDn ... \n");
         while (1) {
-            if (act_token->type == TT_ASSIGN || act_token->type == TT_INIT)
-            {
+            if (act_token->type == TT_ASSIGN || act_token->type == TT_INIT) {
                 statements();
             }
             GET_TOKEN;
-            if (act_token->type != TT_IDENTIFIER ) {
+            if (act_token->type != TT_IDENTIFIER) {
                 return ERR_PARSER;
             }
             data->var = true;
-            htInsert(local_table,act_token->attribute.string->str,*data);
+            htInsert(local_table, act_token->attribute.string->str, *data);
             GET_TOKEN;
             id_counter++;
         }
     }
-
     return ERR_OK;
 }
 
@@ -632,3 +633,17 @@ int init (Token* left_id) {
     }
     return ERR_OK;
 }
+
+int assign(Token* left_id)
+{
+    
+}
+
+
+
+
+
+
+
+
+
