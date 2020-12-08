@@ -13,10 +13,11 @@
 #include "code_generator.h"
 
 #define T_S (7)
-#define Error (-1)
+#define EXP_OK (0)
 
 Psa_stack* ActiveStack;
 Token* EMPTY_TOKEN;
+HashTable* table;
 
 const char prec_table[T_S][T_S] = {
     //      *			  +-   */  <!=   (	   )     i	  $ *//
@@ -28,11 +29,12 @@ const char prec_table[T_S][T_S] = {
     /*	    i	    */ { '>', '>', '>', ' ',  '>',  ' ', '>'},
     /*	    $	    */ { '<', '<', '<', '<',  ' ',  '<', ' '},
 };
-void ActivateResources() {
+void ActivateResources(HashTable* ptable) {
     ActiveStack = s_init();
     EMPTY_TOKEN = initToken();
     strAddChar(EMPTY_TOKEN->attribute.string, '$');
     EMPTY_TOKEN->type = TT_EMPTY;
+    table = ptable;
 }
 
 void FreeResources() {
@@ -110,7 +112,7 @@ Token* topTerm(Psa_stack* stack) {
         stack->active = stack->active->lptr;
     }
 }
-DataType getType(Token *token) {
+Datatype getType(Token *token) {
 
     
     if (token->attribute.integer != UNDEFINED_TOKEN_ATTRIBUTE) {
@@ -118,6 +120,9 @@ DataType getType(Token *token) {
     }
     else if (token->attribute.decimal = UNDEFINED_TOKEN_ATTRIBUTE) {
         return FLOAT64;
+    }
+    else if (htSearch(table, token->attribute.string->str) != NULL) {
+        return IDENTIFIER;
     }
     else {
         return STRING;
@@ -141,11 +146,12 @@ bool cg_stack_p(Token* token) {
     return true;
 }
 
-Token* checkRule(Psa_stack* Rulestack, HashTable *table) { //codegen required
+int checkRule(Psa_stack* Rulestack,Token* result_type) { //codegen required
     
     Token* operand1 = s_pop(Rulestack);
     Token* operator,* operand2;
     TableItem* ID;
+    result_type = NULL;
 
     // E -> E+E
     // E -> E-E
@@ -162,28 +168,130 @@ Token* checkRule(Psa_stack* Rulestack, HashTable *table) { //codegen required
         operand2 = s_pop(Rulestack);
 
         //check matching types
-        if (getType(operand1) != getType(operand2)) {
-            return EMPTY_TOKEN;
+        Datatype op1_type = getType(operand1);
+        Datatype op2_type = getType(operand2);
+        switch (op1_type)
+        {
+        case INT:
+            if (op2_type == INT) {
+                break;
+            }
+            else if (op2_type == STRING || op2_type == FLOAT64) {
+                return ERR_MATH_TYPE;
+            }
+            else if (op2_type == IDENTIFIER) {
+                if (htSearch(table, operand2->attribute.string->str)->data.type == T_INT) {
+                    break;
+                }
+                else {
+                    return ERR_MATH_TYPE;
+                }
+            }
+        case FLOAT64:
+            if (op2_type == STRING || op2_type == INT) {
+                return ERR_MATH_TYPE;
+            }
+            else if (op2_type == FLOAT64) {
+                break;
+            }
+            else if (op2_type == IDENTIFIER) {
+                if (htSearch(table, operand2->attribute.string->str)->data.type == T_DOUBLE) {
+                    break;
+                }
+                else {
+                    return ERR_MATH_TYPE;
+                }
+            }
+        case STRING:
+            if (op2_type == INT || op2_type == FLOAT64) {
+                return ERR_MATH_TYPE;
+            }
+            else if (op2_type == STRING) {
+                break;
+            }
+            else if (op2_type == IDENTIFIER) {
+                if (htSearch(table, operand2->attribute.string->str)->data.type == T_STRING) {
+                    break;
+                }
+                else {
+                    return ERR_MATH_TYPE;
+                }
+            }
+        case IDENTIFIER:
+            switch (htSearch(table, operand1->attribute.string->str)->data.type)
+            {
+            case T_INT:
+                if (op2_type == INT) {
+                    break;
+                }
+                else if (op2_type == STRING || op2_type == FLOAT64) {
+                    return ERR_MATH_TYPE;
+                }
+                else if (op2_type == IDENTIFIER) {
+                    if (htSearch(table, operand2->attribute.string->str)->data.type == T_INT) {
+                        break;
+                    }
+                    else {
+                        return ERR_MATH_TYPE;
+                    }
+                }
+            case T_DOUBLE:
+                if (op2_type == STRING || op2_type == INT) {
+                    return ERR_MATH_TYPE;
+                }
+                else if (op2_type == FLOAT64) {
+                    break;
+                }
+                else if (op2_type == IDENTIFIER) {
+                    if (htSearch(table, operand2->attribute.string->str)->data.type == T_DOUBLE) {
+                        break;
+                    }
+                    else {
+                        return ERR_MATH_TYPE;
+                    }
+                }
+            case T_STRING:
+                if (op2_type == INT || op2_type == FLOAT64) {
+                    return ERR_MATH_TYPE;
+                }
+                else if (op2_type == STRING) {
+                    break;
+                }
+                else if (op2_type == IDENTIFIER) {
+                    if (htSearch(table, operand2->attribute.string->str)->data.type == T_STRING) {
+                        break;
+                    }
+                    else {
+                        return ERR_MATH_TYPE;
+                    }
+                }
+            }
         }
 
         //zero division
         if (operator->type == TT_DIV && operand2->attribute.integer == 0 || operand2->attribute.decimal == 0) {
-            return EMPTY_TOKEN;
+            return ERR_DIV_ZERO;
         }
-         
 
-        return operand1;
+        //operation
+        
+         
+        //return token with operation datatype
+        
+        result_type = operand1;
+        return EXP_OK;
     }
     // E -> i
     else if (operand1->type == TT_IDENTIFIER){ 
         ID = htSearch(table, operand1->attribute.string->str);
         if (ID == NULL) {
-            return EMPTY_TOKEN;
+            return ERR_DEF;
         }
         else {
             if (ID->data.var) {
                 operand1->type = TT_EXPRESSION;
-                return operand1;
+                result_type = operand1;
+                return EXP_OK;
             }
             else {
                 //function call
@@ -193,33 +301,33 @@ Token* checkRule(Psa_stack* Rulestack, HashTable *table) { //codegen required
     }
     else if (operand1->type >= TT_INTEGER && operand1->type <= TT_STRING) {
         operand1->type = TT_EXPRESSION;
-        return operand1;
+        result_type = operand1;
+        return EXP_OK;
     }
 
     // E -> (E)
     else if (operand1->type == TT_L_BRACKET) {
         operand1 = s_pop(Rulestack);
         if (s_pop(Rulestack)->type == TT_R_BRACKET && operand1->type == TT_EXPRESSION) {
-            return operand1;
+            result_type = operand1;
+            return EXP_OK;
         }
     }
-
-    //unknown rule
-    return EMPTY_TOKEN;
+    else {
+        return ERR_INTERNAL;
+    }
 }
 
 
-int expression(HashTable *table, Token* prev_token, Token* act_token) {
-
-    //moze ist do main
-    ActivateResources();
+int expression(Token* prev_token, Token* act_token) {
 
     Token* A, * B, * Y, *S;
     Psa_stack* RuleStack;
     B = prev_token;
+    int pom;
 
     if (s_push(ActiveStack, EMPTY_TOKEN) != ERR_OK) {
-        return Error;
+        return ERR_INTERNAL;
     }
 
     do {
@@ -254,17 +362,13 @@ int expression(HashTable *table, Token* prev_token, Token* act_token) {
                 }
                 //s_push(RuleStack, Y);
                 s_print(RuleStack, "RuleStack");
-                s_push(ActiveStack, checkRule(RuleStack,table));
-                if (ActiveStack->top->E.type == TT_EMPTY) {
-                    printf("Unknown rule -> rules are WIP\n");
-                    return Error;
-                }
+                pom = checkRule(RuleStack, Y);
+                if (pom != EXP_OK) return pom;
+                s_push(ActiveStack, Y);
                 s_destroy(RuleStack);
                 break;
             case ' ':
-                printf("Error");
-                return Error;
-                break;
+                return ERR_PARSER;
             }
         }
         s_print(ActiveStack, "ActiveStack");
