@@ -241,7 +241,7 @@ int params(TableItem* func)
                                 data->type = T_INT;
                                 break;
                             case P_FLOAT64:
-                                data->type = T_DOUBLE;
+                                data->type = T_FLOAT64;
                                 break;
                             case P_STRING:
                                 data->type = T_STRING;
@@ -457,43 +457,43 @@ int statement ()
         }
         else
         {
-            temporary_ht = htSearch(act_table,act_token->attribute.string->str);
+            temporary_ht = htSearch(local_table,act_token->attribute.string->str);
             if(temporary_ht != NULL)
             {
-                PRINT_DEBUG("IF -> FUNC found in global hash table \n");
-                GET_TOKEN; //overime ci sedi pocet parametrov
-                if (act_token->type == TT_L_BRACKET)
-                {
-                    //ok zatvorka sedi
-                    GET_TOKEN;
-                    int counter = 0;
-                    while (act_token->type == TT_IDENTIFIER)
-                    {
-                        counter++;
-                        GET_TOKEN;
-                        if (act_token->type == TT_R_BRACKET)
-                        {
-                            break;
-                        }
-                        if (act_token->type != TT_COMMA)
-                        {
-                            return ERR_PARSER;
-                        }
-                        GET_TOKEN;
-                    }
+                PRINT_DEBUG("IF ID found in local hash table \n");
 
-                    if (temporary_ht->data.number_params != counter)
-                    {
-                        PRINT_DEBUG("Nesedi pocet parametrov ! \n ");
-                        return ERR_FUNC;
-                    }
+                //check if datatypes are same
 
+                switch (temporary_ht->data.type) {
+
+                    case T_INT:
+                        if (act_token->type != TT_INTEGER)
+                        {
+                            return ERR_DEF_TYPE;
+                        }
+                        break;
+                    case T_FLOAT64:
+
+                        if (act_token->type != TT_DECIMAL)
+                        {
+                            return ERR_DEF_TYPE;
+                        }
+                        break;
+                    case T_STRING:
+                        if (act_token->type != TT_STRING)
+                        {
+                            return ERR_DEF_TYPE;
+                        }
+                        break;
+                    default:
+                        return ERR_PARSER;
                 }
+
                 return ERR_OK; // zatial work in progress
             }
             else
             {
-                PRINT_DEBUG("IF -> FUNC not found in global hash table \n");
+                PRINT_DEBUG("IF ID not found in local hash table \n");
             }
         }
     }
@@ -517,10 +517,10 @@ int statement ()
             {
                 return ERR_DEF;
             }
-            else {
+            else
+            {
                 PRINT_DEBUG("INIT \n");
                 init(prev_token);
-
 
                 data->var = true;
                 switch (prev_token->attribute.datatype) {
@@ -530,13 +530,15 @@ int statement ()
                         data->value.integer_value = prev_token->attribute.integer;
                         break;
                     case FLOAT64:
-                        data->type = T_DOUBLE;
+                        data->type = T_FLOAT64;
                         data->value.float_value = prev_token->attribute.decimal;
                         break;
                     case STRING:
                         data->type = T_STRING;
                         strcpy(data->value.string_value, prev_token->attribute.string->str);
                         break;
+                    default:
+                        return ERR_PARSER;
                 }
                 htInsert(local_table, name_of_id, *data);
             }
@@ -642,14 +644,6 @@ int init (Token* left_id) {
 
 int assign(Token* left_id)
 {
-    
+
 }
-
-
-
-
-
-
-
-
 

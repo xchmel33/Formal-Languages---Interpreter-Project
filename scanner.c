@@ -22,11 +22,11 @@ void procces_id_key_data(dstring *S_Attribute, Token* token) {
         token->type = TT_DATATYPE;
         token->attribute.datatype = INT;
     }
-    else if (!strcmp(S_Attribute, "float64")) {
+    else if (!strcmp(S_Attribute->str, "float64")) {
         token->type = TT_DATATYPE;
         token->attribute.datatype = FLOAT64;
     }
-    else if (!strcmp(S_Attribute, "string")) {
+    else if (!strcmp(S_Attribute->str, "string")) {
         token->type = TT_DATATYPE;
         token->attribute.datatype = STRING;
     }

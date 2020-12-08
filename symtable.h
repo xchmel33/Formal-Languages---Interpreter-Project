@@ -8,7 +8,7 @@
 typedef enum {
     T_FUNC,
     T_INT,
-    T_DOUBLE,
+    T_FLOAT64,
     T_STRING,
     T_NONE,
 }DataType;

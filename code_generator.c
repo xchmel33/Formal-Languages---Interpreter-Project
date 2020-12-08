@@ -27,7 +27,7 @@ bool cg_code_header()
     //ADD_INSTR("DEFVAR GF@$$typ_op_2");
     //ADD_INSTR("DEFVAR GF@$$expr_result_type");
 
-    ADD_INST("JUMP $$main");
+    ADD_INSTR("JUMP $$main");
 
     return true;
 }
@@ -210,7 +210,7 @@ bool cg_def_val_var(DataType value)
     case T_INT:
         ADD_CODE("int@0");
         break;
-    case T_DOUBLE:
+    case T_FLOAT64:
         ADD_CODE("float@0");
         break;
     case T_STRING:
