@@ -58,7 +58,7 @@ typedef struct {
     Keyword keyword;
     Datatype datatype;
     int integer;
-    double decimal;
+    float decimal;
     dstring* string;
 }TokenAttribute;
 
@@ -74,7 +74,6 @@ typedef enum {
     SS_NUMBER,
     SS_NUMBER_DECIMAL,
     SS_NUMBER_EXPONENT,
-    SS_NUMBER_EXPONENT_SIGN,
     SS_BACKSLASH,
     SS_LINE_COMMENTARY,
     SS_BLOCK_COMMENTARY,
