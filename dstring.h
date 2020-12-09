@@ -1,3 +1,9 @@
+/**
+ * Implementation of imperative language IFJ2020 compiler
+ * @file dstring.h
+ * @author Tomáš Čechvala (xcechv03)
+ * @brief Dynamic string implementation
+ */
 
 #ifndef IFJ_FINAL_DSTRING_H
 #define IFJ_FINAL_DSTRING_H
@@ -7,9 +13,9 @@
 
 typedef struct
 {
-    char* str;		// misto pro dany retezec ukonceny znakem '\0'
-    int length;		// skutecna delka retezce
-    int allocSize;	// velikost alokovane pameti
+    char* str;		// string ended by '\0' byte
+    int length;		// length of dynamic string
+    int allocSize;	// amount of chars allocated for dynamic string
 } dstring;
 
 
