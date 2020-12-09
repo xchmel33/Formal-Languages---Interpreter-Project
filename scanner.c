@@ -6,6 +6,7 @@
 
 #include "scanner.h"
 #include "dstring.h"
+#include "error.h"
 
 FILE* source;
 
@@ -414,11 +415,11 @@ int GetToken(Token* token) {
                 }
                 break;
             case(SS_ERROR):
-                return 1;
+                return ERR_SCANNER;
                 break;
         }
     }
-    return token->type == TT_EMPTY ? -1 : 0;
+    return token->type == TT_EMPTY ? ERR_SCANNER : 0;
 
 }
 
