@@ -273,3 +273,34 @@ bool cg_var_to_any_val(char* id, Token token)
     return true;
 }
 
+bool cg_print_id(TableItem* data){
+    ADD_INSTR("\n Print id");
+    ADD_CODE("WRITE");
+    ADD_CODE(" ");
+    ADD_CODE(data->key);
+    ADD_CODE("\n");
+}
+
+bool cg_print_value(char* val, DataType type)
+{
+    ADD_INSTR("\n Print value");
+
+    switch (type) {
+
+        case T_INT:
+            ADD_CODE("WRITE int@");
+            ADD_CODE(val);
+            return true;
+
+        case T_FLOAT64:
+            ADD_CODE("WRITE float@");
+            ADD_CODE(val);
+            return true;
+        case T_STRING:
+            ADD_CODE("WRITE string@");
+            return true;
+
+        default:
+            return false;
+    }
+}

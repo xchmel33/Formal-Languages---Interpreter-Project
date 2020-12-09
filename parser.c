@@ -7,6 +7,7 @@
 
 #include "error.h"
 #include "parser.h"
+#include "prec_analysis.h"
 #include "dstring.h"
 #include "scanner.h"
 #include "symtable.h"
@@ -237,17 +238,17 @@ int params(TableItem* func)
                     {
                         switch (data->param[param].type) {
 
-                            case P_INT:
-                                data->type = T_INT;
+                            case INT:
+                                data->param->type = INT;
                                 break;
-                            case P_FLOAT64:
-                                data->type = T_FLOAT64;
+                            case FLOAT64:
+                                data->param->type = FLOAT64;
                                 break;
-                            case P_STRING:
-                                data->type = T_STRING;
+                            case STRING:
+                                data->param->type = STRING;
                                 break;
                             default:
-                                data->type = T_NONE;
+                                return ERR_DEF_TYPE;
                                 break;
                         }
                         data->var = true;
@@ -499,7 +500,7 @@ int statement ()
     }
     if (act_token->type == TT_IDENTIFIER)
     {
-        if (htSearch(act_table,act_token->attribute.string->str) != NULL)
+        if (htSearch(act_table,act_token->attribute.string->str) != NULL && act_token->attribute.datatype == T_FUNC)
         {
             PRINT_DEBUG("Volanie definovanej funkcie ! \n ");
         }
@@ -546,6 +547,15 @@ int statement ()
         else
         {
             PRINT_DEBUG("ID sa uz nachadza v localhash table ! \n");
+            prev_token = act_token;
+            GET_TOKEN;
+            if (act_token->type == TT_ASSIGN)
+            {
+                if (assign(prev_token) != 0)
+                {
+                    return ERR_PARSER;
+                }
+            }
 
 
         }
@@ -644,6 +654,123 @@ int init (Token* left_id) {
 
 int assign(Token* left_id)
 {
+    Token *prev_token;
+    if (act_token->type == TT_ASSIGN)
+    {
+        GET_TOKEN;
+    }
+    if (act_token->type == TT_IDENTIFIER)
+    {
+        if (act_token->attribute.datatype == T_FUNC)
+        {
+            PRINT_DEBUG("Assign func \n");
+        }
+        prev_token = act_token;
+        GET_TOKEN;
 
+        // operator ID
+
+        switch (act_token->type) {
+
+            case TT_ADD:
+                GET_TOKEN;
+                if (act_token->type == TT_IDENTIFIER)
+                {
+                    if (checkTypes(prev_token,act_token) != 0)
+                        return ERR_DEF_TYPE;
+                }
+                else
+                {
+                    return  ERR_PARSER;
+                }
+                break;
+            case TT_SUB:
+
+                break;
+            case TT_MUL:
+
+                break;
+            case TT_DIV:
+
+                break;
+            default:
+                break;
+        }
+
+
+
+    }
 }
+
+int terms ()
+{
+    PRINT_DEBUG("Func Terms printing \n");
+    GET_TOKEN;
+
+    switch (act_token->type) {
+
+        case TT_IDENTIFIER:
+            TableItem* data;
+            data = htSearch(act_table,act_token->attribute.string->str);
+            if (data != NULL)
+            {
+                if (cg_print_id(data) == false)
+                {
+                    return ERR_INTERNAL;
+                }
+            }
+            else if ((data = htSearch(local_table,act_token->attribute.string->str) ) != NULL)
+            {
+                if (cg_print_id(data) == false)
+                {
+                    return ERR_INTERNAL;
+                }
+            }
+            else
+            {
+                return ERR_INTERNAL;
+            }
+            break;
+        case TT_INTEGER:
+        {
+            char pom[50];
+            sprintf(pom, "%i", act_token->attribute.integer); //nalepenie cisla na sting resp. konverzia int na string
+            if (cg_print_value(pom, T_INT) == false) {
+                return ERR_INTERNAL;
+            }
+            break;
+        }
+        case TT_DECIMAL:
+        {
+            char pom[50];
+            sprintf(pom, "%f", act_token->attribute.decimal); //nalepenie cisla na sting resp. konverzia int na string
+            if (cg_print_value(pom, T_FLOAT64) == false) {
+                return ERR_INTERNAL;
+            }
+            break;
+        }
+        case TT_STRING:
+
+            break;
+
+        default:
+            return ERR_PARSER;
+    }
+
+    GET_TOKEN;
+
+    switch (act_token->type) {
+        case TT_R_BRACKET:
+            ADD_CODE("\n");
+            return ERR_OK;
+        case TT_COMMA:
+            ADD_CODE(" ");
+            return terms();
+        default:
+            return ERR_PARSER;
+    }
+}
+
+
+
 

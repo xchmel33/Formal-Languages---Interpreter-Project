@@ -3,6 +3,8 @@ file(REMOVE_RECURSE
   "CMakeFiles/IFJ_FINAL.dir/dstring.c.obj"
   "CMakeFiles/IFJ_FINAL.dir/main.c.obj"
   "CMakeFiles/IFJ_FINAL.dir/parser.c.obj"
+  "CMakeFiles/IFJ_FINAL.dir/prec_analysis.c.obj"
+  "CMakeFiles/IFJ_FINAL.dir/psa_stack.c.obj"
   "CMakeFiles/IFJ_FINAL.dir/scanner.c.obj"
   "CMakeFiles/IFJ_FINAL.dir/symtable.c.obj"
   "IFJ_FINAL.exe"

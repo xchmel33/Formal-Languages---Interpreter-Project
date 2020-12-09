@@ -25,5 +25,6 @@ int blockBeginEOL_check ();
 int IfblockEnd_check();
 
 int init ();
+int assign(Token* left_id);
 int value();
 #endif //IFJ_FINAL_PARSER_H

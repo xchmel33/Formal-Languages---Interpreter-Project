@@ -26,12 +26,31 @@ CMakeFiles/IFJ_FINAL.dir/parser.c.obj
  C:/CLionProjects/School/IFJ/error.h
  C:/CLionProjects/School/IFJ/parser.c
  C:/CLionProjects/School/IFJ/parser.h
+ C:/CLionProjects/School/IFJ/prec_analysis.h
+ C:/CLionProjects/School/IFJ/psa_stack.h
  C:/CLionProjects/School/IFJ/scanner.h
  C:/CLionProjects/School/IFJ/symtable.h
+CMakeFiles/IFJ_FINAL.dir/prec_analysis.c.obj
+ C:/CLionProjects/School/IFJ/code_generator.h
+ C:/CLionProjects/School/IFJ/dstring.h
+ C:/CLionProjects/School/IFJ/error.h
+ C:/CLionProjects/School/IFJ/parser.h
+ C:/CLionProjects/School/IFJ/prec_analysis.c
+ C:/CLionProjects/School/IFJ/psa_stack.h
+ C:/CLionProjects/School/IFJ/scanner.h
+ C:/CLionProjects/School/IFJ/symtable.h
+CMakeFiles/IFJ_FINAL.dir/psa_stack.c.obj
+ C:/CLionProjects/School/IFJ/dstring.h
+ C:/CLionProjects/School/IFJ/error.h
+ C:/CLionProjects/School/IFJ/psa_stack.c
+ C:/CLionProjects/School/IFJ/psa_stack.h
+ C:/CLionProjects/School/IFJ/scanner.h
 CMakeFiles/IFJ_FINAL.dir/scanner.c.obj
  C:/CLionProjects/School/IFJ/dstring.h
  C:/CLionProjects/School/IFJ/scanner.c
  C:/CLionProjects/School/IFJ/scanner.h
 CMakeFiles/IFJ_FINAL.dir/symtable.c.obj
+ C:/CLionProjects/School/IFJ/dstring.h
+ C:/CLionProjects/School/IFJ/scanner.h
  C:/CLionProjects/School/IFJ/symtable.c
  C:/CLionProjects/School/IFJ/symtable.h

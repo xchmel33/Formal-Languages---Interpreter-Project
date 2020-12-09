@@ -16,6 +16,7 @@ typedef enum {
     INT,
     FLOAT64,
     STRING,
+    IDENTIFIER,
 }Datatype;
 
 typedef enum {

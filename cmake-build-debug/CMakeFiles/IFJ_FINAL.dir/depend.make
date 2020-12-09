@@ -25,13 +25,32 @@ CMakeFiles\IFJ_FINAL.dir\parser.c.obj: ..\dstring.h
 CMakeFiles\IFJ_FINAL.dir\parser.c.obj: ..\error.h
 CMakeFiles\IFJ_FINAL.dir\parser.c.obj: ..\parser.c
 CMakeFiles\IFJ_FINAL.dir\parser.c.obj: ..\parser.h
+CMakeFiles\IFJ_FINAL.dir\parser.c.obj: ..\prec_analysis.h
+CMakeFiles\IFJ_FINAL.dir\parser.c.obj: ..\psa_stack.h
 CMakeFiles\IFJ_FINAL.dir\parser.c.obj: ..\scanner.h
 CMakeFiles\IFJ_FINAL.dir\parser.c.obj: ..\symtable.h
+
+CMakeFiles\IFJ_FINAL.dir\prec_analysis.c.obj: ..\code_generator.h
+CMakeFiles\IFJ_FINAL.dir\prec_analysis.c.obj: ..\dstring.h
+CMakeFiles\IFJ_FINAL.dir\prec_analysis.c.obj: ..\error.h
+CMakeFiles\IFJ_FINAL.dir\prec_analysis.c.obj: ..\parser.h
+CMakeFiles\IFJ_FINAL.dir\prec_analysis.c.obj: ..\prec_analysis.c
+CMakeFiles\IFJ_FINAL.dir\prec_analysis.c.obj: ..\psa_stack.h
+CMakeFiles\IFJ_FINAL.dir\prec_analysis.c.obj: ..\scanner.h
+CMakeFiles\IFJ_FINAL.dir\prec_analysis.c.obj: ..\symtable.h
+
+CMakeFiles\IFJ_FINAL.dir\psa_stack.c.obj: ..\dstring.h
+CMakeFiles\IFJ_FINAL.dir\psa_stack.c.obj: ..\error.h
+CMakeFiles\IFJ_FINAL.dir\psa_stack.c.obj: ..\psa_stack.c
+CMakeFiles\IFJ_FINAL.dir\psa_stack.c.obj: ..\psa_stack.h
+CMakeFiles\IFJ_FINAL.dir\psa_stack.c.obj: ..\scanner.h
 
 CMakeFiles\IFJ_FINAL.dir\scanner.c.obj: ..\dstring.h
 CMakeFiles\IFJ_FINAL.dir\scanner.c.obj: ..\scanner.c
 CMakeFiles\IFJ_FINAL.dir\scanner.c.obj: ..\scanner.h
 
+CMakeFiles\IFJ_FINAL.dir\symtable.c.obj: ..\dstring.h
+CMakeFiles\IFJ_FINAL.dir\symtable.c.obj: ..\scanner.h
 CMakeFiles\IFJ_FINAL.dir\symtable.c.obj: ..\symtable.c
 CMakeFiles\IFJ_FINAL.dir\symtable.c.obj: ..\symtable.h
 

@@ -108,6 +108,18 @@
 		<Unit filename="C:/CLionProjects/School/IFJ/parser.h">
 			<Option target="IFJ_FINAL"/>
 		</Unit>
+		<Unit filename="C:/CLionProjects/School/IFJ/prec_analysis.c">
+			<Option target="IFJ_FINAL"/>
+		</Unit>
+		<Unit filename="C:/CLionProjects/School/IFJ/prec_analysis.h">
+			<Option target="IFJ_FINAL"/>
+		</Unit>
+		<Unit filename="C:/CLionProjects/School/IFJ/psa_stack.c">
+			<Option target="IFJ_FINAL"/>
+		</Unit>
+		<Unit filename="C:/CLionProjects/School/IFJ/psa_stack.h">
+			<Option target="IFJ_FINAL"/>
+		</Unit>
 		<Unit filename="C:/CLionProjects/School/IFJ/scanner.c">
 			<Option target="IFJ_FINAL"/>
 		</Unit>

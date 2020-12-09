@@ -46,7 +46,8 @@ bool cg_def_val_var(DataType value);
 bool cg_var_to_default_val(char* id, DataType value);
 bool cg_var_val(Token token);
 bool cg_var_to_any_val(char* id, Token token);
-
+bool cg_print_id(TableItem* data);
+bool cg_print_value(char* val, DataType type);
 int code_to_stdout();
 
 #endif //IFJ_FINAL_CODE_GENERATOR_H

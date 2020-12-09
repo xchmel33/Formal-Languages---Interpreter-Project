@@ -8,6 +8,8 @@ set(CMAKE_DEPENDS_CHECK_C
   "C:/CLionProjects/School/IFJ/dstring.c" "C:/CLionProjects/School/IFJ/cmake-build-debug/CMakeFiles/IFJ_FINAL.dir/dstring.c.obj"
   "C:/CLionProjects/School/IFJ/main.c" "C:/CLionProjects/School/IFJ/cmake-build-debug/CMakeFiles/IFJ_FINAL.dir/main.c.obj"
   "C:/CLionProjects/School/IFJ/parser.c" "C:/CLionProjects/School/IFJ/cmake-build-debug/CMakeFiles/IFJ_FINAL.dir/parser.c.obj"
+  "C:/CLionProjects/School/IFJ/prec_analysis.c" "C:/CLionProjects/School/IFJ/cmake-build-debug/CMakeFiles/IFJ_FINAL.dir/prec_analysis.c.obj"
+  "C:/CLionProjects/School/IFJ/psa_stack.c" "C:/CLionProjects/School/IFJ/cmake-build-debug/CMakeFiles/IFJ_FINAL.dir/psa_stack.c.obj"
   "C:/CLionProjects/School/IFJ/scanner.c" "C:/CLionProjects/School/IFJ/cmake-build-debug/CMakeFiles/IFJ_FINAL.dir/scanner.c.obj"
   "C:/CLionProjects/School/IFJ/symtable.c" "C:/CLionProjects/School/IFJ/cmake-build-debug/CMakeFiles/IFJ_FINAL.dir/symtable.c.obj"
   )

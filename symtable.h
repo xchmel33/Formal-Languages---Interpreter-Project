@@ -5,6 +5,8 @@
 #include <string.h>
 #include <stdbool.h>
 
+#include "scanner.h"
+
 typedef enum {
     T_FUNC,
     T_INT,
@@ -13,14 +15,9 @@ typedef enum {
     T_NONE,
 }DataType;
 
-typedef enum {
-    P_INT,
-    P_FLOAT64,
-    P_STRING,
-}ParamType;
 
 typedef struct {
-    ParamType type;
+    Datatype type;
     char* identifier;
 }Param;
 

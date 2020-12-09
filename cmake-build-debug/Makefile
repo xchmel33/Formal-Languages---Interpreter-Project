@@ -235,6 +235,60 @@ parser.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\IFJ_FINAL.dir\build.make /nologo -$(MAKEFLAGS) CMakeFiles\IFJ_FINAL.dir\parser.c.s
 .PHONY : parser.c.s
 
+prec_analysis.obj: prec_analysis.c.obj
+
+.PHONY : prec_analysis.obj
+
+# target to build an object file
+prec_analysis.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\IFJ_FINAL.dir\build.make /nologo -$(MAKEFLAGS) CMakeFiles\IFJ_FINAL.dir\prec_analysis.c.obj
+.PHONY : prec_analysis.c.obj
+
+prec_analysis.i: prec_analysis.c.i
+
+.PHONY : prec_analysis.i
+
+# target to preprocess a source file
+prec_analysis.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\IFJ_FINAL.dir\build.make /nologo -$(MAKEFLAGS) CMakeFiles\IFJ_FINAL.dir\prec_analysis.c.i
+.PHONY : prec_analysis.c.i
+
+prec_analysis.s: prec_analysis.c.s
+
+.PHONY : prec_analysis.s
+
+# target to generate assembly for a file
+prec_analysis.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\IFJ_FINAL.dir\build.make /nologo -$(MAKEFLAGS) CMakeFiles\IFJ_FINAL.dir\prec_analysis.c.s
+.PHONY : prec_analysis.c.s
+
+psa_stack.obj: psa_stack.c.obj
+
+.PHONY : psa_stack.obj
+
+# target to build an object file
+psa_stack.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\IFJ_FINAL.dir\build.make /nologo -$(MAKEFLAGS) CMakeFiles\IFJ_FINAL.dir\psa_stack.c.obj
+.PHONY : psa_stack.c.obj
+
+psa_stack.i: psa_stack.c.i
+
+.PHONY : psa_stack.i
+
+# target to preprocess a source file
+psa_stack.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\IFJ_FINAL.dir\build.make /nologo -$(MAKEFLAGS) CMakeFiles\IFJ_FINAL.dir\psa_stack.c.i
+.PHONY : psa_stack.c.i
+
+psa_stack.s: psa_stack.c.s
+
+.PHONY : psa_stack.s
+
+# target to generate assembly for a file
+psa_stack.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\IFJ_FINAL.dir\build.make /nologo -$(MAKEFLAGS) CMakeFiles\IFJ_FINAL.dir\psa_stack.c.s
+.PHONY : psa_stack.c.s
+
 scanner.obj: scanner.c.obj
 
 .PHONY : scanner.obj
@@ -310,6 +364,12 @@ help:
 	@echo ... parser.obj
 	@echo ... parser.i
 	@echo ... parser.s
+	@echo ... prec_analysis.obj
+	@echo ... prec_analysis.i
+	@echo ... prec_analysis.s
+	@echo ... psa_stack.obj
+	@echo ... psa_stack.i
+	@echo ... psa_stack.s
 	@echo ... scanner.obj
 	@echo ... scanner.i
 	@echo ... scanner.s
