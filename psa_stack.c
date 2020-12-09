@@ -24,18 +24,7 @@ Psa_stack* s_init()
 
 void s_destroy(Psa_stack* stack)
 {
-    Stack_item* X = stack->top;
-    while (X != NULL) {
-        X = stack->top->lptr;
-        free(stack->top);
-        stack->top = X;
-    }
-    X = stack->active;
-    while (X != NULL) {
-        X = stack->active->lptr;
-        free(stack->active);
-        stack->active = X;
-    }
+    free(stack);
 }
 
 int s_push(Psa_stack* stack, Token *token)
