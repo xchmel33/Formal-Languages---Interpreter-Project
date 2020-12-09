@@ -116,7 +116,6 @@ int body() {
         return ERR_OK;
     }
     body();
-    return ERR_INTERNAL;
 }
 
 int def_func()
