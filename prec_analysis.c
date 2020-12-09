@@ -250,13 +250,11 @@ int checkTypes(Token* operand1,Token* operand2) {
     return EXP_OK;
 }
 
-
-int checkRule(Psa_stack* Rulestack,Token* result_type) { //codegen required
+Token* checkRule(Psa_stack* Rulestack,int *error_code) { //codegen required
     
     Token* operand1 = s_pop(Rulestack);
     Token* operator,* operand2;
     TableItem* ID;
-    result_type = NULL;
 
     // E -> E+E
     // E -> E-E
@@ -275,21 +273,24 @@ int checkRule(Psa_stack* Rulestack,Token* result_type) { //codegen required
         //check matching types
         int pom = checkTypes(operand1, operand2);
         if (pom != EXP_OK) {
-            return pom;
+            *error_code = pom;
+            return EMPTY_TOKEN;
         }
 
         //zero division
         if (operator->type == TT_DIV && operand2->attribute.integer == 0 || operand2->attribute.decimal == 0) {
-            return ERR_DIV_ZERO;
+            *error_code = ERR_DIV_ZERO;
+            return EMPTY_TOKEN;
         }
 
         //operation
-        
+        //cg_stack_p(operand2);
+        //cg_stack_p(operand1);
+        //cg_operation(operator->type);
          
         //return token with operation datatype
-        
-        result_type = operand1;
-        return EXP_OK;
+        *error_code = EXP_OK;
+        return operand1;
     }
     // E -> i
     else if (operand1->type == TT_IDENTIFIER){ 
@@ -300,8 +301,8 @@ int checkRule(Psa_stack* Rulestack,Token* result_type) { //codegen required
         else {
             if (ID->data.var) {
                 operand1->type = TT_EXPRESSION;
-                result_type = operand1;
-                return EXP_OK;
+                *error_code = EXP_OK;
+                return operand1;
             }
             else {
                 //function call
@@ -311,20 +312,21 @@ int checkRule(Psa_stack* Rulestack,Token* result_type) { //codegen required
     }
     else if (operand1->type >= TT_INTEGER && operand1->type <= TT_STRING) {
         operand1->type = TT_EXPRESSION;
-        result_type = operand1;
-        return EXP_OK;
+        *error_code = EXP_OK;
+        return operand1;
     }
 
     // E -> (E)
     else if (operand1->type == TT_L_BRACKET) {
         operand1 = s_pop(Rulestack);
         if (s_pop(Rulestack)->type == TT_R_BRACKET && operand1->type == TT_EXPRESSION) {
-            result_type = operand1;
-            return EXP_OK;
+            *error_code = EXP_OK;
+            return operand1;
         }
     }
     else {
-        return ERR_INTERNAL;
+        *error_code = ERR_INTERNAL;
+        return EMPTY_TOKEN;
     }
 }
 
@@ -372,9 +374,10 @@ int expression(Token* prev_token, Token* act_token) {
                 }
                 //s_push(RuleStack, Y);
                 s_print(RuleStack, "RuleStack");
-                pom = checkRule(RuleStack, Y);
-                if (pom != EXP_OK) return pom;
-                s_push(ActiveStack, Y);
+                s_push(ActiveStack, checkRule(RuleStack, &pom));
+                if (ActiveStack->top->E.type == TT_EMPTY) {
+                    return pom;
+                }
                 s_destroy(RuleStack);
                 break;
             case ' ':
@@ -386,6 +389,7 @@ int expression(Token* prev_token, Token* act_token) {
             B = EMPTY_TOKEN;
         }
     } while (B->type != TT_EMPTY || A->type != TT_EMPTY);
-    printf("OK\n");
-    FreeResources;
+    act_token = s_pop(ActiveStack);
+    FreeResources();
+    return pom;
 }
