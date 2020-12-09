@@ -1,3 +1,5 @@
+#define _CRT_SECURE_NO_WARNINGS
+
 #include "dstring.h"
 #include <stdlib.h>
 #include <malloc.h>
@@ -37,8 +39,8 @@ void strClear(dstring* s) {
 int strAddChar(dstring* s1, char c) {
     if (s1->length + 1 >= s1->allocSize)
     {
-        
-        if ((s1->str = (char*)realloc(s1->str, s1->length + STR_LEN_INC)) == NULL)
+        s1->str = (char*)realloc(s1->str, s1->length + STR_LEN_INC);
+        if (s1->str == NULL)
             return STR_FALSE;
         s1->allocSize = s1->length + STR_LEN_INC;
     }
@@ -52,10 +54,10 @@ int strAddString(dstring* s1, const char *s2){
 
     if (s1->length + len2 + 1 >= s1->allocSize)
     {
-
-        if ((s1->str = (char*)realloc(s1->str, s1->length + len2  + 1)) == NULL)
+        s1->str = (char*)realloc(s1->str, s1->length + len2 + 1);
+        if ((s1->str == NULL))
             return STR_FALSE;
-        s1->allocSize = s1->length + len2  + 1;
+        s1->allocSize = s1->length + len2 + 1;
     }
     s1->length += len2;
     strcat(s1->str, s2);

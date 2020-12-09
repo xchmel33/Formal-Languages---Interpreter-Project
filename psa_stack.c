@@ -65,6 +65,7 @@ Token* s_pop(Psa_stack* stack)
         stack->top = (Stack_item*)tmp->lptr;
         return &tmp->E;
     }
+    return NULL;
 }
 
 void s_print(Psa_stack* stack, char* name)

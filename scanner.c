@@ -81,8 +81,8 @@ int GetToken(Token* token) {
         c = getc(source);
         switch (state)
         {
-            case(SS_START):
-                strClear(S_Attribute);
+        case(SS_START):
+            strClear(S_Attribute);
                 if (c == '\n' || c == '\r') {
                     token->type = TT_EOL;
                     strAddString(token->attribute.string,"NULL");

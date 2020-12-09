@@ -1,3 +1,5 @@
+#define _CRT_SECURE_NO_WARNINGS
+
 //
 // Created by Matúš on 6. 12. 2020.
 //
@@ -40,7 +42,7 @@ bool cg_stack_push_int(int value);
 bool cg_stack_push_double(double value);
 bool cg_stack_push_string(char* value);
 bool cg_stack_push_global(char* key);
-bool cg_stack_push_identifier(char* key, HashTable globaltable);
+bool cg_stack_push_identifier(char* key, HashTable *globaltable);
 bool cg_operation(TokenType operation);
 bool cg_var_declare(char* id);
 bool cg_def_val_var(DataType value);
@@ -50,6 +52,6 @@ bool cg_var_to_any_val(char* id, Token token);
 bool cg_print_id(TableItem* data);
 bool cg_print_value(char* val, DataType type);
 bool cg_variants_of_input();
-int code_to_stdout();
+void code_to_stdout();
 
 #endif //IFJ_FINAL_CODE_GENERATOR_H

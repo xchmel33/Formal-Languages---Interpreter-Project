@@ -111,6 +111,7 @@ Token* topTerm(Psa_stack* stack) {
         }
         stack->active = stack->active->lptr;
     }
+    return NULL;
 }
 Datatype getType(Token *token) {
 
@@ -135,10 +136,10 @@ bool cg_stack_p(Token* token) {
         cg_stack_push_string(token->attribute.string->str);
     }
     else if (token->type == TT_INTEGER) {
-        cg_stack_push_string(token->attribute.integer);
+        cg_stack_push_int(token->attribute.integer);
     }
     else if (token->type == TT_IDENTIFIER) {
-        cg_stack_push_string(token->attribute.string->str);
+        cg_stack_push_identifier(token->attribute.string->str,table);
     }
     else if (token->type == TT_DECIMAL) {
         cg_stack_push_double(token->attribute.decimal);
@@ -277,7 +278,7 @@ Token* funcCall(TableItem *ID,int* error_code) {
         *error_code = EXP_OK;
         //token will be used to return integer value for further use
         token->type = TT_EXPRESSION;
-        strClear(token->attribute.string->str);
+        strClear(token->attribute.string);
         token->attribute.integer = 0;
         return token;
     }
@@ -285,7 +286,7 @@ Token* funcCall(TableItem *ID,int* error_code) {
         *error_code = EXP_OK;
         //token will be used to return float value for further use
         token->type = TT_EXPRESSION;
-        strClear(token->attribute.string->str);
+        strClear(token->attribute.string);
         token->attribute.decimal = 0;
         return token;
     }
@@ -295,6 +296,8 @@ Token* funcCall(TableItem *ID,int* error_code) {
         token->type = TT_EXPRESSION;
         return token;
     }
+    *error_code = ERR_FUNC;
+    return EMPTY_TOKEN;
 }
 
 Token* checkRule(Psa_stack* Rulestack,int *error_code) { //codegen required
@@ -331,10 +334,10 @@ Token* checkRule(Psa_stack* Rulestack,int *error_code) { //codegen required
             return EMPTY_TOKEN;
         }
 
-        //operation
-        //cg_stack_p(operand2);
-        //cg_stack_p(operand1);
-        //cg_operation(operator->type);
+        //string concatanation
+        //if(getType())
+        
+        //all other operations
 
         //return token with operation datatype
         *error_code = EXP_OK;
@@ -344,7 +347,8 @@ Token* checkRule(Psa_stack* Rulestack,int *error_code) { //codegen required
     else if (operand1->type == TT_IDENTIFIER){
         ID = htSearch(table, operand1->attribute.string->str);
         if (ID == NULL) {
-            return ERR_DEF;
+            *error_code = ERR_DEF;
+            return EMPTY_TOKEN;
         }
         else {
             if (ID->data.var) {
@@ -354,7 +358,7 @@ Token* checkRule(Psa_stack* Rulestack,int *error_code) { //codegen required
             }
             else {
                 //function call
-                return funcCall(ID, &error_code);
+                return funcCall(ID, error_code);
             }
         }
 
@@ -373,10 +377,8 @@ Token* checkRule(Psa_stack* Rulestack,int *error_code) { //codegen required
             return operand1;
         }
     }
-    else {
-        *error_code = ERR_INTERNAL;
-        return EMPTY_TOKEN;
-    }
+    *error_code = ERR_INTERNAL;
+    return EMPTY_TOKEN;
 }
 
 
@@ -385,7 +387,7 @@ int expression(Token* prev_token, Token* act_token) {
     Token* A, * B, * Y, *S;
     Psa_stack* RuleStack;
     B = prev_token;
-    int pom;
+    int pom = 0;
 
     if (s_push(ActiveStack, EMPTY_TOKEN) != ERR_OK) {
         return ERR_INTERNAL;
@@ -394,8 +396,7 @@ int expression(Token* prev_token, Token* act_token) {
     do {
         A = topTerm(ActiveStack);
         S = getSymbol(A, B);
-        if (S == NULL)
-        {
+        if (S == NULL) {
             return ERR_PARSER;
         }
         if (B->type != TT_EMPTY || A->type != TT_EMPTY) {

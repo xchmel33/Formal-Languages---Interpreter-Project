@@ -1,3 +1,5 @@
+#define _CRT_SECURE_NO_WARNINGS
+
 //
 // Created by Matúš on 6. 12. 2020.
 //
@@ -98,7 +100,7 @@ bool cg_clear_stack()
     return true;
 }
 
-int code_to_stdout()
+void code_to_stdout()
 {
     fprintf(stdout, "%s", code.str);
     strFree(&code);
@@ -137,7 +139,7 @@ bool cg_stack_push_global(char* key)
     return true;
 }
 
-bool cg_stack_push_identifier(char* key, HashTable globaltable)
+bool cg_stack_push_identifier(char* key, HashTable *globaltable)
 {
     ADD_CODE("PUSHS ");
     if (htSearch(globaltable, key) == NULL) {
@@ -195,6 +197,7 @@ bool cg_operation(TokenType operation)
         ADD_INSTR("NOTS");
         return true;
     }
+    return false;
 }
 
 bool cg_var_declare(char* id) 
@@ -202,6 +205,7 @@ bool cg_var_declare(char* id)
     ADD_CODE("DEFVAR LF@");
     ADD_CODE(id);
     ADD_CODE("\n");
+    return true;
 }
 
 bool cg_def_val_var(DataType value)
@@ -282,6 +286,7 @@ bool cg_print_id(TableItem* data){
     ADD_CODE(" ");
     ADD_CODE(data->key);
     ADD_CODE("\n");
+    return true;
 }
 
 bool cg_print_value(char* val, DataType type)
@@ -293,13 +298,13 @@ bool cg_print_value(char* val, DataType type)
         case T_INT:
             ADD_CODE("WRITE int@");
             ADD_CODE(val);
-            ADD_INSTR();
+            ADD_CODE("\n");
             return true;
 
         case T_FLOAT64:
             ADD_CODE("WRITE float@");
             ADD_CODE(val);
-            ADD_INSTR();
+            ADD_CODE("\n");
             return true;
         case T_STRING:
             ADD_CODE("WRITE string@");

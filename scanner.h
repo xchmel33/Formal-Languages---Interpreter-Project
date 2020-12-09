@@ -57,7 +57,7 @@ typedef struct {
     Keyword keyword;
     Datatype datatype;
     int integer;
-    float decimal;
+    double decimal;
     dstring* string;
 }TokenAttribute;
 
