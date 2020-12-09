@@ -19,7 +19,7 @@ bool cg_header()
     ADD_INSTR("#Program start");
     ADD_INSTR(".IFJcode20");
 
-    ADD_INSTR("#Def basic vars")
+    ADD_INSTR("#Def basic vars");
     ADD_INSTR("DEFVAR GF@$$expr_result");
     ADD_INSTR("DEFVAR GF@$$op1");
     ADD_INSTR("DEFVAR GF@$$op2");

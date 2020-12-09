@@ -54,18 +54,19 @@ int base_cond(Token* token)
         if (strcmp(token->attribute.string->str, "main") == 0)
         {
             PRINT_DEBUG("Package main ok \n ");
-            return ERR_OK; //Chybaju err stavy
+            return ERR_OK;
         }
         if (token->type == TT_EOF)
         {
             PRINT_DEBUG("End of program \n");
-            return 0;
+            return ERR_OK;
         }
     }
     else
     {
         return ERR_PARSER;
     }
+    return ERR_PARSER;
 }
 
 
@@ -88,6 +89,14 @@ int body() {
         htInit(local_table);
         base_cond(act_token);
         GET_TOKEN;
+        if (act_token->type != TT_EOL)
+        {
+            return ERR_PARSER;
+        }
+        else
+        {
+            GET_TOKEN;
+        }
     }
     if (act_token->attribute.keyword == FUNC) // ID "FUNC" -> "ID"
     {
@@ -115,7 +124,7 @@ int body() {
 int def_func()
 {
     PRINT_DEBUG("Def func \n");
-    int in_func_flag;
+
     depth_level++;
     GET_TOKEN;
 
@@ -142,7 +151,7 @@ int def_func()
         }
         else
         {
-            in_func_flag = 1;
+
             cg_func_start(act_token->attribute.string->str);
         }
         func.next_item = NULL;
@@ -171,7 +180,6 @@ int def_func()
                 }
                 else
                 {
-                    in_func_flag = 0;
                     cg_func_end(func.key);
                 }
             }
@@ -192,10 +200,10 @@ int def_func()
 int params(TableItem* func)
 {
     TableData *data = (TableData *) malloc(sizeof(TableData));
-    int pom = TT_COMMA;
+
     int i = 0;
     int param_counter = 0;
-    while (pom == TT_COMMA)
+    while (1)
     {
         size_t len = 0;
         if (act_token->type == TT_L_BRACKET) {
@@ -235,7 +243,7 @@ int params(TableItem* func)
         if (act_token->type == TT_COMMA) {
             param++; //indexovanie parametrov
             GET_TOKEN;
-            pom = TT_COMMA;
+
             i++;
         }
         else
@@ -266,7 +274,7 @@ int params(TableItem* func)
                                 break;
                             default:
                                 return ERR_DEF_TYPE;
-                                break;
+
                         }
                         data->var = true;
                         htInsert(local_table, data->param[param].identifier, *data);
@@ -305,12 +313,14 @@ int params(TableItem* func)
                                 data->return_type = 2;
                                 GET_TOKEN;
                                 break;
+                            default:
+                                return ERR_PARSER;
                         }
                     }
                     if (act_token->type == TT_COMMA) {
                         param++; //indexovanie parametrov
                         GET_TOKEN;
-                        pom = TT_COMMA;
+
                     }
                     else
                     {
@@ -328,7 +338,7 @@ int params(TableItem* func)
                             return ERR_DEF;
                         }
                     }
-                } while (pom == TT_COMMA);
+                } while (1);
             }
             else
             {
@@ -403,8 +413,16 @@ int statements()
                 break;
             case FUNC:
                 PRINT_DEBUG("Statements FUNC \n");
-                def_func();
-                break;
+                int error = def_func();
+                if (error != 0)
+                {
+                    return error;
+                }
+                else
+                {
+                    return ERR_OK;
+                }
+
             case PACKAGE:
                 PRINT_DEBUG("Statements PACKAGE \n");
                 break;
@@ -418,6 +436,14 @@ int statements()
             if (statement() != 0)
             {
                 return ERR_DEF;
+            }
+            else
+            {
+                GET_TOKEN;
+                if (act_token->type != TT_EOL)
+                {
+                    return ERR_PARSER;
+                }
             }
             /*
             prev_token = act_token; //v pripade ak by som ho v buducnosti potreboval
@@ -459,6 +485,10 @@ int statements()
         {
             return ERR_PARSER;
         }
+    }
+    if (act_token->type == TT_EOF)
+    {
+        return ERR_OK;
     }
 }
 int statement ()
@@ -578,7 +608,7 @@ int statement ()
         }
     }
     if (act_token->type == TT_COMMA) {
-        prev_token = act_token; //v pripade ak by som ho v buducnosti potreboval
+
         int id_counter = 0;
         PRINT_DEBUG("ID, ID, IDn ... \n");
         while (1) {
@@ -643,7 +673,7 @@ int IfblockEnd_check()
 }
 
 int init (Token* left_id) {
-    Token *prev_token = initToken();
+
     if (act_token->attribute.keyword == FOR)
     {
         GET_TOKEN;
