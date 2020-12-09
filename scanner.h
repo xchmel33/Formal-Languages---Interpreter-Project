@@ -1,3 +1,11 @@
+﻿/**
+ * Implementation of imperative language IFJ2020 compiler
+ * @file scanner.h
+ * @author Lukáš Chmelo (xchmel33), Tomáš Čechvala (xcechv03)
+ * @brief Scanner header implementation
+ */
+
+
 #ifndef SCANNER_H
 #define SCANNER_H
 #include "dstring.h"
