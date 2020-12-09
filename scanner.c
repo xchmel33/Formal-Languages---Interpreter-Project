@@ -22,11 +22,11 @@ void procces_id_key_data(dstring *S_Attribute, Token* token) {
         token->type = TT_DATATYPE;
         token->attribute.datatype = INT;
     }
-    else if (!strcmp(S_Attribute->str, "float64")) {
+    else if (!strcmp(S_Attribute, "float64")) {
         token->type = TT_DATATYPE;
         token->attribute.datatype = FLOAT64;
     }
-    else if (!strcmp(S_Attribute->str, "string")) {
+    else if (!strcmp(S_Attribute, "string")) {
         token->type = TT_DATATYPE;
         token->attribute.datatype = STRING;
     }
@@ -381,15 +381,34 @@ int GetToken(Token* token) {
                     state = SS_NUMBER_EXPONENT;
                 }
                 else {
+                    ungetc(c, source);
                     procces_decimal(S_Attribute, token);
                     state = SS_FINISHED;
                 }
                 break;
             case(SS_NUMBER_EXPONENT):
-                if (isdigit(c) || c == '+' || c == '-') {
+                if (isdigit(c)) {
                     strAddChar(S_Attribute,c);
                 }
+                else if (c == '-') {
+                    strAddChar(S_Attribute, c);
+                    state = SS_NUMBER_EXPONENT_SIGN;
+                }
+                else if (c == '+') {
+                    state = SS_NUMBER_EXPONENT_SIGN;
+                }
                 else {
+                    ungetc(c, source);
+                    procces_decimal(S_Attribute, token);
+                    state = SS_FINISHED;
+                }
+                break;
+            case(SS_NUMBER_EXPONENT_SIGN):
+                if (isdigit(c)) {
+                    strAddChar(S_Attribute, c);
+                }
+                else {
+                    ungetc(c, source);
                     procces_decimal(S_Attribute, token);
                     state = SS_FINISHED;
                 }

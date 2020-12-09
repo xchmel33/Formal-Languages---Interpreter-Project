@@ -1,0 +1,63 @@
+<program> 	-> package main <body> EOF
+<body> 		-> FUNC ID (<arguments>) (<datatypes>) ( BLOCK_BEGIN EOL <statements> EOL BLOCK_END
+<body>		-> ε
+
+<statements> -> <statement> EOL <statement>
+<statement> -> IF <expression> !EOL BLOCK_BEGIN EOL <statements> EOL BLOCK_END !EOL ELSE !EOL BLOCK_BEGIN EOL <statements> EOL BLOCK_END EOL
+<statement> -> FOR <init> SEMICOLON <expression> SEMICOLON <assign> BLOCK_BEGIN EOL <statements> EOL BLOCK_END
+<statement> -> <function> EOL 
+<statement> -> <assign>
+<statement> -> <init>
+<statement> -> RETURN <value>
+<statement> -> RETURN <expression>
+<statement> -> RETURN <function> ?
+<statement> -> ε
+
+<assign> -> <identif> ASSIGN <function> 
+<assign> -> <identif> ASSIGN <value>
+<assign> -> <identif> ASSIGN <expression>
+<assign> -> ε
+
+<init> -> ID INIT <value>
+<init> -> ID INIT <function>
+<init> -> ID INIT <expression>
+<init> -> ε
+
+<function> -> ID (<identif>) 
+<function> -> inputs (<identif>)
+<function> -> inputi (<identif>)
+<function> -> inputf (<identif>)
+<function> -> print (<identif>)
+<function> -> int2float (<identif>)
+<function> -> float2int (<identif>)
+<function> -> len (<identif>)
+<function> -> substr (<identif>)
+<function> -> ord (<identif>)
+<function> -> chr (<identif>)
+
+<arguments> -> <identif> <datatype> <argument>
+<argument> -> , <identif> <datatype>
+<argument> -> ε
+
+<identif> -> ID <identifs>
+<identifs> -> , ID <identifs>
+<identifs> -> ε
+
+<expression> -> ID COMPARE||ADD||SUB||MUL||DIV <value>
+<expression> -> ID COMPARE||ADD||SUB||MUL||DIV <expression>
+<expression> -> ID COMPARE||ADD||SUB||MUL||DIV <function> ?
+
+<value> -> INTEGER
+<value> -> DECIMAL
+<value> -> STRING
+<value> -> ID
+
+<datatypes> -> <datatype>
+<datatypes> -> <datatype>, <datatype>
+<datatypes> -> ε
+<datatype> -> int
+<datatype> -> string
+<datatype> -> float64
+<datatype> -> ε
+
+
