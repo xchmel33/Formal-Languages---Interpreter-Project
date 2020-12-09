@@ -118,7 +118,7 @@ Datatype getType(Token *token) {
     if (token->attribute.integer != UNDEFINED_TOKEN_ATTRIBUTE) {
         return INT;
     }
-    else if (token->attribute.decimal = UNDEFINED_TOKEN_ATTRIBUTE) {
+    else if (token->attribute.decimal != UNDEFINED_TOKEN_ATTRIBUTE) {
         return FLOAT64;
     }
     else if (htSearch(table, token->attribute.string->str) != NULL) {
