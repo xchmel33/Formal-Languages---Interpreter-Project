@@ -645,6 +645,10 @@ int init (Token* left_id) {
         }
         GET_TOKEN;
     }
+    else
+    {
+        GET_TOKEN;
+    }
 
     /*if (act_token->type == TT_IDENTIFIER)
     {
@@ -672,30 +676,26 @@ int init (Token* left_id) {
 
 int assign(Token* left_id)
 {
-    Token *prev_token;
+    Token *prev_token = initToken();
     if (act_token->type == TT_ASSIGN)
     {
-        GET_TOKEN;
+        GetToken(prev_token);
     }
-    if (act_token->type == TT_IDENTIFIER)
+    if (prev_token->type == TT_IDENTIFIER)
     {
         if (act_token->attribute.datatype == T_FUNC)
         {
             PRINT_DEBUG("Assign func \n");
         }
-        prev_token = act_token;
         GET_TOKEN;
 
         // operator ID
 
         if (act_token->type >= TT_ADD && act_token->type <= TT_R_BRACKET)
         {
+            ActivateResources(local_table);
             expression(prev_token,act_token);
         }
-
-
-
-
     }
 }
 

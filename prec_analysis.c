@@ -20,14 +20,14 @@ Token* EMPTY_TOKEN;
 HashTable* table;
 
 const char prec_table[T_S][T_S] = {
-    //      *			  +-   */  <!=   (	   )     i	  $ *//
-    /*  	+-	    */ { '>', '<', '>', '<',  '>',  '<', '>'},
-    /*  	*&/	    */ { '>', '>', '>', '<',  '>',  '<', '>'},
-    /*    <...!=    */ { '<', '<', '>', '<',  '>',  '<', '>'},
-    /*	    (	    */ { '<', '<', '<', '<',  '=',  '<', ' '},
-    /*	    )	    */ { '>', '>', '>', ' ',  '>',  ' ', '>'},
-    /*	    i	    */ { '>', '>', '>', ' ',  '>',  ' ', '>'},
-    /*	    $	    */ { '<', '<', '<', '<',  ' ',  '<', ' '},
+        //      *			  +-   */  <!=   (	   )     i	  $ *//
+        /*  	+-	    */ { '>', '<', '>', '<',  '>',  '<', '>'},
+        /*  	*&/	    */ { '>', '>', '>', '<',  '>',  '<', '>'},
+        /*    <...!=    */ { '<', '<', '>', '<',  '>',  '<', '>'},
+        /*	    (	    */ { '<', '<', '<', '<',  '=',  '<', ' '},
+        /*	    )	    */ { '>', '>', '>', ' ',  '>',  ' ', '>'},
+        /*	    i	    */ { '>', '>', '>', ' ',  '>',  ' ', '>'},
+        /*	    $	    */ { '<', '<', '<', '<',  ' ',  '<', ' '},
 };
 void ActivateResources(HashTable* ptable) {
     ActiveStack = s_init();
@@ -45,35 +45,35 @@ int getIndex(Token* T) {
 
     //pozicia v tabulke
     switch (T->type) {
-    case TT_ADD:
-    case TT_SUB:
-        return 0;
-    case TT_MUL:
-    case TT_DIV:
-        return 1;
-    case TT_LESS_THAN:
-    case TT_MORE_THAN:
-    case TT_EQUAL:
-    case TT_MORE_OR_EQUAL:
-    case TT_LESS_OR_EQUAL:
-    case TT_NOT_EQUAL:
-        return 2;
-    case(TT_L_BRACKET):
-        return 3;
-    case(TT_R_BRACKET):
-        return 4;
-    case TT_IDENTIFIER:
-    case TT_INTEGER:
-    case TT_DECIMAL:
-    case TT_STRING:
-        return 5;
-    case TT_EMPTY:
-    case TT_SEMICOLON:
-    case TT_COMMA:
-    case TT_EOL:
-        return 6;
-    default:
-        return -1;
+        case TT_ADD:
+        case TT_SUB:
+            return 0;
+        case TT_MUL:
+        case TT_DIV:
+            return 1;
+        case TT_LESS_THAN:
+        case TT_MORE_THAN:
+        case TT_EQUAL:
+        case TT_MORE_OR_EQUAL:
+        case TT_LESS_OR_EQUAL:
+        case TT_NOT_EQUAL:
+            return 2;
+        case(TT_L_BRACKET):
+            return 3;
+        case(TT_R_BRACKET):
+            return 4;
+        case TT_IDENTIFIER:
+        case TT_INTEGER:
+        case TT_DECIMAL:
+        case TT_STRING:
+            return 5;
+        case TT_EMPTY:
+        case TT_SEMICOLON:
+        case TT_COMMA:
+        case TT_EOL:
+            return 6;
+        default:
+            return -1;
     }
 }
 
@@ -114,7 +114,7 @@ Token* topTerm(Psa_stack* stack) {
 }
 Datatype getType(Token *token) {
 
-    
+
     if (token->attribute.integer != UNDEFINED_TOKEN_ATTRIBUTE) {
         return INT;
     }
@@ -130,7 +130,7 @@ Datatype getType(Token *token) {
 }
 
 bool cg_stack_p(Token* token) {
-    
+
     if (token->type == TT_STRING) {
         cg_stack_push_string(token->attribute.string->str);
     }
@@ -152,55 +152,7 @@ int checkTypes(Token* operand1,Token* operand2) {
     Datatype op2_type = getType(operand2);
     switch (op1_type)
     {
-    case INT:
-        if (op2_type == INT) {
-            break;
-        }
-        else if (op2_type == STRING || op2_type == FLOAT64) {
-            return ERR_MATH_TYPE;
-        }
-        else if (op2_type == IDENTIFIER) {
-            if (htSearch(table, operand2->attribute.string->str)->data.type == T_INT) {
-                break;
-            }
-            else {
-                return ERR_MATH_TYPE;
-            }
-        }
-    case FLOAT64:
-        if (op2_type == STRING || op2_type == INT) {
-            return ERR_MATH_TYPE;
-        }
-        else if (op2_type == FLOAT64) {
-            break;
-        }
-        else if (op2_type == IDENTIFIER) {
-            if (htSearch(table, operand2->attribute.string->str)->data.type == T_DOUBLE) {
-                break;
-            }
-            else {
-                return ERR_MATH_TYPE;
-            }
-        }
-    case STRING:
-        if (op2_type == INT || op2_type == FLOAT64) {
-            return ERR_MATH_TYPE;
-        }
-        else if (op2_type == STRING) {
-            break;
-        }
-        else if (op2_type == IDENTIFIER) {
-            if (htSearch(table, operand2->attribute.string->str)->data.type == T_STRING) {
-                break;
-            }
-            else {
-                return ERR_MATH_TYPE;
-            }
-        }
-    case IDENTIFIER:
-        switch (htSearch(table, operand1->attribute.string->str)->data.type)
-        {
-        case T_INT:
+        case INT:
             if (op2_type == INT) {
                 break;
             }
@@ -215,7 +167,7 @@ int checkTypes(Token* operand1,Token* operand2) {
                     return ERR_MATH_TYPE;
                 }
             }
-        case T_DOUBLE:
+        case FLOAT64:
             if (op2_type == STRING || op2_type == INT) {
                 return ERR_MATH_TYPE;
             }
@@ -223,14 +175,14 @@ int checkTypes(Token* operand1,Token* operand2) {
                 break;
             }
             else if (op2_type == IDENTIFIER) {
-                if (htSearch(table, operand2->attribute.string->str)->data.type == T_DOUBLE) {
+                if (htSearch(table, operand2->attribute.string->str)->data.type == T_FLOAT64) {
                     break;
                 }
                 else {
                     return ERR_MATH_TYPE;
                 }
             }
-        case T_STRING:
+        case STRING:
             if (op2_type == INT || op2_type == FLOAT64) {
                 return ERR_MATH_TYPE;
             }
@@ -245,15 +197,108 @@ int checkTypes(Token* operand1,Token* operand2) {
                     return ERR_MATH_TYPE;
                 }
             }
-        }
+        case IDENTIFIER:
+            switch (htSearch(table, operand1->attribute.string->str)->data.type)
+            {
+                case T_INT:
+                    if (op2_type == INT) {
+                        break;
+                    }
+                    else if (op2_type == STRING || op2_type == FLOAT64) {
+                        return ERR_MATH_TYPE;
+                    }
+                    else if (op2_type == IDENTIFIER) {
+                        if (htSearch(table, operand2->attribute.string->str)->data.type == T_INT) {
+                            break;
+                        }
+                        else {
+                            return ERR_MATH_TYPE;
+                        }
+                    }
+                case T_FLOAT64:
+                    if (op2_type == STRING || op2_type == INT) {
+                        return ERR_MATH_TYPE;
+                    }
+                    else if (op2_type == FLOAT64) {
+                        break;
+                    }
+                    else if (op2_type == IDENTIFIER) {
+                        if (htSearch(table, operand2->attribute.string->str)->data.type == T_FLOAT64) {
+                            break;
+                        }
+                        else {
+                            return ERR_MATH_TYPE;
+                        }
+                    }
+                case T_STRING:
+                    if (op2_type == INT || op2_type == FLOAT64) {
+                        return ERR_MATH_TYPE;
+                    }
+                    else if (op2_type == STRING) {
+                        break;
+                    }
+                    else if (op2_type == IDENTIFIER) {
+                        if (htSearch(table, operand2->attribute.string->str)->data.type == T_STRING) {
+                            break;
+                        }
+                        else {
+                            return ERR_MATH_TYPE;
+                        }
+                    }
+            }
     }
     return EXP_OK;
 }
 
+Token* funcCall(TableItem *ID,int* error_code) {
 
+    Token* token = initToken();
+    Token* argument = initToken();
+    GetToken(token); //left bracket or error
+    if (token->type != TT_L_BRACKET) {
+        *error_code = ERR_PARSER;
+        return EMPTY_TOKEN;
+    }
+    GetToken(argument); //function argument type check
+    if (ID->data.param[0].type != argument->type) {
+        *error_code = ERR_FUNC;
+        return EMPTY_TOKEN;
+    }
+    GetToken(token); //right bracket or error
+    if (token->type != TT_R_BRACKET) {
+        *error_code = ERR_PARSER;
+        return EMPTY_TOKEN;
+    }
+    if (ID->data.return_type == T_NONE) {
+        *error_code = ERR_MATH_TYPE;
+        return EMPTY_TOKEN;
+    }
+    else if (ID->data.return_type == T_INT) {
+        *error_code = EXP_OK;
+        //token will be used to return integer value for further use
+        token->type = TT_EXPRESSION;
+        strClear(token->attribute.string->str);
+        token->attribute.integer = 0;
+        return token;
+    }
+    else if (ID->data.return_type == T_FLOAT64) {
+        *error_code = EXP_OK;
+        //token will be used to return float value for further use
+        token->type = TT_EXPRESSION;
+        strClear(token->attribute.string->str);
+        token->attribute.decimal = 0;
+        return token;
+    }
+    else if (ID->data.return_type == T_STRING) {
+        *error_code = EXP_OK;
+        //token will be used to return string value for further use
+        token->type = TT_EXPRESSION;
+        return token;
+    }
+}
 
 Token* checkRule(Psa_stack* Rulestack,int *error_code) { //codegen required
-    
+
     Token *operand1 = s_pop(Rulestack);
     Token *operator = initToken();
     Token *operand2 = initToken();
@@ -290,13 +335,13 @@ Token* checkRule(Psa_stack* Rulestack,int *error_code) { //codegen required
         //cg_stack_p(operand2);
         //cg_stack_p(operand1);
         //cg_operation(operator->type);
-         
+
         //return token with operation datatype
         *error_code = EXP_OK;
         return operand1;
     }
-    // E -> i
-    else if (operand1->type == TT_IDENTIFIER){ 
+        // E -> i
+    else if (operand1->type == TT_IDENTIFIER){
         ID = htSearch(table, operand1->attribute.string->str);
         if (ID == NULL) {
             return ERR_DEF;
@@ -309,50 +354,10 @@ Token* checkRule(Psa_stack* Rulestack,int *error_code) { //codegen required
             }
             else {
                 //function call
-                GetToken(operator); //left bracket or error
-                if (operator->type != TT_L_BRACKET) {
-                    *error_code = ERR_PARSER;
-                    return EMPTY_TOKEN;
-                }
-                GetToken(operand2); //function argument type check
-                if (ID->data.param[0].type != operand2->type) {
-                    *error_code = ERR_FUNC;
-                    return EMPTY_TOKEN;
-                }
-                GetToken(operator); //right bracket or error
-                if (operator->type != TT_R_BRACKET) {
-                    *error_code = ERR_PARSER;
-                    return EMPTY_TOKEN;
-                }
-                if (ID->data.return_type == T_NONE) {
-                    *error_code = ERR_MATH_TYPE;
-                    return EMPTY_TOKEN;
-                }
-                else if (ID->data.return_type == T_INT) {
-                    *error_code = EXP_OK;
-                    //operator will be used to return integer value for further use
-                    operator->type = TT_EXPRESSION;
-                    strClear(operator->attribute.string->str);
-                    operator->attribute.integer = 0;
-                    return operator;
-                }
-                else if (ID->data.return_type == T_DOUBLE) {
-                    *error_code = EXP_OK;
-                    //operator will be used to return float value for further use
-                    operator->type = TT_EXPRESSION;
-                    strClear(operator->attribute.string->str);
-                    operator->attribute.decimal = 0;
-                    return operator;
-                }
-                else if (ID->data.return_type == T_STRING) {
-                    *error_code = EXP_OK;
-                    //operator will be used to return string value for further use
-                    operator->type = TT_EXPRESSION;
-                    return operator;
-                }
+                return funcCall(ID, &error_code);
             }
         }
-        
+
     }
     else if (operand1->type >= TT_INTEGER && operand1->type <= TT_STRING) {
         operand1->type = TT_EXPRESSION;
@@ -360,7 +365,7 @@ Token* checkRule(Psa_stack* Rulestack,int *error_code) { //codegen required
         return operand1;
     }
 
-    // E -> (E)
+        // E -> (E)
     else if (operand1->type == TT_L_BRACKET) {
         operand1 = s_pop(Rulestack);
         if (s_pop(Rulestack)->type == TT_R_BRACKET && operand1->type == TT_EXPRESSION) {
@@ -392,40 +397,40 @@ int expression(Token* prev_token, Token* act_token) {
         if (B->type != TT_EMPTY || A->type != TT_EMPTY) {
             switch (S->attribute.string->str[0])
             {
-            case '=':
-                s_push(ActiveStack, B);
-                B = getNextToken(B, act_token);
-                break;
-            case '<':
-                if (ActiveStack->top->E.type == TT_EXPRESSION) {
-                    prev_token = s_pop(ActiveStack);
-                    s_push(ActiveStack, S);
-                    s_push(ActiveStack, prev_token);
+                case '=':
                     s_push(ActiveStack, B);
-                }
-                else {
-                    s_push(ActiveStack, S);
-                    s_push(ActiveStack, B);
-                }
-                B = getNextToken(B, act_token);
-                break;
-            case '>':
-                RuleStack = s_init();
-                Y = s_pop(ActiveStack);
-                while (Y->type != TT_TABLESYM) {
-                    s_push(RuleStack, Y);
+                    B = getNextToken(B, act_token);
+                    break;
+                case '<':
+                    if (ActiveStack->top->E.type == TT_EXPRESSION) {
+                        prev_token = s_pop(ActiveStack);
+                        s_push(ActiveStack, S);
+                        s_push(ActiveStack, prev_token);
+                        s_push(ActiveStack, B);
+                    }
+                    else {
+                        s_push(ActiveStack, S);
+                        s_push(ActiveStack, B);
+                    }
+                    B = getNextToken(B, act_token);
+                    break;
+                case '>':
+                    RuleStack = s_init();
                     Y = s_pop(ActiveStack);
-                }
-                //s_push(RuleStack, Y);
-                s_print(RuleStack, "RuleStack");
-                s_push(ActiveStack, checkRule(RuleStack, &pom));
-                if (ActiveStack->top->E.type == TT_EMPTY) {
-                    return pom;
-                }
-                s_destroy(RuleStack);
-                break;
-            case ' ':
-                return ERR_PARSER;
+                    while (Y->type != TT_TABLESYM) {
+                        s_push(RuleStack, Y);
+                        Y = s_pop(ActiveStack);
+                    }
+                    //s_push(RuleStack, Y);
+                    s_print(RuleStack, "RuleStack");
+                    s_push(ActiveStack, checkRule(RuleStack, &pom));
+                    if (ActiveStack->top->E.type == TT_EMPTY) {
+                        return pom;
+                    }
+                    s_destroy(RuleStack);
+                    break;
+                case ' ':
+                    return ERR_PARSER;
             }
         }
         s_print(ActiveStack, "ActiveStack");
