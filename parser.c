@@ -69,13 +69,13 @@ int base_cond(Token* token)
 int body() {
     PRINT_DEBUG("Body start \n");
 
-    GET_TOKEN;
+    GET_TOKEN; if (error_code != 0) return error_code;
     PRINT_DEBUG("AFTER fisrt GET TOKEN \n");
     if (act_token->type == TT_EOL)
     {
         do {
-            GET_TOKEN;
-        }while (act_token->type == TT_EOL);
+            GET_TOKEN; if (error_code != 0) return error_code;
+        } while (act_token->type == TT_EOL);
     }
     iteration_count++;
     if (iteration_count == 1)
@@ -85,22 +85,29 @@ int body() {
         cg_header();
         htInit(local_table);
         base_cond(act_token);
-        GET_TOKEN;
+
+        GET_TOKEN; if (error_code != 0) return error_code;
         if (act_token->type != TT_EOL)
         {
             return ERR_PARSER;
         }
         else
         {
-            GET_TOKEN;
+            GET_TOKEN; if (error_code != 0) return error_code;
+            if (act_token->type == TT_EOL)
+            {
+                do {
+                    GET_TOKEN; if (error_code != 0) return error_code;
+                } while (act_token->type == TT_EOL);
+            }
+            if (act_token->type == TT_IDENTIFIER)
+            {
+                return ERR_PARSER;
+            }
         }
     }
-    if (act_token->attribute.keyword == FUNC ) // ID "FUNC" -> "ID"
+    if (act_token->attribute.keyword == FUNC) // ID "FUNC" -> "ID"
     {
-        /*if (strcmp(act_token->attribute.string->str,"func") != 0)
-        {
-            return ERR_PARSER;
-        }*/
         error_code = def_func(); //"ID"
         if (error_code != 0)
         {
@@ -118,8 +125,12 @@ int body() {
     }
 
 
-    if (act_token->type == TT_EOF )
+    if (act_token->type == TT_EOF)
     {
+        if (htSearch(act_table, "main") == NULL)
+        {
+            return ERR_PARSER;
+        }
         cg_main_end();
         return ERR_OK;
     }
@@ -131,14 +142,14 @@ int def_func()
     PRINT_DEBUG("Def func \n");
 
 
-    GET_TOKEN;
+    GET_TOKEN; if (error_code != 0) return error_code;
 
     if (act_token->type == TT_IDENTIFIER)
     {
-        if (strcmp(act_token->attribute.string->str,"print") == 0)
+        if (strcmp(act_token->attribute.string->str, "print") == 0)
         {
             PRINT_DEBUG("Function pre declared print \n");
-            GET_TOKEN;
+            GET_TOKEN; if (error_code != 0) return error_code;
             if (act_token->type == TT_L_BRACKET)
             {
                 int error_pom = terms();
@@ -149,13 +160,13 @@ int def_func()
                 return ERR_OK;
             }
         }
-        if (strcmp(act_token->attribute.string->str,"inputi") == 0)
+        if (strcmp(act_token->attribute.string->str, "inputi") == 0)
         {
             PRINT_DEBUG("INPUTI \n");
-            GET_TOKEN;
+            GET_TOKEN; if (error_code != 0) return error_code;
             if (act_token->type == TT_L_BRACKET)
             {
-                GET_TOKEN;
+                GET_TOKEN; if (error_code != 0) return error_code;
                 if (act_token->type == TT_R_BRACKET)
                 {
                     if (cg_variants_of_input(INT) == true)
@@ -173,13 +184,13 @@ int def_func()
                 return ERR_PARSER;
             }
         }
-        if (strcmp(act_token->attribute.string->str,"inputf") == 0)
+        if (strcmp(act_token->attribute.string->str, "inputf") == 0)
         {
             PRINT_DEBUG("INPUTI \n");
-            GET_TOKEN;
+            GET_TOKEN; if (error_code != 0) return error_code;
             if (act_token->type == TT_L_BRACKET)
             {
-                GET_TOKEN;
+                GET_TOKEN; if (error_code != 0) return error_code;
                 if (act_token->type == TT_R_BRACKET)
                 {
                     if (cg_variants_of_input(FLOAT64) == true)
@@ -198,7 +209,7 @@ int def_func()
             }
         }
         TableItem func;
-        if (strcmp(act_token->attribute.string->str,"main") == 0)
+        if (strcmp(act_token->attribute.string->str, "main") == 0)
         {
             cg_main();
         }
@@ -210,17 +221,17 @@ int def_func()
         func.next_item = NULL;
         size_t len = strlen(act_token->attribute.string->str);
         func.key = malloc(len * sizeof(char)); //sizeof(char) always 1
-        strcpy(func.key,act_token->attribute.string->str);
+        strcpy(func.key, act_token->attribute.string->str);
         func.data.type = T_FUNC;
         PRINT_DEBUG("Table check \n");
         htInsert(act_table, func.key, func.data);
-        GET_TOKEN;
+        GET_TOKEN; if (error_code != 0) return error_code;
         if (act_token->type == TT_L_BRACKET)
         {
-
-            if (!params(&func))
+            error_code = params(&func);
+            if (error_code == 0)
             {
-                if (blockBeginEOL_check() !=0)
+                if (blockBeginEOL_check() != 0)
                 {
                     PRINT_DEBUG("Error block begin eol \n");
                     return ERR_PARSER;
@@ -238,7 +249,7 @@ int def_func()
             }
             else
             {
-                return ERR_DEF;
+                return error_code;
             }
         }
         return ERR_OK;
@@ -252,7 +263,7 @@ int def_func()
 
 int params(TableItem* func)
 {
-    TableData *data = (TableData *) malloc(sizeof(TableData));
+    TableData* data = (TableData*)malloc(sizeof(TableData));
 
     int i = 0;
     int param_counter = 0;
@@ -260,29 +271,47 @@ int params(TableItem* func)
     {
 
         if (act_token->type == TT_L_BRACKET) {
-            GET_TOKEN;
+            GET_TOKEN; if (error_code != 0) return error_code;
         }
 
-        if (act_token->type == TT_IDENTIFIER) {
+        if (act_token->type == TT_IDENTIFIER)
+        {
 
             data->param[param].identifier = malloc(sizeof(char));
             strcpy(data->param[param].identifier, act_token->attribute.string->str);
             param_counter++;
-            GET_TOKEN;
+            GET_TOKEN; if (error_code != 0) return error_code;
+            if (!(act_token->type == TT_INTEGER || act_token->type == TT_STRING || act_token->type == TT_DECIMAL))
+            {
+                return ERR_PARSER;
+            }
         }
         if (act_token->type == TT_DATATYPE) {
             switch (act_token->attribute.datatype) {
                 case INT:
                     data->param[param].type = 0;
-                    GET_TOKEN;
+                    GET_TOKEN; if (error_code != 0) return error_code;
+                    if (act_token->type != TT_IDENTIFIER)
+                    {
+                        return ERR_PARSER;
+                    }
+
                     break;
                 case FLOAT64:
                     data->param[param].type = 1;
-                    GET_TOKEN;
+                    GET_TOKEN; if (error_code != 0) return error_code;
+                    if (act_token->type != TT_IDENTIFIER)
+                    {
+                        return ERR_PARSER;
+                    }
                     break;
                 case STRING:
                     data->param[param].type = 2;
-                    GET_TOKEN;
+                    GET_TOKEN; if (error_code != 0) return error_code;
+                    if (act_token->type != TT_IDENTIFIER)
+                    {
+                        return ERR_PARSER;
+                    }
                     break;
                 default:
                     return ERR_PARSER;
@@ -295,7 +324,7 @@ int params(TableItem* func)
         }*/
         if (act_token->type == TT_COMMA) {
             param++; //indexovanie parametrov
-            GET_TOKEN;
+            GET_TOKEN; if (error_code != 0) return error_code;
 
             i++;
         }
@@ -303,7 +332,7 @@ int params(TableItem* func)
         {
             if (act_token->type == TT_R_BRACKET)
             {
-                GET_TOKEN;
+                GET_TOKEN; if (error_code != 0) return error_code;
 
                 if (act_token->type == TT_BLOCK_BEGIN)
                 {
@@ -336,12 +365,12 @@ int params(TableItem* func)
                 }
 
                 if (act_token->type == TT_L_BRACKET) {
-                    GET_TOKEN;
+                    GET_TOKEN; if (error_code != 0) return error_code;
                 }
                 else
                 {
                     PRINT_DEBUG("Error def in params \n");
-                    return ERR_DEF;
+                    return ERR_PARSER;
                 }
                 do {
                     if (act_token->type == TT_R_BRACKET) {
@@ -356,15 +385,15 @@ int params(TableItem* func)
                         switch (act_token->attribute.datatype) {
                             case INT:
                                 data->return_type = 0;
-                                GET_TOKEN;
+                                GET_TOKEN; if (error_code != 0) return error_code;
                                 break;
                             case FLOAT64:
                                 data->return_type = 1;
-                                GET_TOKEN;
+                                GET_TOKEN; if (error_code != 0) return error_code;
                                 break;
                             case STRING:
                                 data->return_type = 2;
-                                GET_TOKEN;
+                                GET_TOKEN; if (error_code != 0) return error_code;
                                 break;
                             default:
                                 return ERR_PARSER;
@@ -372,7 +401,7 @@ int params(TableItem* func)
                     }
                     if (act_token->type == TT_COMMA) {
                         param++; //indexovanie parametrov
-                        GET_TOKEN;
+                        GET_TOKEN; if (error_code != 0) return error_code;
 
                     }
                     else
@@ -396,7 +425,7 @@ int params(TableItem* func)
             else
             {
                 PRINT_DEBUG("ERROR def func in params ! \n");
-                return ERR_DEF;
+                return ERR_PARSER;
             }
         }
 
@@ -408,7 +437,7 @@ int statements()
 
     while (act_token->type != TT_BLOCK_BEGIN && act_token->type != TT_BLOCK_END)
     {
-        GET_TOKEN;
+        GET_TOKEN; if (error_code != 0) return error_code;
         if (act_token->type == TT_BLOCK_BEGIN || act_token->type == TT_BLOCK_END)
         {
             break;
@@ -419,30 +448,7 @@ int statements()
             case IF:
                 PRINT_DEBUG("Statements IF \n");
                 int error_pom = statement(); // pomocna aby sme vedeli kt. error vracat
-                if (error_pom != 0)
-                {
-                    return error_pom;
-                }
-                if (blockBeginEOL_check() != 0)
-                {
-                    return ERR_PARSER;
-                }
-                GET_TOKEN; // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! umela uprava !!!!!!
-                if (act_token->type == TT_BLOCK_END)
-                {
-                    if (IfblockEnd_check() != 0)
-                    {
-                        return ERR_PARSER;
-                    }
-                    else
-                    {
-                        if (blockBeginEOL_check() != 0)
-                        {
-                            return ERR_PARSER;
-                        }
-                    }
-                }
-                break;
+                return error_pom;
             case FOR:
                 PRINT_DEBUG("Statements FOR \n");
                 // for -> init -> ; -> expres -> ; -> assign -> { eol statements... eol }
@@ -450,11 +456,11 @@ int statements()
                 {
                     return ERR_PARSER;
                 }
-                GET_TOKEN;
+                GET_TOKEN; if (error_code != 0) return error_code;
                 if (act_token->type == TT_SEMICOLON)
                 {
                     PRINT_DEBUG("For 1. semicolon ok \n");
-                    GET_TOKEN;
+                    GET_TOKEN; if (error_code != 0) return error_code;
                 }
                 else
                 {
@@ -485,17 +491,23 @@ int statements()
             default:
                 break;
         }
-        if (act_token->type == TT_IDENTIFIER) {
-            if (statement() != 0)
+        if (act_token->type == TT_IDENTIFIER)
+        {
+            error_code = statement();
+            if (error_code != 0)
             {
-                return ERR_DEF;
+                return error_code;
             }
+        }
+        if (act_token->type == TT_INIT || act_token->type == TT_ASSIGN)
+        {
+            return ERR_PARSER;
         }
     }
     if (act_token->type == TT_BLOCK_END)
     {
         PRINT_DEBUG("Block end of func ! \n");
-        if (blockEnd_EOL_check () == 0 )
+        if (blockEnd_EOL_check() == 0)
         {
             return ERR_OK;
         }
@@ -510,123 +522,185 @@ int statements()
     }
     return ERR_OK;
 }
-int statement ()
+int statement()
 {
-    TableData *data = (TableData *) malloc(sizeof(TableData));
+    Token* prev_token1 = initToken();
+    Token* prev_token2 = initToken();
+    TableData* data = (TableData*)malloc(sizeof(TableData));
     TableItem* temporary_ht;
-    Token *prev_token;
+
+    if (act_token->type == TT_BLOCK_END) {
+        return ERR_OK;
+    }
+
+    //if -> else start
     if (act_token->attribute.keyword == IF)
     {
-        GET_TOKEN;
-        if (act_token->type != TT_IDENTIFIER)
+        error_code = GetToken(prev_token2);
+        if (error_code != 0) return error_code;
+
+        error_code = GetToken(prev_token1);
+        if (error_code != 0) return error_code;
+
+        //var op
+        if (prev_token1->type >= TT_ADD && prev_token1->type <= TT_R_BRACKET)
         {
+            ActivateResources(local_table);
+            int error_pom = expression(prev_token2, prev_token1);
+            if (error_pom != 0) {
+                return error_pom;
+            }
+            act_token = prev_token1;
+        }
+        else {
+            //bracket var op
+            GET_TOKEN; if (error_code != 0) return error_code;
+            if (act_token->type >= TT_ADD && act_token->type <= TT_R_BRACKET)
+            {
+                ActivateResources(local_table);
+                int error_pom = expression(prev_token1, act_token);
+                if (error_pom != 0) {
+                    return error_pom;
+                }
+            }
+        }
+
+        //{
+        error_code = blockBeginEOL_check();
+        if (error_code != 0) return error_code;
+
+        GET_TOKEN; if (error_code != 0) return error_code;
+        error_code = statement();
+        if (error_code != 0) return error_code;
+
+        //else
+        GET_TOKEN; if (error_code != 0) return error_code;
+        if (act_token->attribute.keyword == ELSE) {
+
+            //{
+            GET_TOKEN; if (error_code != 0) return error_code;
+            error_code = blockBeginEOL_check();
+            if (error_code != 0) return error_code;
+
+            GET_TOKEN; if (error_code != 0) return error_code;
+            error_code = statement();
+            if (error_code != 0) return error_code;
+
+            //}
+            error_code = blockEnd_EOL_check();
+            if (error_code != 0) return error_code;
+            //if -> else finished
+            return ERR_OK;
+        }
+        else {
             return ERR_PARSER;
         }
-        else
-        {
-            temporary_ht = htSearch(local_table,act_token->attribute.string->str);
-            if(temporary_ht != NULL)
-            {
-                PRINT_DEBUG("IF ID found in local hash table \n");
 
-                //check if datatypes are same
-
-                switch (temporary_ht->data.type) {
-
-                    case T_INT:
-                        if (act_token->type != TT_INTEGER)
-                        {
-                            return ERR_DEF_TYPE;
-                        }
-                        break;
-                    case T_FLOAT64:
-
-                        if (act_token->type != TT_DECIMAL)
-                        {
-                            return ERR_DEF_TYPE;
-                        }
-                        break;
-                    case T_STRING:
-                        if (act_token->type != TT_STRING)
-                        {
-                            return ERR_DEF_TYPE;
-                        }
-                        break;
-                    default:
-                        return ERR_PARSER;
-                }
-
-                return ERR_OK; // zatial work in progress
-            }
-            else
-            {
-                PRINT_DEBUG("IF ID not found in local hash table \n");
-            }
-        }
     }
     if (act_token->type == TT_IDENTIFIER)
     {
-        if (htSearch(act_table,act_token->attribute.string->str) != NULL && act_token->attribute.datatype == T_FUNC)
-        {
-            PRINT_DEBUG("Volanie definovanej funkcie ! \n ");
-        }
-
-        prev_token = act_token;
-        size_t len = strlen(prev_token->attribute.string->str);
-        char* name_of_id = malloc(sizeof(len));
-        strcpy(name_of_id,prev_token->attribute.string->str);
-
-        if (htSearch(local_table,act_token->attribute.string->str) == NULL)
-        {
-            //nebol este inicializovany => next token musi byt :=
+        if (strcmp(act_token->attribute.string->str, "print") == 0) {
+            PRINT_DEBUG("Function pre declared print \n");
             GET_TOKEN;
-            if (act_token->type != TT_INIT)
-            {
-                return ERR_DEF;
-            }
-            else
-            {
-                PRINT_DEBUG("INIT \n");
-                init(prev_token);
-
-                data->var = true;
-                switch (prev_token->attribute.datatype) {
-
-                    case INT:
-                        data->type = T_INT;
-                        data->value.integer_value = prev_token->attribute.integer;
-                        break;
-                    case FLOAT64:
-                        data->type = T_FLOAT64;
-                        data->value.float_value = prev_token->attribute.decimal;
-                        break;
-                    case STRING:
-                        data->type = T_STRING;
-                        strcpy(data->value.string_value, prev_token->attribute.string->str);
-                        break;
-                    default:
-                        return ERR_PARSER;
+            if (error_code != 0) return error_code;
+            if (act_token->type == TT_L_BRACKET) {
+                int error_pom = terms();
+                if (error_pom != 0) {
+                    return error_pom;
                 }
-                htInsert(local_table, name_of_id, *data);
+                return ERR_OK;
             }
+        }
+        if (strcmp(act_token->attribute.string->str, "inputi") == 0) {
+            PRINT_DEBUG("INPUTI \n");
+            GET_TOKEN;
+            if (error_code != 0) return error_code;
+            if (act_token->type == TT_L_BRACKET) {
+                GET_TOKEN;
+                if (error_code != 0) return error_code;
+                if (act_token->type == TT_R_BRACKET) {
+                    if (cg_variants_of_input(INT) == true) {
+                        return ERR_OK;
+                    }
+                    else {
+                        return ERR_INTERNAL;
+                    }
+                }
+            }
+            else {
+                return ERR_PARSER;
+            }
+        }
+        if (strcmp(act_token->attribute.string->str, "inputf") == 0) {
+            PRINT_DEBUG("INPUTI \n");
+            GET_TOKEN;
+            if (error_code != 0) return error_code;
+            if (act_token->type == TT_L_BRACKET) {
+                GET_TOKEN;
+                if (error_code != 0) return error_code;
+                if (act_token->type == TT_R_BRACKET) {
+                    if (cg_variants_of_input(FLOAT64) == true) {
+                        return ERR_OK;
+                    }
+                    else {
+                        return ERR_INTERNAL;
+                    }
+                }
+            }
+            else {
+                return ERR_PARSER;
+            }
+        }
+    }
+    if (htSearch(act_table, act_token->attribute.string->str) != NULL && act_token->attribute.datatype == T_FUNC)
+    {
+        PRINT_DEBUG("Volanie definovanej funkcie ! \n ");
+    }
+
+    prev_token1 = act_token;
+    size_t len = strlen(prev_token1->attribute.string->str);
+    char* name_of_id = malloc(sizeof(len));
+    strcpy(name_of_id, prev_token1->attribute.string->str);
+
+    if (htSearch(local_table, act_token->attribute.string->str) == NULL)
+    {
+        //nebol este inicializovany => next token musi byt :=
+        GET_TOKEN; if (error_code != 0) return error_code;
+        if (act_token->type != TT_INIT)
+        {
+            return ERR_DEF;
         }
         else
         {
-            PRINT_DEBUG("ID sa uz nachadza v localhash table ! \n");
-            prev_token = act_token;
-            GET_TOKEN;
-            if (act_token->type == TT_ASSIGN)
+            PRINT_DEBUG("INIT \n");
+
+            error_code = init(prev_token1);
+            if (error_code != 0)
             {
-                if (assign(prev_token) != 0)
-                {
-                    return ERR_PARSER;
-                }
+                return error_code;
             }
-
-
+            htInsert(local_table, name_of_id, *data);
         }
     }
-    if (act_token->type == TT_COMMA) {
+    else
+    {
+        PRINT_DEBUG("ID sa uz nachadza v localhash table ! \n");
+        prev_token1 = act_token;
+        GET_TOKEN; if (error_code != 0) return error_code;
+        if (act_token->type == TT_ASSIGN)
+        {
+            error_code = assign(prev_token1);
+            if (error_code != 0)
+            {
+                return error_code;
+            }
+        }
+
+
+    }
+
+    if (act_token->type == TT_COMMA)
+    {
 
         int id_counter = 0;
         PRINT_DEBUG("ID, ID, IDn ... \n");
@@ -634,13 +708,13 @@ int statement ()
             if (act_token->type == TT_ASSIGN || act_token->type == TT_INIT) {
                 statements();
             }
-            GET_TOKEN;
+            GET_TOKEN; if (error_code != 0) return error_code;
             if (act_token->type != TT_IDENTIFIER) {
                 return ERR_PARSER;
             }
             data->var = true;
             htInsert(local_table, act_token->attribute.string->str, *data);
-            GET_TOKEN;
+            GET_TOKEN; if (error_code != 0) return error_code;
             id_counter++;
         }
     }
@@ -648,11 +722,11 @@ int statement ()
 }
 
 
-int blockBeginEOL_check ()
+int blockBeginEOL_check()
 {
     if (act_token->type == TT_R_BRACKET)
     {
-        GET_TOKEN;
+        GET_TOKEN; if (error_code != 0) return error_code;
     }
 
     if (act_token->type != TT_BLOCK_BEGIN)
@@ -662,7 +736,7 @@ int blockBeginEOL_check ()
     }
     else
     {
-        GET_TOKEN;
+        GET_TOKEN; if (error_code != 0) return error_code;
         if (act_token->type == TT_EOL)
         {
             PRINT_DEBUG("Block begin + EOL OK ! \n");
@@ -674,7 +748,7 @@ int blockBeginEOL_check ()
         }
     }
 }
-int blockEnd_EOL_check ()
+int blockEnd_EOL_check()
 {
     if (act_token->type != TT_BLOCK_END)
     {
@@ -683,7 +757,7 @@ int blockEnd_EOL_check ()
     }
     else
     {
-        GET_TOKEN;
+        GET_TOKEN; if (error_code != 0) return error_code;
         if (act_token->type == TT_EOL)
         {
             PRINT_DEBUG("Block END + EOL OK ! \n");
@@ -701,7 +775,7 @@ int IfblockEnd_check()
     if (act_token->type == TT_BLOCK_END)
     {
         prev_token->type = act_token->type;
-        GET_TOKEN;
+        GET_TOKEN; if (error_code != 0) return error_code;
     }
     else
     {
@@ -710,7 +784,7 @@ int IfblockEnd_check()
 
     if (act_token->attribute.keyword == ELSE && prev_token->type == TT_BLOCK_END)
     {
-        GET_TOKEN;
+        GET_TOKEN; if (error_code != 0) return error_code;
         return ERR_OK;
     }
     else
@@ -719,94 +793,139 @@ int IfblockEnd_check()
     }
 }
 
-int init (Token* left_id) {
+int init(Token* left_id) {
+
+    Token* prev_token = initToken();
 
     if (act_token->attribute.keyword == FOR)
     {
-        GET_TOKEN;
+        GET_TOKEN; if (error_code != 0) return error_code;
         if (act_token->type == TT_IDENTIFIER)
         {
             left_id = act_token;
         }
         else
         {
-            return ERR_OK;
+            return ERR_PARSER;
         }
-        GET_TOKEN;
-        if(act_token->type != TT_INIT)
+        GET_TOKEN; if (error_code != 0) return error_code;
+        if (act_token->type != TT_INIT)
         {
             return ERR_PARSER;
         }
-        GET_TOKEN;
+        init(prev_token);
+        GET_TOKEN; if (error_code != 0) return error_code;
     }
-    else
+    if (act_token->type == TT_INIT)
     {
-        GET_TOKEN;
-    }
+        error_code = GetToken(prev_token);
+        if (error_code != 0) return error_code;
 
-    /*if (act_token->type == TT_IDENTIFIER)
-    {
-        prev_token = act_token;
-        GET_TOKEN;
-        switch (act_token->type)
-        {
-            case TT_ADD:
-            case TT_SUB:
-            case TT_MUL:
-            case TT_DIV:
-                PRINT_DEBUG("Arithmetical operator calling expression analyser !\n");
-        }
-    }*/
-    if (act_token->type == TT_INTEGER) {
-        left_id->attribute.datatype = INT;
-        left_id->attribute.integer = act_token->attribute.integer;
-    }
-    if (act_token->type == TT_DECIMAL) {
-        left_id->attribute.datatype = FLOAT64;
-        left_id->attribute.decimal = act_token->attribute.decimal;
-    }
-    return ERR_OK;
-}
-
-int assign(Token* left_id)
-{
-    Token *prev_token = initToken();
-    if (act_token->type == TT_ASSIGN)
-    {
-        GetToken(prev_token);
-    }
-    if (prev_token->type == TT_IDENTIFIER)
-    {
-        if (act_token->attribute.datatype == T_FUNC)
-        {
-            PRINT_DEBUG("Assign func \n");
-        }
-        GET_TOKEN;
+        GET_TOKEN; if (error_code != 0) return error_code;
 
         // operator ID
 
         if (act_token->type >= TT_ADD && act_token->type <= TT_R_BRACKET)
         {
             ActivateResources(local_table);
-            int error_pom = expression(prev_token,act_token);
+            int error_pom = expression(prev_token, act_token);
             if (error_pom != 0)
             {
                 return error_pom;
             }
+            return ERR_OK;
         }
+        else
+        {
+            if (act_token->type == TT_EOL)
+            {
+                if (prev_token->type == TT_INTEGER) {
+                    left_id->attribute.datatype = INT;
+                    left_id->attribute.integer = prev_token->attribute.integer;
+                }
+                else if (prev_token->type == TT_DECIMAL) {
+                    left_id->attribute.datatype = FLOAT64;
+                    left_id->attribute.decimal = prev_token->attribute.decimal;
+                }
+                else if (prev_token->type == TT_STRING) {
+                    left_id->attribute.datatype = STRING;
+                    strCopyString(left_id->attribute.string, prev_token->attribute.string);
+                }
+
+                return ERR_OK;
+            }
+        }
+
+    }
+    return ERR_PARSER;
+}
+
+int assign(Token* left_id)
+{
+    Token* prev_token = initToken();
+    if (act_token->type == TT_ASSIGN)
+    {
+        GetToken(prev_token);
+    }
+    if (prev_token->type == TT_IDENTIFIER)
+    {
+        if (strcmp(prev_token->attribute.string->str,"print") == 0)
+        {
+            return ERR_SEM_OTHR;
+        }
+
+        if (act_token->attribute.datatype == T_FUNC)
+        {
+            PRINT_DEBUG("Assign func \n");
+        }
+        GET_TOKEN; if (error_code != 0) return error_code;
+
+        // operator ID
+
+        if (act_token->type >= TT_ADD && act_token->type <= TT_R_BRACKET)
+        {
+            ActivateResources(local_table);
+            int error_pom = expression(prev_token, act_token);
+            if (error_pom != 0)
+            {
+                return error_pom;
+            }
+            return ERR_OK;
+        }
+        else
+        {
+            if (act_token->type == TT_EOL)
+            {
+                if (prev_token->type == TT_INTEGER) {
+                    left_id->attribute.datatype = INT;
+                    left_id->attribute.integer = prev_token->attribute.integer;
+                }
+                else if (prev_token->type == TT_DECIMAL) {
+                    left_id->attribute.datatype = FLOAT64;
+                    left_id->attribute.decimal = prev_token->attribute.decimal;
+                }
+                else if (prev_token->type == TT_STRING) {
+                    left_id->attribute.datatype = STRING;
+                    strCopyString(left_id->attribute.string, prev_token->attribute.string);
+                }
+
+                return ERR_OK;
+            }
+        }
+        return ERR_PARSER;
     }
 }
 
-int terms ()
+int terms()
 {
     PRINT_DEBUG("Func Terms printing \n");
-    GET_TOKEN;
-
+    GET_TOKEN; if (error_code != 0) return error_code;
+    TableItem* data;
     switch (act_token->type) {
 
         case TT_IDENTIFIER:
-            TableItem* data;
-            data = htSearch(act_table,act_token->attribute.string->str);
+
+            data = htSearch(act_table, act_token->attribute.string->str);
             if (data != NULL)
             {
                 if (cg_print_id(data) == false)
@@ -814,7 +933,7 @@ int terms ()
                     return ERR_INTERNAL;
                 }
             }
-            else if ((data = htSearch(local_table,act_token->attribute.string->str) ) != NULL)
+            else if ((data = htSearch(local_table, act_token->attribute.string->str)) != NULL)
             {
                 if (cg_print_id(data) == false)
                 {
@@ -847,12 +966,14 @@ int terms ()
         case TT_STRING:
 
             break;
-
+        case TT_R_BRACKET:
+            ADD_CODE("\n");
+            return ERR_OK;
         default:
             return ERR_PARSER;
     }
 
-    GET_TOKEN;
+    GET_TOKEN; if (error_code != 0) return error_code;
 
     switch (act_token->type) {
         case TT_R_BRACKET:
@@ -865,7 +986,3 @@ int terms ()
             return ERR_PARSER;
     }
 }
-
-
-
-

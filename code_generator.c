@@ -208,78 +208,6 @@ bool cg_var_declare(char* id)
     return true;
 }
 
-bool cg_def_val_var(DataType value)
-{
-    switch (value) {
-
-    case T_INT:
-        ADD_CODE("int@0");
-        break;
-    case T_FLOAT64:
-        ADD_CODE("float@0");
-        break;
-    case T_STRING:
-        ADD_CODE("string@");
-        break;
-
-    default:
-        return false;
-    }
-    return true;
-}
-
-bool cg_var_to_default_val(char* id, DataType value)
-{
-    ADD_CODE("MOVE LF@");
-    ADD_CODE(id);
-    ADD_CODE(" "); // space ! MOVE LF@id int@x
-    if (cg_def_val_var(value) == 1)
-    {
-        ADD_CODE("\n");
-        return true;
-    }
-    return false;
-}
-
-bool cg_var_val(Token token)
-{
-    char val_string[MAX_DIGITS];
-
-    switch (token.type) {
-
-    case TT_INTEGER:
-        sprintf(val_string, "%d", token.attribute.integer);
-        ADD_CODE("int@");
-        ADD_CODE(val_string);
-
-        break;
-    case TT_DECIMAL:
-        sprintf(val_string, "%a", token.attribute.decimal);
-        ADD_CODE("float@");
-        ADD_CODE(val_string);
-
-        break;
-    case TT_STRING:
-        break;
-
-    default:
-        return false;
-    }
-    return true;
-}
-
-bool cg_var_to_any_val(char* id, Token token)
-{
-    ADD_CODE("MOVE LF@");
-    ADD_CODE(id);
-    ADD_CODE(" "); // space ! MOVE LF@id int@x
-    if (cg_var_val(token) == 0)
-    {
-        return false;
-    }
-    return true;
-}
-
 bool cg_print_id(TableItem* data){
     ADD_INSTR("\n # Print id");
     ADD_CODE("WRITE");
@@ -312,39 +240,5 @@ bool cg_print_value(char* val, DataType type)
 
         default:
             return false;
-    }
-}
-
-bool cg_find_type(Datatype data_t)
-{
-    switch (data_t) {
-
-        case INT:
-            ADD_CODE("int");
-            return true;
-
-        case FLOAT64:
-            ADD_CODE("float");
-            return true;
-        case STRING:
-            ADD_CODE("string");
-            return true;
-        default:
-            return false;
-    }
-}
-
-bool cg_variants_of_input(Datatype data_t)
-{
-    ADD_INSTR("\n # CG func input");
-    ADD_CODE("READ GF@$$expr_result");
-    if (cg_find_type(data_t) == true)
-    {
-        ADD_CODE("\n");
-        return true;
-    }
-    else
-    {
-        return false;
     }
 }
