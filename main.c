@@ -1,3 +1,9 @@
+/**
+ * Implementation of imperative language IFJ2020 compiler
+ * @file main.c
+ * @author Lukáš Chmelo (xchmel33), Matúš Nosko(xnosko06), Tomáš Čechvala(xcechv03)
+ * @brief main function implementation
+ */
 #define _CRT_SECURE_NO_WARNINGS
 
 #include <stdio.h>
