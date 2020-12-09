@@ -250,10 +250,13 @@ int checkTypes(Token* operand1,Token* operand2) {
     return EXP_OK;
 }
 
+
+
 Token* checkRule(Psa_stack* Rulestack,int *error_code) { //codegen required
     
-    Token* operand1 = s_pop(Rulestack);
-    Token* operator,* operand2;
+    Token *operand1 = s_pop(Rulestack);
+    Token *operator = initToken();
+    Token *operand2 = initToken();
     TableItem* ID;
 
     // E -> E+E
@@ -306,6 +309,47 @@ Token* checkRule(Psa_stack* Rulestack,int *error_code) { //codegen required
             }
             else {
                 //function call
+                GetToken(operator); //left bracket or error
+                if (operator->type != TT_L_BRACKET) {
+                    *error_code = ERR_PARSER;
+                    return EMPTY_TOKEN;
+                }
+                GetToken(operand2); //function argument type check
+                if (ID->data.param[0].type != operand2->type) {
+                    *error_code = ERR_FUNC;
+                    return EMPTY_TOKEN;
+                }
+                GetToken(operator); //right bracket or error
+                if (operator->type != TT_R_BRACKET) {
+                    *error_code = ERR_PARSER;
+                    return EMPTY_TOKEN;
+                }
+                if (ID->data.return_type == T_NONE) {
+                    *error_code = ERR_MATH_TYPE;
+                    return EMPTY_TOKEN;
+                }
+                else if (ID->data.return_type == T_INT) {
+                    *error_code = EXP_OK;
+                    //operator will be used to return integer value for further use
+                    operator->type = TT_EXPRESSION;
+                    strClear(operator->attribute.string->str);
+                    operator->attribute.integer = 0;
+                    return operator;
+                }
+                else if (ID->data.return_type == T_DOUBLE) {
+                    *error_code = EXP_OK;
+                    //operator will be used to return float value for further use
+                    operator->type = TT_EXPRESSION;
+                    strClear(operator->attribute.string->str);
+                    operator->attribute.decimal = 0;
+                    return operator;
+                }
+                else if (ID->data.return_type == T_STRING) {
+                    *error_code = EXP_OK;
+                    //operator will be used to return string value for further use
+                    operator->type = TT_EXPRESSION;
+                    return operator;
+                }
             }
         }
         
