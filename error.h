@@ -1,3 +1,9 @@
+/**
+ * Implementation of imperative language IFJ2020 compiler
+ * @file error.h
+ * @author Lukáš Chmelo (xchmel33)
+ * @brief error codes implementation
+ */
 
 #ifndef ERROR_H
 #define ERROR_H
