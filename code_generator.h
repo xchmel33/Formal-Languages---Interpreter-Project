@@ -37,7 +37,6 @@ bool cg_main();
 bool cg_main_end();
 bool cg_func_start(char* id);
 bool cg_func_end(char* id);
-
 bool cg_stack_push_int(int value);
 bool cg_stack_push_double(double value);
 bool cg_stack_push_string(char* value);

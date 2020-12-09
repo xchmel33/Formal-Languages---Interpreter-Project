@@ -208,6 +208,26 @@ bool cg_var_declare(char* id)
     return true;
 }
 
+bool cg_def_val_var(DataType value)
+{
+    switch (value) {
+
+    case T_INT:
+        ADD_CODE("int@0");
+        break;
+    case T_FLOAT64:
+        ADD_CODE("float@0");
+        break;
+    case T_STRING:
+        ADD_CODE("string@");
+        break;
+
+    default:
+        return false;
+    }
+    return true;
+}
+
 bool cg_print_id(TableItem* data){
     ADD_INSTR("\n # Print id");
     ADD_CODE("WRITE");
@@ -240,5 +260,39 @@ bool cg_print_value(char* val, DataType type)
 
         default:
             return false;
+    }
+}
+
+bool cg_find_type(Datatype data_t)
+{
+    switch (data_t) {
+
+        case INT:
+            ADD_CODE("int");
+            return true;
+
+        case FLOAT64:
+            ADD_CODE("float");
+            return true;
+        case STRING:
+            ADD_CODE("string");
+            return true;
+        default:
+            return false;
+    }
+}
+
+bool cg_variants_of_input(Datatype data_t)
+{
+    ADD_INSTR("\n # CG func input");
+    ADD_CODE("READ GF@$$expr_result");
+    if (cg_find_type(data_t) == true)
+    {
+        ADD_CODE("\n");
+        return true;
+    }
+    else
+    {
+        return false;
     }
 }
