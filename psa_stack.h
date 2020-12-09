@@ -1,6 +1,9 @@
-//
-// Created by Matúš on 26. 11. 2020.
-//
+/**
+ * Implementation of imperative language IFJ2020 compiler
+ * @file psa_stack.h
+ * @author Lukáš Chmelo (xchmel33), Matúš Nosko (xnosko06)
+ * @brief Stack for precedence analysis
+ */
 
 #ifndef IFJSTACK_PSA_STACK_H
 #define IFJSTACK_PSA_STACK_H

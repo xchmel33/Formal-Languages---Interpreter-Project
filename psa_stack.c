@@ -1,3 +1,9 @@
+/**
+ * Implementation of imperative language IFJ2020 compiler
+ * @file psa_stack.c
+ * @author Lukáš Chmelo (xchmel33), Matúš Nosko (xnosko06)
+ * @brief Stack for precedence analysis
+ */
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -7,9 +13,9 @@
 
 
 
-Psa_stack* s_init()
+Psa_stack* s_init()                                 //stack initialization
 {
-    Psa_stack* new_stack = malloc(sizeof(Psa_stack));
+    Psa_stack* new_stack = malloc(sizeof(Psa_stack));           //allocate memory for stack
 
     if (new_stack == NULL)
     {
@@ -22,12 +28,12 @@ Psa_stack* s_init()
     return new_stack;
 }
 
-void s_destroy(Psa_stack* stack)
+void s_destroy(Psa_stack* stack)            //free allocated memory for stack
 {
     free(stack);
 }
 
-int s_push(Psa_stack* stack, Token *token)
+int s_push(Psa_stack* stack, Token *token)      //add new element on top of stack
 {
     Stack_item* new_i = malloc(sizeof(Stack_item));
     if (new_i == NULL)
@@ -57,7 +63,7 @@ int s_push(Psa_stack* stack, Token *token)
     return ERR_OK;
 }
 
-Token* s_pop(Psa_stack* stack)
+Token* s_pop(Psa_stack* stack)              //remove element on top of stack
 {
     if (stack->top != NULL)
     {
@@ -68,7 +74,7 @@ Token* s_pop(Psa_stack* stack)
     return NULL;
 }
 
-void s_print(Psa_stack* stack, char* name)
+void s_print(Psa_stack* stack, char* name)          //print stack
 {
     printf("START OF %s STACK:\n", name);
     stack->active = stack->top;
