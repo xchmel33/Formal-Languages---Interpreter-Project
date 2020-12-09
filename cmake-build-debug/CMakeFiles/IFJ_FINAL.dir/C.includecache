@@ -6,20 +6,6 @@
 
 #IncludeRegexTransform: 
 
-C:/CLionProjects/School/IFJ/code_generator.c
-stdbool.h
--
-stdio.h
--
-code_generator.h
-C:/CLionProjects/School/IFJ/code_generator.h
-symtable.h
-C:/CLionProjects/School/IFJ/symtable.h
-prec_analysis.h
-C:/CLionProjects/School/IFJ/prec_analysis.h
-parser.h
-C:/CLionProjects/School/IFJ/parser.h
-
 C:/CLionProjects/School/IFJ/code_generator.h
 dstring.h
 C:/CLionProjects/School/IFJ/dstring.h
@@ -29,22 +15,6 @@ C:/CLionProjects/School/IFJ/parser.h
 C:/CLionProjects/School/IFJ/dstring.h
 
 C:/CLionProjects/School/IFJ/error.h
-
-C:/CLionProjects/School/IFJ/main.c
-stdio.h
--
-stdlib.h
--
-string.h
--
-scanner.h
-C:/CLionProjects/School/IFJ/scanner.h
-parser.h
-C:/CLionProjects/School/IFJ/parser.h
-errno.h
-C:/CLionProjects/School/IFJ/errno.h
-code_generator.h
-C:/CLionProjects/School/IFJ/code_generator.h
 
 C:/CLionProjects/School/IFJ/parser.c
 stdio.h
@@ -76,28 +46,6 @@ C:/CLionProjects/School/IFJ/scanner.h
 symtable.h
 C:/CLionProjects/School/IFJ/symtable.h
 
-C:/CLionProjects/School/IFJ/prec_analysis.c
-stdio.h
--
-stdlib.h
--
-string.h
--
-stdbool.h
--
-error.h
-C:/CLionProjects/School/IFJ/error.h
-parser.h
-C:/CLionProjects/School/IFJ/parser.h
-psa_stack.h
-C:/CLionProjects/School/IFJ/psa_stack.h
-scanner.h
-C:/CLionProjects/School/IFJ/scanner.h
-dstring.h
-C:/CLionProjects/School/IFJ/dstring.h
-code_generator.h
-C:/CLionProjects/School/IFJ/code_generator.h
-
 C:/CLionProjects/School/IFJ/prec_analysis.h
 scanner.h
 C:/CLionProjects/School/IFJ/scanner.h
@@ -113,16 +61,6 @@ C:/CLionProjects/School/IFJ/scanner.h
 C:/CLionProjects/School/IFJ/scanner.h
 dstring.h
 C:/CLionProjects/School/IFJ/dstring.h
-
-C:/CLionProjects/School/IFJ/symtable.c
-stdlib.h
--
-string.h
--
-stdio.h
--
-symtable.h
-C:/CLionProjects/School/IFJ/symtable.h
 
 C:/CLionProjects/School/IFJ/symtable.h
 stdlib.h

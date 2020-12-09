@@ -366,7 +366,7 @@ int statements()
             case FOR:
                 PRINT_DEBUG("Statements FOR \n");
                 // for -> init -> ; -> expres -> ; -> assign -> { eol statements... eol }
-                if (init() != 0)
+                if (init(act_token) != 0)
                 {
                     return ERR_PARSER;
                 }
@@ -627,7 +627,25 @@ int IfblockEnd_check()
 
 int init (Token* left_id) {
     Token *prev_token = initToken();
-    GET_TOKEN;
+    if (act_token->attribute.keyword == FOR)
+    {
+        GET_TOKEN;
+        if (act_token->type == TT_IDENTIFIER)
+        {
+            left_id = act_token;
+        }
+        else
+        {
+            return ERR_OK;
+        }
+        GET_TOKEN;
+        if(act_token->type != TT_INIT)
+        {
+            return ERR_PARSER;
+        }
+        GET_TOKEN;
+    }
+
     /*if (act_token->type == TT_IDENTIFIER)
     {
         prev_token = act_token;
@@ -670,32 +688,11 @@ int assign(Token* left_id)
 
         // operator ID
 
-        switch (act_token->type) {
-
-            case TT_ADD:
-                GET_TOKEN;
-                if (act_token->type == TT_IDENTIFIER)
-                {
-                    if (checkTypes(prev_token,act_token) != 0)
-                        return ERR_DEF_TYPE;
-                }
-                else
-                {
-                    return  ERR_PARSER;
-                }
-                break;
-            case TT_SUB:
-
-                break;
-            case TT_MUL:
-
-                break;
-            case TT_DIV:
-
-                break;
-            default:
-                break;
+        if (act_token->type >= TT_ADD && act_token->type <= TT_R_BRACKET)
+        {
+            expression(prev_token,act_token);
         }
+
 
 
 
