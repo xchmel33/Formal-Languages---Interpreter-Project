@@ -92,7 +92,7 @@ int GetToken(Token* token) {
                     strAddChar(S_Attribute,c);
                     state = SS_NUMBER;
                 }
-                else if (isspace(c)) {
+                else if (isspace(c) || c == '\t') {
                     state = SS_START;
                 }
                 else if (isalpha(c) || c == '_') {
