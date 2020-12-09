@@ -1,4 +1,3 @@
-
 #ifndef SCANNER_H
 #define SCANNER_H
 #include "dstring.h"
@@ -58,7 +57,7 @@ typedef struct {
     Keyword keyword;
     Datatype datatype;
     int integer;
-    float decimal;
+    double decimal;
     dstring* string;
 }TokenAttribute;
 
@@ -74,6 +73,7 @@ typedef enum {
     SS_NUMBER,
     SS_NUMBER_DECIMAL,
     SS_NUMBER_EXPONENT,
+    SS_NUMBER_EXPONENT_SIGN,
     SS_BACKSLASH,
     SS_LINE_COMMENTARY,
     SS_BLOCK_COMMENTARY,
