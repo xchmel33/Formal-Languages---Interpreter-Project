@@ -9,7 +9,8 @@
 #include "symtable.h"
 
 #define GET_TOKEN \
-    GetToken(act_token)
+    error_code = GetToken(act_token); \
+    if (error_code != 0) return error_code
 
 void set_active_token(Token* token);
 void set_active_table(HashTable* table);

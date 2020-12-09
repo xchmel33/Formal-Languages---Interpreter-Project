@@ -21,6 +21,7 @@
 Token* act_token;
 HashTable* act_table; //Global
 HashTable* local_table; //Local
+int error_code = 0;
 
 int depth_level = 0;  //level zanorenia do funkcie
 
@@ -71,6 +72,7 @@ int body() {
     PRINT_DEBUG("Body start \n");
 
     GET_TOKEN;
+    PRINT_DEBUG("AFTER fisrt GET TOKEN \n");
     if (act_token->type == TT_EOL)
     {
         do {
@@ -95,8 +97,12 @@ int body() {
             GET_TOKEN;
         }
     }
-    if (act_token->attribute.keyword == FUNC) // ID "FUNC" -> "ID"
+    if (act_token->attribute.keyword == FUNC ) // ID "FUNC" -> "ID"
     {
+        /*if (strcmp(act_token->attribute.string->str,"func") != 0)
+        {
+            return ERR_PARSER;
+        }*/
         error_guard = def_func(); //"ID"
         if (error_guard != 0)
         {
@@ -106,7 +112,11 @@ int body() {
     }
     if (act_token->type == TT_IDENTIFIER)
     {
-        statement();
+        error_code = statement();
+        if (error_code != 0)
+        {
+            return error_code;
+        }
     }
 
 

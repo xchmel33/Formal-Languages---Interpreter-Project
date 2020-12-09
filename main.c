@@ -159,5 +159,5 @@ int main() {
     fclose(f);
     free(token);
     htClearAll(pTable);
-    return 0;
+    return error;
 }
