@@ -23,6 +23,7 @@ int statements();
 int statement ();
 
 int blockBeginEOL_check ();
+int blockEnd_EOL_check ();
 int IfblockEnd_check();
 
 int init ();

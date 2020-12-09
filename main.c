@@ -10,18 +10,9 @@
 #include "error.h"
 #include "code_generator.h"
 
-int main(int argc, char** argv) {
-    if (argc != 2) {
-        // argv[0] == interpret
-        // argv[1] == filename
-        // and nothing else!
-        return ERR_INTERNAL;
-    }
-    FILE* f = fopen(argv[1], "r");
-    if (f == NULL) {
-        return ERR_INTERNAL;
-    }
-    SetSource(f);
+int main() {
+
+    SetSource(stdin);
     Token* token;
     token = initToken();
     HashTable* pTable = (HashTable*)malloc(sizeof(HashTable));
@@ -32,13 +23,12 @@ int main(int argc, char** argv) {
     int error = body();
     if (error != 0)
     {
+        printf("%d \n",error);
         return error;
     }
     htPrintTable(pTable);
     code_to_stdout();
-    fclose(f);
     free(token);
     htClearAll(pTable);
-    fclose(f);
     return 0;
 }

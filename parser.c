@@ -22,11 +22,9 @@ Token* act_token;
 HashTable* act_table; //Global
 HashTable* local_table; //Local
 int error_code = 0;
+int iteration_count = 0;
 
-int depth_level = 0;  //level zanorenia do funkcie
 
-int iteration_count = 0; //pocet iteracii
-int error_guard = 0;
 unsigned param = 0;
 
 dstring code;
@@ -103,11 +101,11 @@ int body() {
         {
             return ERR_PARSER;
         }*/
-        error_guard = def_func(); //"ID"
-        if (error_guard != 0)
+        error_code = def_func(); //"ID"
+        if (error_code != 0)
         {
             PRINT_DEBUG("Error guard def func ! \n");
-            return error_guard;
+            return error_code;
         }
     }
     if (act_token->type == TT_IDENTIFIER)
@@ -132,7 +130,7 @@ int def_func()
 {
     PRINT_DEBUG("Def func \n");
 
-    depth_level++;
+
     GET_TOKEN;
 
     if (act_token->type == TT_IDENTIFIER)
@@ -497,7 +495,7 @@ int statements()
     if (act_token->type == TT_BLOCK_END)
     {
         PRINT_DEBUG("Block end of func ! \n");
-        if (IfblockEnd_check() == 0 )
+        if (blockEnd_EOL_check () == 0 )
         {
             return ERR_OK;
         }
@@ -670,9 +668,33 @@ int blockBeginEOL_check ()
             PRINT_DEBUG("Block begin + EOL OK ! \n");
             return ERR_OK;
         }
+        else
+        {
+            return ERR_PARSER;
+        }
     }
 }
-
+int blockEnd_EOL_check ()
+{
+    if (act_token->type != TT_BLOCK_END)
+    {
+        PRINT_DEBUG("Block begin + EOL ERROR ! \n");
+        return ERR_PARSER;
+    }
+    else
+    {
+        GET_TOKEN;
+        if (act_token->type == TT_EOL)
+        {
+            PRINT_DEBUG("Block END + EOL OK ! \n");
+            return ERR_OK;
+        }
+        else
+        {
+            return ERR_PARSER;
+        }
+    }
+}
 int IfblockEnd_check()
 {
     Token* prev_token = malloc(sizeof(Token));
@@ -690,6 +712,10 @@ int IfblockEnd_check()
     {
         GET_TOKEN;
         return ERR_OK;
+    }
+    else
+    {
+        return ERR_PARSER;
     }
 }
 
