@@ -26,7 +26,7 @@ HashTable* act_table; //Global
 HashTable* local_table; //Local
 
 int depth_level = 0;  //level zanorenia do funkcie
-bool func_flag = 0; //flag funkcie 0 - 1
+
 int iteration_count = 0; //pocet iteracii
 int error_guard = 0;
 unsigned param = 0;
@@ -84,6 +84,7 @@ int body() {
     {
         local_table = (HashTable*)malloc(sizeof(HashTable));
         strInit(&code);
+        cg_header();
         htInit(local_table);
         base_cond(act_token);
         GET_TOKEN;
@@ -114,7 +115,7 @@ int body() {
 int def_func()
 {
     PRINT_DEBUG("Def func \n");
-    func_flag = 1;
+    int in_func_flag;
     depth_level++;
     GET_TOKEN;
 
@@ -141,6 +142,7 @@ int def_func()
         }
         else
         {
+            in_func_flag = 1;
             cg_func_start(act_token->attribute.string->str);
         }
         func.next_item = NULL;
@@ -169,6 +171,7 @@ int def_func()
                 }
                 else
                 {
+                    in_func_flag = 0;
                     cg_func_end(func.key);
                 }
             }

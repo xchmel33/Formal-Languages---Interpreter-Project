@@ -30,6 +30,7 @@
 
 #define MAX_DIGITS 40
 
+bool cg_header();
 bool cg_main();
 bool cg_main_end();
 bool cg_func_start(char* id);
@@ -48,6 +49,7 @@ bool cg_var_val(Token token);
 bool cg_var_to_any_val(char* id, Token token);
 bool cg_print_id(TableItem* data);
 bool cg_print_value(char* val, DataType type);
+bool cg_variants_of_input();
 int code_to_stdout();
 
 #endif //IFJ_FINAL_CODE_GENERATOR_H

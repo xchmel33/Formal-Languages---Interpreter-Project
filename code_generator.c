@@ -14,11 +14,12 @@
 dstring code;
 HashTable globalHt;
 
-bool cg_code_header()
+bool cg_header()
 {
-    ADD_INSTR(".IFJcode20");
     ADD_INSTR("#Program start");
+    ADD_INSTR(".IFJcode20");
 
+    ADD_INSTR("#Def basic vars")
     ADD_INSTR("DEFVAR GF@$$expr_result");
     ADD_INSTR("DEFVAR GF@$$op1");
     ADD_INSTR("DEFVAR GF@$$op2");
@@ -249,7 +250,7 @@ bool cg_var_val(Token token)
 
         break;
     case TT_DECIMAL:
-        sprintf(val_string, "%f", token.attribute.decimal);
+        sprintf(val_string, "%a", token.attribute.decimal);
         ADD_CODE("float@");
         ADD_CODE(val_string);
 
@@ -306,5 +307,39 @@ bool cg_print_value(char* val, DataType type)
 
         default:
             return false;
+    }
+}
+
+bool cg_find_type(Datatype data_t)
+{
+    switch (data_t) {
+
+        case INT:
+            ADD_CODE("int");
+            return true;
+
+        case FLOAT64:
+            ADD_CODE("float");
+            return true;
+        case STRING:
+            ADD_CODE("string");
+            return true;
+        default:
+            return false;
+    }
+}
+
+bool cg_variants_of_input(Datatype data_t)
+{
+    ADD_INSTR("\n # CG func input");
+    ADD_CODE("READ GF@$$expr_result");
+    if (cg_find_type(data_t) == true)
+    {
+        ADD_CODE("\n");
+        return true;
+    }
+    else
+    {
+        return false;
     }
 }
