@@ -25,11 +25,6 @@ bool cg_header()
     ADD_INSTR("DEFVAR GF@$$expr_result");
     ADD_INSTR("DEFVAR GF@$$op1");
     ADD_INSTR("DEFVAR GF@$$op2");
-    //ADD_INSTR("DEFVAR GF@$$typ_op_1");
-    ADD_INSTR("DEFVAR GF@$$concat");
-    //ADD_INSTR("DEFVAR GF@$$typ_op_2");
-    //ADD_INSTR("DEFVAR GF@$$expr_result_type");
-
     ADD_INSTR("JUMP $$main");
 
     return true;
@@ -139,6 +134,18 @@ bool cg_stack_push_global(char* key)
     return true;
 }
 
+bool cg_stack_pop_id(char* var, bool local) 
+{
+    ADD_CODE("POPS ");
+    if (local) 
+        ADD_CODE("LF@");
+    else 
+        ADD_CODE("GF@");
+    ADD_CODE(var); 
+    ADD_CODE("\n");
+    return true;
+}
+
 bool cg_stack_push_identifier(char* key, HashTable *globaltable)
 {
     ADD_CODE("PUSHS ");
@@ -228,7 +235,60 @@ bool cg_def_val_var(DataType value)
     return true;
 }
 
-bool cg_print_id(TableItem* data){
+bool cg_var_to_default_val(char* id, DataType value)
+{
+    ADD_CODE("MOVE LF@");
+    ADD_CODE(id);
+    ADD_CODE(" "); // space ! MOVE LF@id int@x
+    if (cg_def_val_var(value) == 1)
+    {
+        ADD_CODE("\n");
+        return true;
+    }
+    return false;
+}
+
+bool cg_var_val(Token token)
+{
+    char val_string[MAX_DIGITS];
+
+    switch (token.type) {
+
+    case TT_INTEGER:
+        sprintf(val_string, "%d", token.attribute.integer);
+        ADD_CODE("int@");
+        ADD_CODE(val_string);
+
+        break;
+    case TT_DECIMAL:
+        sprintf(val_string, "%a", token.attribute.decimal);
+        ADD_CODE("float@");
+        ADD_CODE(val_string);
+
+        break;
+    case TT_STRING:
+        break;
+
+    default:
+        return false;
+    }
+    return true;
+}
+
+bool cg_var_to_any_val(char* id, Token token)
+{
+    ADD_CODE("MOVE LF@");
+    ADD_CODE(id);
+    ADD_CODE(" "); // space ! MOVE LF@id int@x
+    if (cg_var_val(token) == 0)
+    {
+        return false;
+    }
+    return true;
+}
+
+bool cg_print_id(TableItem* data)
+{
     ADD_INSTR("\n # Print id");
     ADD_CODE("WRITE");
     ADD_CODE(" ");
@@ -295,4 +355,21 @@ bool cg_variants_of_input(Datatype data_t)
     {
         return false;
     }
+}
+bool cg_concat() 
+{   
+    cg_stack_pop_id("$$op_2", false);
+    cg_stack_pop_id("$$op_1", true);
+    cg_stack_push_global("$$expr_result");
+    ADD_CODE("CONCAT GF@$$expr_result GF@$$op_1 GF@$$op_2\n");
+    ADD_CODE("\n");
+    return true;
+}
+
+bool cg_other_operations(TokenType operation) 
+{
+    cg_stack_push_global("$$expr_result");
+    cg_operation(operation);
+    ADD_CODE("\n");
+    return true;
 }
