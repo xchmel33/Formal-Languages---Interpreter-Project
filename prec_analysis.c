@@ -118,7 +118,7 @@ Datatype getType(Token *token) {
     if (token->attribute.integer != UNDEFINED_TOKEN_ATTRIBUTE) {
         return INT;
     }
-    else if (token->attribute.decimal = UNDEFINED_TOKEN_ATTRIBUTE) {
+    else if (token->attribute.decimal != UNDEFINED_TOKEN_ATTRIBUTE) {
         return FLOAT64;
     }
     else if (htSearch(table, token->attribute.string->str) != NULL) {
@@ -394,6 +394,10 @@ int expression(Token* prev_token, Token* act_token) {
     do {
         A = topTerm(ActiveStack);
         S = getSymbol(A, B);
+        if (S == NULL)
+        {
+            return ERR_PARSER;
+        }
         if (B->type != TT_EMPTY || A->type != TT_EMPTY) {
             switch (S->attribute.string->str[0])
             {

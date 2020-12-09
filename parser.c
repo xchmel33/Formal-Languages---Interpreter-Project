@@ -8,9 +8,6 @@
 #include "error.h"
 #include "parser.h"
 #include "prec_analysis.h"
-#include "dstring.h"
-#include "scanner.h"
-#include "symtable.h"
 #include "code_generator.h"
 
 #define DEBUG 1
@@ -119,6 +116,7 @@ int body() {
         return ERR_OK;
     }
     body();
+    return ERR_INTERNAL;
 }
 
 int def_func()
@@ -142,6 +140,54 @@ int def_func()
                     return error_pom;
                 }
                 return ERR_OK;
+            }
+        }
+        if (strcmp(act_token->attribute.string->str,"inputi") == 0)
+        {
+            PRINT_DEBUG("INPUTI \n");
+            GET_TOKEN;
+            if (act_token->type == TT_L_BRACKET)
+            {
+                GET_TOKEN;
+                if (act_token->type == TT_R_BRACKET)
+                {
+                    if (cg_variants_of_input(INT) == true)
+                    {
+                        return ERR_OK;
+                    }
+                    else
+                    {
+                        return ERR_INTERNAL;
+                    }
+                }
+            }
+            else
+            {
+                return ERR_PARSER;
+            }
+        }
+        if (strcmp(act_token->attribute.string->str,"inputf") == 0)
+        {
+            PRINT_DEBUG("INPUTI \n");
+            GET_TOKEN;
+            if (act_token->type == TT_L_BRACKET)
+            {
+                GET_TOKEN;
+                if (act_token->type == TT_R_BRACKET)
+                {
+                    if (cg_variants_of_input(FLOAT64) == true)
+                    {
+                        return ERR_OK;
+                    }
+                    else
+                    {
+                        return ERR_INTERNAL;
+                    }
+                }
+            }
+            else
+            {
+                return ERR_PARSER;
             }
         }
         TableItem func;
@@ -205,16 +251,14 @@ int params(TableItem* func)
     int param_counter = 0;
     while (1)
     {
-        size_t len = 0;
+
         if (act_token->type == TT_L_BRACKET) {
             GET_TOKEN;
         }
-        /*if (act_token->type == TT_R_BRACKET) {
-            GET_TOKEN;
-        }*/
+
         if (act_token->type == TT_IDENTIFIER) {
-            len = strlen(act_token->attribute.string->str);
-            data->param[param].identifier = malloc(sizeof(len * sizeof(char)));
+
+            data->param[param].identifier = malloc(sizeof(char));
             strcpy(data->param[param].identifier, act_token->attribute.string->str);
             param_counter++;
             GET_TOKEN;
@@ -233,6 +277,8 @@ int params(TableItem* func)
                     data->param[param].type = 2;
                     GET_TOKEN;
                     break;
+                default:
+                    return ERR_PARSER;
             }
         }
 
@@ -352,7 +398,7 @@ int params(TableItem* func)
 
 int statements()
 {
-    Token* prev_token;
+
     while (act_token->type != TT_BLOCK_BEGIN && act_token->type != TT_BLOCK_END)
     {
         GET_TOKEN;
@@ -437,41 +483,6 @@ int statements()
             {
                 return ERR_DEF;
             }
-            else
-            {
-                GET_TOKEN;
-                if (act_token->type != TT_EOL)
-                {
-                    return ERR_PARSER;
-                }
-            }
-            /*
-            prev_token = act_token; //v pripade ak by som ho v buducnosti potreboval
-            GET_TOKEN;
-            switch (act_token->type) {
-                case TT_IDENTIFIER:
-                    return ERR_PARSER; //ID ID x not ok
-
-                case TT_INIT:
-                    PRINT_DEBUG("Statements init ! \n");
-                    init();
-                    break;
-                case TT_ASSIGN:
-                    PRINT_DEBUG("Statements assign \n");
-                    GET_TOKEN;
-                    value();
-                    break;
-                case TT_INTEGER:
-                case TT_STRING:
-                case TT_DECIMAL:
-                    PRINT_DEBUG("Statements int string decimal alias <value>\n");
-                    prev_token = act_token;
-                    GET_TOKEN;
-                    break;
-                case TT_COMMA:
-                    break;
-
-            }*/
         }
     }
     if (act_token->type == TT_BLOCK_END)
@@ -490,6 +501,7 @@ int statements()
     {
         return ERR_OK;
     }
+    return ERR_OK;
 }
 int statement ()
 {
@@ -741,7 +753,11 @@ int assign(Token* left_id)
         if (act_token->type >= TT_ADD && act_token->type <= TT_R_BRACKET)
         {
             ActivateResources(local_table);
-            expression(prev_token,act_token);
+            int error_pom = expression(prev_token,act_token);
+            if (error_pom != 0)
+            {
+                return error_pom;
+            }
         }
     }
 }
