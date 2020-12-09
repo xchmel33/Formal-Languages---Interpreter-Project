@@ -1,5 +1,6 @@
-PROJ=proj
-FILES=main.c scanner.c string.c symtable.c stack.c instlist.c expression.c parser.c
+PROJ=main
+FILES= main.c scanner.c parser.c symtable.c code_generator.c dstring.c prec_analysis.c psa_stack.c
+HEADS= scanner.h error.h symtable.h code_generator.h dstring.h prec_analysis.h psa_stack.h
 CFLAGS=-std=gnu99 -Wall -Wextra -Werror -pedantic -pthread
 CC=gcc
 RM=rm -f
@@ -8,9 +9,6 @@ all : $(PROJ)
 
 $(PROJ) : $(FILES)
 		$(CC) $(CFLAGS) -o $(PROJ) $(FILES) -lm
-
-test :
-	./tests/tests_runner.sh
 
 clean :
 	$(RM) *.o $(PROJ)
