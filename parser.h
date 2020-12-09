@@ -27,4 +27,5 @@ int IfblockEnd_check();
 int init ();
 int assign(Token* left_id);
 int value();
+int terms ();
 #endif //IFJ_FINAL_PARSER_H

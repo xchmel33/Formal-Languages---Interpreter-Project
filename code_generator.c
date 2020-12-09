@@ -246,11 +246,13 @@ bool cg_var_val(Token token)
         sprintf(val_string, "%d", token.attribute.integer);
         ADD_CODE("int@");
         ADD_CODE(val_string);
+
         break;
     case TT_DECIMAL:
         sprintf(val_string, "%f", token.attribute.decimal);
         ADD_CODE("float@");
         ADD_CODE(val_string);
+
         break;
     case TT_STRING:
         break;
@@ -274,7 +276,7 @@ bool cg_var_to_any_val(char* id, Token token)
 }
 
 bool cg_print_id(TableItem* data){
-    ADD_INSTR("\n Print id");
+    ADD_INSTR("\n # Print id");
     ADD_CODE("WRITE");
     ADD_CODE(" ");
     ADD_CODE(data->key);
@@ -283,18 +285,20 @@ bool cg_print_id(TableItem* data){
 
 bool cg_print_value(char* val, DataType type)
 {
-    ADD_INSTR("\n Print value");
+    ADD_INSTR("\n# Print value");
 
     switch (type) {
 
         case T_INT:
             ADD_CODE("WRITE int@");
             ADD_CODE(val);
+            ADD_INSTR();
             return true;
 
         case T_FLOAT64:
             ADD_CODE("WRITE float@");
             ADD_CODE(val);
+            ADD_INSTR();
             return true;
         case T_STRING:
             ADD_CODE("WRITE string@");

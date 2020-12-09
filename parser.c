@@ -120,6 +120,20 @@ int def_func()
 
     if (act_token->type == TT_IDENTIFIER)
     {
+        if (strcmp(act_token->attribute.string->str,"print") == 0)
+        {
+            PRINT_DEBUG("Function pre declared print \n");
+            GET_TOKEN;
+            if (act_token->type == TT_L_BRACKET)
+            {
+                int error_pom = terms();
+                if (error_pom != 0)
+                {
+                    return error_pom;
+                }
+                return ERR_OK;
+            }
+        }
         TableItem func;
         if (strcmp(act_token->attribute.string->str,"main") == 0)
         {
@@ -731,7 +745,7 @@ int terms ()
         case TT_INTEGER:
         {
             char pom[50];
-            sprintf(pom, "%i", act_token->attribute.integer); //nalepenie cisla na sting resp. konverzia int na string
+            sprintf(pom, "%d", act_token->attribute.integer); //nalepenie cisla na sting resp. konverzia int na string
             if (cg_print_value(pom, T_INT) == false) {
                 return ERR_INTERNAL;
             }
