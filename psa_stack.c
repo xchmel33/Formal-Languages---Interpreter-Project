@@ -29,12 +29,12 @@ void s_destroy(Psa_stack* stack)
 
 int s_push(Psa_stack* stack, Token *token)
 {
-    Stack_item* new_i = initToken();
+    Stack_item* new_i = malloc(sizeof(Stack_item));
     if (new_i == NULL)
     {
         return ERR_PARSER;
     }
-
+    new_i->E = *initToken();
     new_i->E.type = token->type;
     if (token->attribute.integer != UNDEFINED_TOKEN_ATTRIBUTE) {
         new_i->E.attribute.integer = token->attribute.integer;
